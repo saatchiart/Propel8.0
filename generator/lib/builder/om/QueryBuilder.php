@@ -8,7 +8,6 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/OMBuilder.php';
 
 /**
  * Generates a PHP5 base Query class for user object model (OM).
@@ -415,10 +414,10 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . "
             }
             $pkType = 'array';
             $pkDescription = "
-                         A Primary key composition: " . '[' . join($colNames, ', ') . ']';
+                         A Primary key composition: " . '[' . join(', ', $colNames) . ']';
             $script .= "
      * <code>
-     * \$obj = \$c->findPk(array(" . join($examplePk, ', ') . "), \$con);";
+     * \$obj = \$c->findPk(array(" . join(', ', $examplePk) . "), \$con);";
         } else {
             $pkType = 'mixed';
             $script .= "

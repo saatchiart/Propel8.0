@@ -8,10 +8,9 @@
  * @license         MIT License
  */
 
-require_once dirname(__FILE__) . '/GeneratorConfig.php';
-require_once dirname(__FILE__) . '/GeneratorConfigInterface.php';
-require_once dirname(__FILE__) . '/../platform/PropelPlatformInterface.php';
-require_once dirname(__FILE__) . '/../platform/SqlitePlatform.php';
+
+
+
 
 /**
  * @package propel.generator.config
@@ -62,7 +61,7 @@ class QuickGeneratorConfig implements GeneratorConfigInterface
         }
         foreach ($lines as $line) {
             $line = trim($line);
-            if ($line == "" || $line{0} == '#' || $line{0} == ';') {
+            if ($line == "" || $line[0] == '#' || $line[0] == ';') {
                 continue;
             }
             $pos = strpos($line, '=');
@@ -90,7 +89,7 @@ class QuickGeneratorConfig implements GeneratorConfigInterface
     public function getConfiguredBuilder(Table $table, $type)
     {
         $class = $this->builders[$type];
-        require_once dirname(__FILE__) . '/../builder/om/' . $class . '.php';
+
         $builder = new $class($table);
         $builder->setGeneratorConfig($this);
 
@@ -104,7 +103,7 @@ class QuickGeneratorConfig implements GeneratorConfigInterface
      */
     public function getConfiguredPluralizer()
     {
-        require_once dirname(__FILE__) . '/../builder/util/DefaultEnglishPluralizer.php';
+
 
         return new DefaultEnglishPluralizer();
     }

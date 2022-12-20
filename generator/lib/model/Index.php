@@ -8,8 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/XMLElement.php';
-require_once dirname(__FILE__) . '/../exception/EngineException.php';
+
 
 /**
  * Information about indices of a table.
@@ -181,7 +180,7 @@ class Index extends XMLElement
             }
         } else {
             $attrib = $data;
-            $name = $attrib["name"];
+            $name = $attrib["name"] ?? null;
             $this->indexColumns[] = $name;
             if (isset($attrib["size"])) {
                 $this->indexColumnSizes[$name] = $attrib["size"];

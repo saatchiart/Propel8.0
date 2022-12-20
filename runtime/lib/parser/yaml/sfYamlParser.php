@@ -56,10 +56,8 @@ class sfYamlParser
     $this->currentLine = '';
     $this->lines = explode("\n", $this->cleanup($value));
 
-    if (function_exists('mb_internal_encoding') && ((int) ini_get('mbstring.func_overload')) & 2) {
-      $mbEncoding = mb_internal_encoding();
-      mb_internal_encoding('UTF-8');
-    }
+    $mbEncoding = mb_internal_encoding();
+    mb_internal_encoding('UTF-8');
 
     $data = array();
     while ($this->moveToNextLine()) {
@@ -327,7 +325,7 @@ class sfYamlParser
     if (preg_match('/^(?P<separator>\||>)(?P<modifiers>\+|\-|\d+|\+\d+|\-\d+|\d+\+|\d+\-)?(?P<comments> +#.*)?$/', $value, $matches)) {
       $modifiers = isset($matches['modifiers']) ? $matches['modifiers'] : '';
 
-      return $this->parseFoldedScalar($matches['separator'], preg_replace('#\d+#', '', $modifiers), intval(abs($modifiers)));
+      return $this->parseFoldedScalar($matches['separator'], preg_replace('#\d+#', '', $modifiers), abs((int)$modifiers));
     } else {
       return sfYamlInline::load($value);
     }

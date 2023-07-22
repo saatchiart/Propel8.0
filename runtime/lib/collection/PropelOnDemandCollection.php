@@ -21,10 +21,6 @@ class PropelOnDemandCollection extends PropelCollection
      */
     protected $iterator;
 
-    /**
-     * @param PropelFormatter $formatter
-     * @param PDOStatement    $stmt
-     */
     public function initIterator(PropelFormatter $formatter, PDOStatement $stmt)
     {
         $this->iterator = new PropelOnDemandIterator($formatter, $stmt);
@@ -39,7 +35,7 @@ class PropelOnDemandCollection extends PropelCollection
      *
      * @throws PropelException
      */
-    public function fromArray($arr)
+    public function fromArray($arr): never
     {
         throw new PropelException('The On Demand Collection is read only');
     }
@@ -84,9 +80,8 @@ class PropelOnDemandCollection extends PropelCollection
      * @throws PropelException
      *
      * @param integer $offset
-     * @param mixed   $value
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, mixed $value)
     {
         throw new PropelException('The On Demand Collection is read only');
     }
@@ -106,7 +101,7 @@ class PropelOnDemandCollection extends PropelCollection
     /**
      * @throws PropelException
      */
-    public function serialize()
+    public function serialize(): never
     {
         throw new PropelException('The On Demand Collection cannot be serialized');
     }
@@ -118,7 +113,7 @@ class PropelOnDemandCollection extends PropelCollection
      *
      * @return void
      */
-    public function unserialize($data)
+    public function unserialize($data): never
     {
         throw new PropelException('The On Demand Collection cannot be serialized');
     }
@@ -143,7 +138,7 @@ class PropelOnDemandCollection extends PropelCollection
         throw new PropelException('The On Demand Collection is read only');
     }
 
-    public function prepend($value)
+    public function prepend($value): never
     {
         throw new PropelException('The On Demand Collection is read only');
     }
@@ -201,7 +196,7 @@ class PropelOnDemandCollection extends PropelCollection
     /**
      * {@inheritdoc}
      */
-    public function exportTo($parser, $usePrefix = true, $includeLazyLoadColumns = true)
+    public function exportTo($parser, $usePrefix = true, $includeLazyLoadColumns = true): never
     {
         throw new PropelException('A PropelOnDemandCollection cannot be exported.');
     }

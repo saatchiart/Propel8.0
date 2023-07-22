@@ -28,7 +28,6 @@ class PropelException extends Exception
      * Emulates wrapped exceptions for PHP < 5.3
      *
      * @param string    $message
-     * @param Exception $previous
      *
      * @return PropelException
      */

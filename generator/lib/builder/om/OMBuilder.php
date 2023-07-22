@@ -27,7 +27,7 @@ abstract class OMBuilder extends DataModelBuilder
      *
      * @var array
      */
-    protected $declaredClasses = array();
+    protected $declaredClasses = [];
 
     /**
      * Builds the PHP source for current class and returns it as a string.
@@ -159,7 +159,7 @@ abstract class OMBuilder extends DataModelBuilder
      */
     public function getPackage()
     {
-        $pkg = ($this->getTable()->getPackage() ? $this->getTable()->getPackage() : $this->getDatabase()->getPackage());
+        $pkg = ($this->getTable()->getPackage() ?: $this->getDatabase()->getPackage());
         if (!$pkg) {
             $pkg = $this->getBuildProperty('targetPackage');
         }
@@ -176,11 +176,11 @@ abstract class OMBuilder extends DataModelBuilder
     {
         $pkg = $this->getPackage();
 
-        if (false !== strpos($pkg, '/')) {
+        if (str_contains($pkg, '/')) {
             return preg_replace('#\.(map|om)$#', '/\1', $pkg);
         }
 
-        if ('.' === substr($pkg, 0, 1)) {
+        if (str_starts_with($pkg, '.')) {
             $pkg = substr($pkg, 1);
         }
 
@@ -208,7 +208,7 @@ abstract class OMBuilder extends DataModelBuilder
 
     public function declareClass($fullyQualifiedClassName)
     {
-        $fullyQualifiedClassName = trim($fullyQualifiedClassName, '\\');
+        $fullyQualifiedClassName = trim((string) $fullyQualifiedClassName, '\\');
         if (($pos = strrpos($fullyQualifiedClassName, '\\')) !== false) {
             $this->declareClassNamespace(substr($fullyQualifiedClassName, $pos + 1), substr($fullyQualifiedClassName, 0, $pos));
         } else {
@@ -329,7 +329,7 @@ abstract class OMBuilder extends DataModelBuilder
         if ($col->getPeerName()) {
             $const = strtoupper($col->getPeerName());
         } else {
-            $const = strtoupper($col->getName());
+            $const = strtoupper((string) $col->getName());
         }
 
         return $classname . '::' . $const;
@@ -367,7 +367,6 @@ abstract class OMBuilder extends DataModelBuilder
      * If the key is required, an INNER JOIN will be returned, else a LEFT JOIN will be suggested,
      * unless the schema is provided with the DefaultJoin attribute, which overrules the default Join Type
      *
-     * @param ForeignKey $fk
      *
      * @return string
      */
@@ -408,7 +407,7 @@ abstract class OMBuilder extends DataModelBuilder
                 $className = $this->getPluralizer()->getPluralForm($className);
             }
 
-            return $className . $this->getRelatedBySuffix($fk);
+            return $className . static::getRelatedBySuffix($fk);
         }
     }
 
@@ -432,7 +431,7 @@ abstract class OMBuilder extends DataModelBuilder
             if (!$localColumn) {
                 throw new Exception("Could not fetch column: $localColumnName in table " . $localTable->getName());
             }
-            if (count($localTable->getForeignKeysReferencingTable($fk->getForeignTableName())) > 1
+            if ((is_countable($localTable->getForeignKeysReferencingTable($fk->getForeignTableName())) ? count($localTable->getForeignKeysReferencingTable($fk->getForeignTableName())) : 0) > 1
              || count($fk->getForeignTable()->getForeignKeysReferencingTable($fk->getTableName())) > 0
              || $fk->getForeignTableName() == $fk->getTableName()) {
                 // self referential foreign key, or several foreign keys to the same table, or cross-reference fkey
@@ -472,7 +471,7 @@ abstract class OMBuilder extends DataModelBuilder
                 $className = $this->getPluralizer()->getPluralForm($className);
             }
 
-            return $className . $this->getRefRelatedBySuffix($fk);
+            return $className . static::getRefRelatedBySuffix($fk);
         }
     }
 
@@ -489,11 +488,11 @@ abstract class OMBuilder extends DataModelBuilder
             if ($fk->getForeignTableName() == $fk->getTableName()) {
                 // self referential foreign key
                 $relCol .= $fk->getForeignTable()->getColumn($foreignColumnName)->getPhpName();
-                if (count($foreignKeysToForeignTable) > 1) {
+                if ((is_countable($foreignKeysToForeignTable) ? count($foreignKeysToForeignTable) : 0) > 1) {
                     // several self-referential foreign keys
                     $relCol .= array_search($fk, $foreignKeysToForeignTable);
                 }
-            } elseif (count($foreignKeysToForeignTable) > 1 || count($fk->getForeignTable()->getForeignKeysReferencingTable($fk->getTableName())) > 0) {
+            } elseif ((is_countable($foreignKeysToForeignTable) ? count($foreignKeysToForeignTable) : 0) > 1 || count($fk->getForeignTable()->getForeignKeysReferencingTable($fk->getTableName())) > 0) {
                 // several foreign keys to the same table, or symmetrical foreign key in foreign table
                 $relCol .= $localColumn->getPhpName();
             }
@@ -550,7 +549,7 @@ abstract class OMBuilder extends DataModelBuilder
             $modifier = $behavior->$modifierGetter();
 
             if (method_exists($modifier, $hookName)) {
-                if (strpos($hookName, 'Filter') !== false) {
+                if (str_contains($hookName, 'Filter')) {
                     // filter hook: the script string will be modified by the behavior
                     $modifier->$hookName($script, $this);
                 } else {
@@ -562,7 +561,7 @@ abstract class OMBuilder extends DataModelBuilder
                     $script .= "
 " . $tab . '// ' . $behavior->getName() . " behavior
 ";
-                    $script .= preg_replace('/^/m', $tab, $addedScript);
+                    $script .= preg_replace('/^/m', $tab, (string) $addedScript);
                 }
             }
         }
@@ -591,10 +590,10 @@ abstract class OMBuilder extends DataModelBuilder
     private function clean($content)
     {
         // trailing whitespaces
-        $content = preg_replace('/[ \t]*$/m', '', $content);
+        $content = preg_replace('/[ \t]*$/m', '', (string) $content);
 
         // indentation
-        $content = preg_replace_callback('/^([ \t]+)/m', array($this, 'fixTrailingWhitespaces'), $content);
+        $content = preg_replace_callback('/^([ \t]+)/m', $this->fixTrailingWhitespaces(...), $content);
 
         // line feed
         $content = str_replace("\r\n", "\n", $content);
@@ -610,13 +609,13 @@ abstract class OMBuilder extends DataModelBuilder
             }
 
             preg_match_all('/\b' . $short . '\b/i', str_replace($match[0] . "\n", '', $content), $m);
-            if (!count($m[0])) {
+            if (!(is_countable($m[0]) ? count($m[0]) : 0)) {
                 $content = str_replace($match[0] . "\n", '', $content);
             }
         }
 
         // end of line
-        if (strlen($content) && "\n" != substr($content, -1)) {
+        if (strlen($content) && !str_ends_with($content, "\n")) {
             $content = $content . "\n";
         }
 
@@ -625,6 +624,6 @@ abstract class OMBuilder extends DataModelBuilder
 
     public function fixTrailingWhitespaces($matches)
     {
-        return str_replace("\t", '    ', $matches[0]);
+        return str_replace("\t", '    ', (string) $matches[0]);
     }
 }

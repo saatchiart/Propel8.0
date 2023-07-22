@@ -29,97 +29,94 @@ class Propel
     /**
      * The Propel version.
      */
-    const VERSION = '1.7.3-dev';
+    final public const VERSION = '1.7.3-dev';
 
     /**
      * A constant for <code>default</code>.
      */
-    const DEFAULT_NAME = "default";
+    final public const DEFAULT_NAME = "default";
 
     /**
      * A constant defining 'System is unusuable' logging level
      */
-    const LOG_EMERG = 0;
+    final public const LOG_EMERG = 0;
 
     /**
      * A constant defining 'Immediate action required' logging level
      */
-    const LOG_ALERT = 1;
+    final public const LOG_ALERT = 1;
 
     /**
      * A constant defining 'Critical conditions' logging level
      */
-    const LOG_CRIT = 2;
+    final public const LOG_CRIT = 2;
 
     /**
      * A constant defining 'Error conditions' logging level
      */
-    const LOG_ERR = 3;
+    final public const LOG_ERR = 3;
 
     /**
      * A constant defining 'Warning conditions' logging level
      */
-    const LOG_WARNING = 4;
+    final public const LOG_WARNING = 4;
 
     /**
      * A constant defining 'Normal but significant' logging level
      */
-    const LOG_NOTICE = 5;
+    final public const LOG_NOTICE = 5;
 
     /**
      * A constant defining 'Informational' logging level
      */
-    const LOG_INFO = 6;
+    final public const LOG_INFO = 6;
 
     /**
      * A constant defining 'Debug-level messages' logging level
      */
-    const LOG_DEBUG = 7;
+    final public const LOG_DEBUG = 7;
 
     /**
      * The class name for a PDO object.
      */
-    const CLASS_PDO = 'PDO';
+    final public const CLASS_PDO = 'PDO';
 
     /**
      * The class name for a PropelPDO object.
      */
-    const CLASS_PROPEL_PDO = 'PropelPDO';
+    final public const CLASS_PROPEL_PDO = 'PropelPDO';
 
     /**
      * The class name for a DebugPDO object.
      */
-    const CLASS_DEBUG_PDO = 'DebugPDO';
+    final public const CLASS_DEBUG_PDO = 'DebugPDO';
 
     /**
      * Constant used to request a READ connection (applies to replication).
      */
-    const CONNECTION_READ = 'read';
+    final public const CONNECTION_READ = 'read';
 
     /**
      * Constant used to request a WRITE connection (applies to replication).
      */
-    const CONNECTION_WRITE = 'write';
+    final public const CONNECTION_WRITE = 'write';
 
-    /**
-     * @var        string The db name that is specified as the default in the property file
-     */
-    private static $defaultDBName;
+    private static bool|float|int|string|null $defaultDBName = null;
 
     /**
      * @var        array The global cache of database maps
      */
-    private static $dbMaps = array();
+    private static array $dbMaps = [];
 
     /**
      * @var        array The cache of DB adapter keys
      */
-    private static $adapterMap = array();
+    private static array $adapterMap = [];
 
     /**
      * @var        array Cache of established connections (to eliminate overhead).
      */
-    private static $connectionMap = array();
+    private static array $connectionMap = [];
 
     /**
      * @var        PropelConfiguration Propel-specific configuration.
@@ -129,7 +126,7 @@ class Propel
     /**
      * @var        bool flag to set to true once this class has been initialized
      */
-    private static $isInit = false;
+    private static bool $isInit = false;
 
     /**
      * @var        Log optional logger
@@ -139,17 +136,17 @@ class Propel
     /**
      * @var        string The name of the database mapper class
      */
-    private static $databaseMapClass = 'DatabaseMap';
+    private static string $databaseMapClass = 'DatabaseMap';
 
     /**
      * @var        bool Whether the object instance pooling is enabled
      */
-    private static $instancePoolingEnabled = true;
+    private static bool $instancePoolingEnabled = true;
 
     /**
      * @var        bool For replication, whether to force the use of master connection.
      */
-    private static $forceMasterConnection = false;
+    private static bool $forceMasterConnection = false;
 
     /**
      * @var        string Base directory to use for autoloading. Initialized in self::initBaseDir()
@@ -159,99 +156,7 @@ class Propel
     /**
      * @var        array A map of class names and their file paths for autoloading
      */
-    protected static $autoloadMap = array(
-
-        'DBAdapter'           => 'adapter/DBAdapter.php',
-        'DBMSSQL'             => 'adapter/DBMSSQL.php',
-        'MssqlPropelPDO'      => 'adapter/MSSQL/MssqlPropelPDO.php',
-        'MssqlDebugPDO'       => 'adapter/MSSQL/MssqlDebugPDO.php',
-        'MssqlDateTime'       => 'adapter/MSSQL/MssqlDateTime.class.php',
-        'DBMySQL'             => 'adapter/DBMySQL.php',
-        'DBMySQLi'            => 'adapter/DBMySQLi.php',
-        'DBNone'              => 'adapter/DBNone.php',
-        'DBOracle'            => 'adapter/DBOracle.php',
-        'DBPostgres'          => 'adapter/DBPostgres.php',
-        'DBSQLite'            => 'adapter/DBSQLite.php',
-        'DBSybase'            => 'adapter/DBSybase.php',
-        'DBSQLSRV'            => 'adapter/DBSQLSRV.php',
-
-        'PropelArrayCollection' => 'collection/PropelArrayCollection.php',
-        'PropelCollection'    => 'collection/PropelCollection.php',
-        'PropelObjectCollection' => 'collection/PropelObjectCollection.php',
-        'PropelOnDemandCollection' => 'collection/PropelOnDemandCollection.php',
-        'PropelOnDemandIterator' => 'collection/PropelOnDemandIterator.php',
-
-        'PropelConfiguration' => 'config/PropelConfiguration.php',
-        'PropelConfigurationIterator' => 'config/PropelConfigurationIterator.php',
-
-        'PropelPDO'           => 'connection/PropelPDO.php',
-        'DebugPDO'            => 'connection/DebugPDO.php',
-        'DebugPDOStatement'   => 'connection/DebugPDOStatement.php',
-
-        'PropelException'     => 'exception/PropelException.php',
-
-        'ModelWith'           => 'formatter/ModelWith.php',
-        'PropelArrayFormatter' => 'formatter/PropelArrayFormatter.php',
-        'PropelFormatter'     => 'formatter/PropelFormatter.php',
-        'PropelObjectFormatter' => 'formatter/PropelObjectFormatter.php',
-        'PropelOnDemandFormatter' => 'formatter/PropelOnDemandFormatter.php',
-        'PropelStatementFormatter' => 'formatter/PropelStatementFormatter.php',
-        'PropelSimpleArrayFormatter' => 'formatter/PropelSimpleArrayFormatter.php',
-
-        'BasicLogger'         => 'logger/BasicLogger.php',
-        'MojaviLogAdapter'    => 'logger/MojaviLogAdapter.php',
-
-        'ColumnMap'           => 'map/ColumnMap.php',
-        'DatabaseMap'         => 'map/DatabaseMap.php',
-        'TableMap'            => 'map/TableMap.php',
-        'RelationMap'         => 'map/RelationMap.php',
-        'ValidatorMap'        => 'map/ValidatorMap.php',
-
-        'BaseObject'          => 'om/BaseObject.php',
-        'NodeObject'          => 'om/NodeObject.php',
-        'Persistent'          => 'om/Persistent.php',
-        'PreOrderNodeIterator' => 'om/PreOrderNodeIterator.php',
-        'NestedSetPreOrderNodeIterator' => 'om/NestedSetPreOrderNodeIterator.php',
-        'NestedSetRecursiveIterator' => 'om/NestedSetRecursiveIterator.php',
-
-        'PropelCSVParser'     => 'parser/PropelCSVParser.php',
-        'PropelJSONParser'    => 'parser/PropelJSONParser.php',
-        'PropelParser'        => 'parser/PropelParser.php',
-        'PropelXMLParser'     => 'parser/PropelXMLParser.php',
-        'PropelYAMLParser'    => 'parser/PropelYAMLParser.php',
-
-        'Criteria'            => 'query/Criteria.php',
-        'Criterion'           => 'query/Criterion.php',
-        'CriterionIterator'   => 'query/CriterionIterator.php',
-        'Join'                => 'query/Join.php',
-        'ModelCriteria'       => 'query/ModelCriteria.php',
-        'ModelCriterion'      => 'query/ModelCriterion.php',
-        'ModelJoin'           => 'query/ModelJoin.php',
-        'PropelQuery'         => 'query/PropelQuery.php',
-
-        'BasePeer'            => 'util/BasePeer.php',
-        'NodePeer'            => 'util/NodePeer.php',
-        'PeerInfo'            => 'util/PeerInfo.php',
-        'PropelAutoloader'    => 'util/PropelAutoloader.php',
-        'PropelColumnTypes'   => 'util/PropelColumnTypes.php',
-        'PropelConditionalProxy' => 'util/PropelConditionalProxy.php',
-        'PropelModelPager'    => 'util/PropelModelPager.php',
-        'PropelPager'         => 'util/PropelPager.php',
-        'PropelDateTime'      => 'util/PropelDateTime.php',
-
-        'BasicValidator'      => 'validator/BasicValidator.php',
-        'MatchValidator'      => 'validator/MatchValidator.php',
-        'MaxLengthValidator'  => 'validator/MaxLengthValidator.php',
-        'MaxValueValidator'   => 'validator/MaxValueValidator.php',
-        'MinLengthValidator'  => 'validator/MinLengthValidator.php',
-        'MinValueValidator'   => 'validator/MinValueValidator.php',
-        'NotMatchValidator'   => 'validator/NotMatchValidator.php',
-        'RequiredValidator'   => 'validator/RequiredValidator.php',
-        'TypeValidator'       => 'validator/TypeValidator.php',
-        'UniqueValidator'     => 'validator/UniqueValidator.php',
-        'ValidValuesValidator' => 'validator/ValidValuesValidator.php',
-        'ValidationFailed'    => 'validator/ValidationFailed.php',
-    );
+    protected static $autoloadMap = ['DBAdapter'           => 'adapter/DBAdapter.php', 'DBMSSQL'             => 'adapter/DBMSSQL.php', 'MssqlPropelPDO'      => 'adapter/MSSQL/MssqlPropelPDO.php', 'MssqlDebugPDO'       => 'adapter/MSSQL/MssqlDebugPDO.php', 'MssqlDateTime'       => 'adapter/MSSQL/MssqlDateTime.class.php', 'DBMySQL'             => 'adapter/DBMySQL.php', 'DBMySQLi'            => 'adapter/DBMySQLi.php', 'DBNone'              => 'adapter/DBNone.php', 'DBOracle'            => 'adapter/DBOracle.php', 'DBPostgres'          => 'adapter/DBPostgres.php', 'DBSQLite'            => 'adapter/DBSQLite.php', 'DBSybase'            => 'adapter/DBSybase.php', 'DBSQLSRV'            => 'adapter/DBSQLSRV.php', 'PropelArrayCollection' => 'collection/PropelArrayCollection.php', 'PropelCollection'    => 'collection/PropelCollection.php', 'PropelObjectCollection' => 'collection/PropelObjectCollection.php', 'PropelOnDemandCollection' => 'collection/PropelOnDemandCollection.php', 'PropelOnDemandIterator' => 'collection/PropelOnDemandIterator.php', 'PropelConfiguration' => 'config/PropelConfiguration.php', 'PropelConfigurationIterator' => 'config/PropelConfigurationIterator.php', 'PropelPDO'           => 'connection/PropelPDO.php', 'DebugPDO'            => 'connection/DebugPDO.php', 'DebugPDOStatement'   => 'connection/DebugPDOStatement.php', 'PropelException'     => 'exception/PropelException.php', 'ModelWith'           => 'formatter/ModelWith.php', 'PropelArrayFormatter' => 'formatter/PropelArrayFormatter.php', 'PropelFormatter'     => 'formatter/PropelFormatter.php', 'PropelObjectFormatter' => 'formatter/PropelObjectFormatter.php', 'PropelOnDemandFormatter' => 'formatter/PropelOnDemandFormatter.php', 'PropelStatementFormatter' => 'formatter/PropelStatementFormatter.php', 'PropelSimpleArrayFormatter' => 'formatter/PropelSimpleArrayFormatter.php', 'BasicLogger'         => 'logger/BasicLogger.php', 'MojaviLogAdapter'    => 'logger/MojaviLogAdapter.php', 'ColumnMap'           => 'map/ColumnMap.php', 'DatabaseMap'         => 'map/DatabaseMap.php', 'TableMap'            => 'map/TableMap.php', 'RelationMap'         => 'map/RelationMap.php', 'ValidatorMap'        => 'map/ValidatorMap.php', 'BaseObject'          => 'om/BaseObject.php', 'NodeObject'          => 'om/NodeObject.php', 'Persistent'          => 'om/Persistent.php', 'PreOrderNodeIterator' => 'om/PreOrderNodeIterator.php', 'NestedSetPreOrderNodeIterator' => 'om/NestedSetPreOrderNodeIterator.php', 'NestedSetRecursiveIterator' => 'om/NestedSetRecursiveIterator.php', 'PropelCSVParser'     => 'parser/PropelCSVParser.php', 'PropelJSONParser'    => 'parser/PropelJSONParser.php', 'PropelParser'        => 'parser/PropelParser.php', 'PropelXMLParser'     => 'parser/PropelXMLParser.php', 'PropelYAMLParser'    => 'parser/PropelYAMLParser.php', 'Criteria'            => 'query/Criteria.php', 'Criterion'           => 'query/Criterion.php', 'CriterionIterator'   => 'query/CriterionIterator.php', 'Join'                => 'query/Join.php', 'ModelCriteria'       => 'query/ModelCriteria.php', 'ModelCriterion'      => 'query/ModelCriterion.php', 'ModelJoin'           => 'query/ModelJoin.php', 'PropelQuery'         => 'query/PropelQuery.php', 'BasePeer'            => 'util/BasePeer.php', 'NodePeer'            => 'util/NodePeer.php', 'PeerInfo'            => 'util/PeerInfo.php', 'PropelAutoloader'    => 'util/PropelAutoloader.php', 'PropelColumnTypes'   => 'util/PropelColumnTypes.php', 'PropelConditionalProxy' => 'util/PropelConditionalProxy.php', 'PropelModelPager'    => 'util/PropelModelPager.php', 'PropelPager'         => 'util/PropelPager.php', 'PropelDateTime'      => 'util/PropelDateTime.php', 'BasicValidator'      => 'validator/BasicValidator.php', 'MatchValidator'      => 'validator/MatchValidator.php', 'MaxLengthValidator'  => 'validator/MaxLengthValidator.php', 'MaxValueValidator'   => 'validator/MaxValueValidator.php', 'MinLengthValidator'  => 'validator/MinLengthValidator.php', 'MinValueValidator'   => 'validator/MinValueValidator.php', 'NotMatchValidator'   => 'validator/NotMatchValidator.php', 'RequiredValidator'   => 'validator/RequiredValidator.php', 'TypeValidator'       => 'validator/TypeValidator.php', 'UniqueValidator'     => 'validator/UniqueValidator.php', 'ValidValuesValidator' => 'validator/ValidValuesValidator.php', 'ValidationFailed'    => 'validator/ValidationFailed.php'];
 
     /**
      * Initializes Propel
@@ -279,7 +184,7 @@ class Propel
         }
 
         // reset the connection map (this should enable runtime changes of connection params)
-        self::$connectionMap = array();
+        self::$connectionMap = [];
 
         if (isset(self::$configuration['classmap']) && is_array(self::$configuration['classmap'])) {
             PropelAutoloader::getInstance()->addClassPaths(self::$configuration['classmap']);
@@ -315,11 +220,11 @@ class Propel
             if (isset(self::$configuration['log']) && is_array(self::$configuration['log']) && count(self::$configuration['log'])) {
                 include_once 'Log.php'; // PEAR Log class
                 $c = self::$configuration['log'];
-                $type = isset($c['type']) ? $c['type'] : 'file';
-                $name = isset($c['name']) ? $c['name'] : './propel.log';
-                $ident = isset($c['ident']) ? $c['ident'] : 'propel';
-                $conf = isset($c['conf']) ? $c['conf'] : array();
-                $level = isset($c['level']) ? $c['level'] : PEAR_LOG_DEBUG;
+                $type = $c['type'] ?? 'file';
+                $name = $c['name'] ?? './propel.log';
+                $ident = $c['ident'] ?? 'propel';
+                $conf = $c['conf'] ?? [];
+                $level = $c['level'] ?? PEAR_LOG_DEBUG;
                 self::$logger = Log::singleton($type, $name, $ident, $conf, $level);
             } // if isset()
         }
@@ -433,24 +338,16 @@ class Propel
     {
         if (self::hasLogger()) {
             $logger = self::logger();
-            switch ($level) {
-                case self::LOG_EMERG:
-                    return $logger->log($message, $level);
-                case self::LOG_ALERT:
-                    return $logger->alert($message);
-                case self::LOG_CRIT:
-                    return $logger->crit($message);
-                case self::LOG_ERR:
-                    return $logger->err($message);
-                case self::LOG_WARNING:
-                    return $logger->warning($message);
-                case self::LOG_NOTICE:
-                    return $logger->notice($message);
-                case self::LOG_INFO:
-                    return $logger->info($message);
-                default:
-                    return $logger->debug($message);
-            }
+            return match ($level) {
+                self::LOG_EMERG => $logger->log($message, $level),
+                self::LOG_ALERT => $logger->alert($message),
+                self::LOG_CRIT => $logger->crit($message),
+                self::LOG_ERR => $logger->err($message),
+                self::LOG_WARNING => $logger->warning($message),
+                self::LOG_NOTICE => $logger->notice($message),
+                self::LOG_INFO => $logger->info($message),
+                default => $logger->debug($message),
+            };
         }
 
         return true;
@@ -578,7 +475,7 @@ class Propel
     {
         if (!isset(self::$connectionMap[$name]['master'])) {
             // load connection parameter for master connection
-            $conparams = isset(self::$configuration['datasources'][$name]['connection']) ? self::$configuration['datasources'][$name]['connection'] : null;
+            $conparams = self::$configuration['datasources'][$name]['connection'] ?? null;
             if (empty($conparams)) {
                 throw new PropelException('No connection information in your runtime configuration file for datasource [' . $name . ']');
             }
@@ -604,7 +501,7 @@ class Propel
     {
         if (!isset(self::$connectionMap[$name]['slave'])) {
 
-            $slaveconfigs = isset(self::$configuration['datasources'][$name]['slaves']) ? self::$configuration['datasources'][$name]['slaves'] : null;
+            $slaveconfigs = self::$configuration['datasources'][$name]['slaves'] ?? null;
 
             if (empty($slaveconfigs)) {
                 // no slaves configured for this datasource
@@ -666,12 +563,12 @@ class Propel
         }
 
         $dsn = $conparams['dsn'];
-        $user = isset($conparams['user']) ? $conparams['user'] : null;
-        $password = isset($conparams['password']) ? $conparams['password'] : null;
+        $user = $conparams['user'] ?? null;
+        $password = $conparams['password'] ?? null;
 
         // load any driver options from the config file
         // driver options are those PDO settings that have to be passed during the connection construction
-        $driver_options = array();
+        $driver_options = [];
         if (isset($conparams['options']) && is_array($conparams['options'])) {
             try {
                 self::processDriverOptions($conparams['options'], $driver_options);
@@ -691,7 +588,7 @@ class Propel
         // load any connection options from the config file
         // connection attributes are those PDO flags that have to be set on the initialized connection
         if (isset($conparams['attributes']) && is_array($conparams['attributes'])) {
-            $attributes = array();
+            $attributes = [];
             try {
                 self::processDriverOptions($conparams['attributes'], $attributes);
             } catch (PropelException $e) {
@@ -703,7 +600,7 @@ class Propel
         }
 
         // initialize the connection using the settings provided in the config file. this could be a "SET NAMES <charset>" query for MySQL, for instance
-        $adapter->initConnection($con, isset($conparams['settings']) && is_array($conparams['settings']) ? $conparams['settings'] : array());
+        $adapter->initConnection($con, isset($conparams['settings']) && is_array($conparams['settings']) ? $conparams['settings'] : []);
 
         return $con;
     }
@@ -721,7 +618,7 @@ class Propel
     private static function processDriverOptions($source, &$write_to)
     {
         foreach ($source as $option => $optiondata) {
-            if (is_string($option) && strpos($option, '::') !== false) {
+            if (is_string($option) && str_contains($option, '::')) {
                 $key = $option;
             } elseif (is_string($option)) {
                 $key = 'PropelPDO::' . $option;
@@ -732,7 +629,7 @@ class Propel
             $key = constant($key);
 
             $value = $optiondata['value'];
-            if (is_string($value) && strpos($value, '::') !== false) {
+            if (is_string($value) && str_contains($value, '::')) {
                 if (!defined($value)) {
                     throw new PropelException("Invalid PDO option/attribute value specified: " . $value);
                 }
@@ -838,7 +735,7 @@ class Propel
      */
     public static function initBaseDir()
     {
-        self::$baseDir = dirname(__FILE__) . '/';
+        self::$baseDir = __DIR__ . '/';
     }
 
     /**
@@ -859,10 +756,10 @@ class Propel
     public static function importClass($path)
     {
         // extract classname
-        if (($pos = strrpos($path, '.')) === false) {
+        if (($pos = strrpos((string) $path, '.')) === false) {
             $class = $path;
         } else {
-            $class = substr($path, $pos + 1);
+            $class = substr((string) $path, $pos + 1);
         }
 
         // check if class exists, using autoloader to attempt to load it.
@@ -940,8 +837,8 @@ class Propel
 
 // Since the Propel class is not a true singleton, this code cannot go into the __construct()
 Propel::initBaseDir();
-spl_autoload_register(array('Propel', 'autoload'));
+spl_autoload_register(['Propel', 'autoload']);
 
 if (version_compare(PHP_VERSION, '5.3.0', '<')) {
-    require_once dirname(__FILE__) . '/../stubs/functions.php';
+    require_once __DIR__ . '/../stubs/functions.php';
 }

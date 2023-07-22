@@ -17,8 +17,6 @@
  */
 class ModelCriterion extends Criterion
 {
-    protected $clause = '';
-
     /**
      * Create a new instance.
      *
@@ -29,7 +27,7 @@ class ModelCriterion extends Criterion
      * @param string    $clause      A simple pseudo-SQL clause, e.g. 'foo.BAR LIKE ?'
      * @param string    $type
      */
-    public function __construct(Criteria $outer, $column, $value, $comparison, $clause, $type = null)
+    public function __construct(Criteria $outer, $column, $value, $comparison, protected $clause, $type = null)
     {
         $this->value = $value;
         if ($column instanceof ColumnMap) {
@@ -46,8 +44,7 @@ class ModelCriterion extends Criterion
                 $this->column = substr($column, $dotPos + 1, strlen($column));
             }
         }
-        $this->comparison = ($comparison === null ? Criteria::EQUAL : $comparison);
-        $this->clause = $clause;
+        $this->comparison = ($comparison ?? Criteria::EQUAL);
         $this->type = $type;
         $this->init($outer);
     }
@@ -70,47 +67,17 @@ class ModelCriterion extends Criterion
      */
     protected function dispatchPsHandling(&$sb, array &$params)
     {
-        switch ($this->comparison) {
-            case Criteria::CUSTOM:
-                // custom expression with no parameter binding
-                $this->appendCustomToPs($sb, $params);
-                break;
-            case Criteria::IN:
-            case Criteria::NOT_IN:
-                // table.column IN (?, ?) or table.column NOT IN (?, ?)
-                $this->appendInToPs($sb, $params);
-                break;
-            case Criteria::LIKE:
-            case Criteria::NOT_LIKE:
-            case Criteria::ILIKE:
-            case Criteria::NOT_ILIKE:
-                // table.column LIKE ? or table.column NOT LIKE ?  (or ILIKE for Postgres)
-                $this->appendLikeToPs($sb, $params);
-                break;
-            case ModelCriteria::MODEL_CLAUSE:
-                // regular model clause, e.g. 'book.TITLE = ?'
-                $this->appendModelClauseToPs($sb, $params);
-                break;
-            case ModelCriteria::MODEL_CLAUSE_LIKE:
-                // regular model clause, e.g. 'book.TITLE = ?'
-                $this->appendModelClauseLikeToPs($sb, $params);
-                break;
-            case ModelCriteria::MODEL_CLAUSE_SEVERAL:
-                // Ternary model clause, e.G 'book.ID BETWEEN ? AND ?'
-                $this->appendModelClauseSeveralToPs($sb, $params);
-                break;
-            case ModelCriteria::MODEL_CLAUSE_ARRAY:
-                // IN or NOT IN model clause, e.g. 'book.TITLE NOT IN ?'
-                $this->appendModelClauseArrayToPs($sb, $params);
-                break;
-            case ModelCriteria::MODEL_CLAUSE_RAW:
-                // raw model clause, with type, e.g. 'foobar = ?'
-                $this->appendModelClauseRawToPs($sb, $params);
-                break;
-            default:
-                // table.column = ? or table.column >= ? etc. (traditional expressions, the default)
-                $this->appendBasicToPs($sb, $params);
-        }
+        match ($this->comparison) {
+            Criteria::CUSTOM => $this->appendCustomToPs($sb, $params),
+            Criteria::IN, Criteria::NOT_IN => $this->appendInToPs($sb, $params),
+            Criteria::LIKE, Criteria::NOT_LIKE, Criteria::ILIKE, Criteria::NOT_ILIKE => $this->appendLikeToPs($sb, $params),
+            ModelCriteria::MODEL_CLAUSE => $this->appendModelClauseToPs($sb, $params),
+            ModelCriteria::MODEL_CLAUSE_LIKE => $this->appendModelClauseLikeToPs($sb, $params),
+            ModelCriteria::MODEL_CLAUSE_SEVERAL => $this->appendModelClauseSeveralToPs($sb, $params),
+            ModelCriteria::MODEL_CLAUSE_ARRAY => $this->appendModelClauseArrayToPs($sb, $params),
+            ModelCriteria::MODEL_CLAUSE_RAW => $this->appendModelClauseRawToPs($sb, $params),
+            default => $this->appendBasicToPs($sb, $params),
+        };
     }
 
     /**
@@ -123,8 +90,8 @@ class ModelCriterion extends Criterion
     public function appendModelClauseToPs(&$sb, array &$params)
     {
         if ($this->value !== null) {
-            $params[] = array('table' => $this->realtable, 'column' => $this->column, 'value' => $this->value);
-            $sb .= str_replace('?', ':p' . count($params), $this->clause);
+            $params[] = ['table' => $this->realtable, 'column' => $this->column, 'value' => $this->value];
+            $sb .= str_replace('?', ':p' . count($params), (string) $this->clause);
         } else {
             $sb .= $this->clause;
         }
@@ -143,7 +110,7 @@ class ModelCriterion extends Criterion
         // LIKE is case insensitive in mySQL and SQLite, but not in PostGres
         // If the column is case insensitive, use ILIKE / NOT ILIKE instead of LIKE / NOT LIKE
         if ($this->ignoreStringCase && $this->getDb() instanceof DBPostgres) {
-            $this->clause = preg_replace('/LIKE \?$/i', 'ILIKE ?', $this->clause);
+            $this->clause = preg_replace('/LIKE \?$/i', 'ILIKE ?', (string) $this->clause);
         }
         $this->appendModelClauseToPs($sb, $params);
     }
@@ -167,7 +134,7 @@ class ModelCriterion extends Criterion
                 // in order to support null values
                 throw new PropelException('Null values are not supported inside BETWEEN clauses');
             }
-            $params[] = array('table' => $this->realtable, 'column' => $this->column, 'value' => $value);
+            $params[] = ['table' => $this->realtable, 'column' => $this->column, 'value' => $value];
             $clause = self::strReplaceOnce('?', ':p' . count($params), $clause);
         }
         $sb .= $clause;
@@ -182,18 +149,18 @@ class ModelCriterion extends Criterion
      */
     public function appendModelClauseArrayToPs(&$sb, array &$params)
     {
-        $_bindParams = array(); // the param names used in query building
+        $_bindParams = []; // the param names used in query building
         $_idxstart = count($params);
         $valuesLength = 0;
         foreach ((array) $this->value as $value) {
             $valuesLength++; // increment this first to correct for wanting bind params to start with :p1
-            $params[] = array('table' => $this->realtable, 'column' => $this->column, 'value' => $value);
+            $params[] = ['table' => $this->realtable, 'column' => $this->column, 'value' => $value];
             $_bindParams[] = ':p' . ($_idxstart + $valuesLength);
         }
         if ($valuesLength !== 0) {
-            $sb .= str_replace('?', '(' . implode(',', $_bindParams) . ')', $this->clause);
+            $sb .= str_replace('?', '(' . implode(',', $_bindParams) . ')', (string) $this->clause);
         } else {
-            $sb .= (stripos($this->clause, ' NOT IN ') === false) ? "1<>1" : "1=1";
+            $sb .= (stripos((string) $this->clause, ' NOT IN ') === false) ? "1<>1" : "1=1";
         }
         unset($value, $valuesLength);
     }
@@ -209,11 +176,11 @@ class ModelCriterion extends Criterion
      */
     protected function appendModelClauseRawToPs(&$sb, array &$params)
     {
-        if (substr_count($this->clause, '?') != 1) {
+        if (substr_count((string) $this->clause, '?') != 1) {
             throw new PropelException(sprintf('Could not build SQL for expression "%s" because Criteria::RAW works only with a clause containing a single question mark placeholder', $this->column));
         }
-        $params[] = array('table' => null, 'type' => $this->type, 'value' => $this->value);
-        $sb .= str_replace('?', ':p' . count($params), $this->clause);
+        $params[] = ['table' => null, 'type' => $this->type, 'value' => $this->value];
+        $sb .= str_replace('?', ':p' . count($params), (string) $this->clause);
     }
 
     /**
@@ -265,14 +232,14 @@ class ModelCriterion extends Criterion
      */
     public function hashCode()
     {
-        $h = crc32(serialize($this->value)) ^ crc32($this->comparison) ^ crc32($this->clause);
+        $h = crc32(serialize($this->value)) ^ crc32($this->comparison) ^ crc32((string) $this->clause);
 
         if ($this->table !== null) {
-            $h ^= crc32($this->table);
+            $h ^= crc32((string) $this->table);
         }
 
         if ($this->column !== null) {
-            $h ^= crc32($this->column);
+            $h ^= crc32((string) $this->column);
         }
 
         foreach ($this->clauses as $clause) {
@@ -281,9 +248,9 @@ class ModelCriterion extends Criterion
             // replace it if it doesn't bother us?
             // $clause->appendPsTo($sb='',$params=array());
             $sb = '';
-            $params = array();
+            $params = [];
             $clause->appendPsTo($sb, $params);
-            $h ^= crc32(serialize(array($sb, $params)));
+            $h ^= crc32(serialize([$sb, $params]));
             unset($sb, $params);
         }
 
@@ -297,10 +264,10 @@ class ModelCriterion extends Criterion
      */
     protected static function strReplaceOnce($search, $replace, $subject)
     {
-        $firstChar = strpos($subject, $search);
+        $firstChar = strpos((string) $subject, (string) $search);
         if ($firstChar !== false) {
-            $beforeStr = substr($subject, 0, $firstChar);
-            $afterStr = substr($subject, $firstChar + strlen($search));
+            $beforeStr = substr((string) $subject, 0, $firstChar);
+            $afterStr = substr((string) $subject, $firstChar + strlen((string) $search));
 
             return $beforeStr . $replace . $afterStr;
         } else {

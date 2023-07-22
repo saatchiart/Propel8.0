@@ -8,11 +8,11 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/PlatformMigrationTestProvider.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/platform/MysqlPlatform.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/Column.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/VendorInfo.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/config/GeneratorConfig.php';
+require_once __DIR__ . '/PlatformMigrationTestProvider.php';
+require_once __DIR__ . '/../../../../generator/lib/platform/MysqlPlatform.php';
+require_once __DIR__ . '/../../../../generator/lib/model/Column.php';
+require_once __DIR__ . '/../../../../generator/lib/model/VendorInfo.php';
+require_once __DIR__ . '/../../../../generator/lib/config/GeneratorConfig.php';
 
 /**
  *
@@ -32,9 +32,7 @@ class MysqlPlatformMigrationTest extends PlatformMigrationTestProvider
         if (!$platform) {
             $platform = new MysqlPlatform();
             $config   = new GeneratorConfig();
-            $config->setBuildProperties(array(
-                 'propel.mysql.tableType' => 'InnoDB'
-            ));
+            $config->setBuildProperties(['propel.mysql.tableType' => 'InnoDB']);
             $platform->setGeneratorConfig($config);
         }
 

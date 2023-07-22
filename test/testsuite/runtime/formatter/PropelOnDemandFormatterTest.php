@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelOnDemandFormatter.
@@ -29,7 +29,7 @@ class PropelOnDemandFormatterTest extends BookstoreEmptyTestBase
         try {
             $books = $formatter->format($stmt);
             $this->fail('PropelOnDemandFormatter::format() trows an exception when called with no valid criteria');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true,'PropelOnDemandFormatter::format() trows an exception when called with no valid criteria');
         }
     }
@@ -45,7 +45,7 @@ class PropelOnDemandFormatterTest extends BookstoreEmptyTestBase
         $books = $formatter->format($stmt);
 
         $this->assertTrue($books instanceof PropelOnDemandCollection, 'PropelOnDemandFormatter::format() returns a PropelOnDemandCollection');
-        $this->assertEquals(4, count($books), 'PropelOnDemandFormatter::format() returns a collection that counts as many rows as the results in the query');
+        $this->assertEquals(4, is_countable($books) ? count($books) : 0, 'PropelOnDemandFormatter::format() returns a collection that counts as many rows as the results in the query');
         foreach ($books as $book) {
             $this->assertTrue($book instanceof Book, 'PropelOnDemandFormatter::format() returns an traversable collection of Model objects');
         }
@@ -93,7 +93,7 @@ class PropelOnDemandFormatterTest extends BookstoreEmptyTestBase
         $books = $formatter->format($stmt);
 
         $this->assertTrue($books instanceof PropelOnDemandCollection, 'PropelOnDemandFormatter::format() returns a PropelOnDemandCollection');
-        $this->assertEquals($nbBooks, count($books), 'PropelOnDemandFormatter::format() returns a collection that counts as many rows as the results in the query');
+        $this->assertEquals($nbBooks, is_countable($books) ? count($books) : 0, 'PropelOnDemandFormatter::format() returns a collection that counts as many rows as the results in the query');
         $i = 0;
         foreach ($books as $book) {
             $this->assertTrue($book instanceof Book, 'PropelOnDemandFormatter::format() returns a collection of Model objects');
@@ -115,7 +115,7 @@ class PropelOnDemandFormatterTest extends BookstoreEmptyTestBase
         $books = $formatter->format($stmt);
 
         $this->assertTrue($books instanceof PropelOnDemandCollection, 'PropelOnDemandFormatter::format() returns a PropelOnDemandCollection');
-        $this->assertEquals(1, count($books), 'PropelOnDemandFormatter::format() returns a collection that counts as many rows as the results in the query');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'PropelOnDemandFormatter::format() returns a collection that counts as many rows as the results in the query');
         foreach ($books as $book) {
             $this->assertTrue($book instanceof Book, 'PropelOnDemandFormatter::format() returns a collection of Model objects');
             $this->assertEquals('Quicksilver', $book->getTitle(), 'PropelOnDemandFormatter::format() returns the model objects matching the query');
@@ -132,7 +132,7 @@ class PropelOnDemandFormatterTest extends BookstoreEmptyTestBase
         $books = $formatter->format($stmt);
 
         $this->assertTrue($books instanceof PropelOnDemandCollection, 'PropelOnDemandFormatter::format() returns a PropelCollection');
-        $this->assertEquals(0, count($books), 'PropelOnDemandFormatter::format() returns an empty collection when no record match the query');
+        $this->assertEquals(0, is_countable($books) ? count($books) : 0, 'PropelOnDemandFormatter::format() returns an empty collection when no record match the query');
         foreach ($books as $book) {
             $this->fail('PropelOnDemandFormatter returns an empty iterator when no record match the query');
         }
@@ -163,11 +163,11 @@ class PropelOnDemandFormatterTest extends BookstoreEmptyTestBase
         $employees = $formatter->format($stmt);
 
         foreach ($employees as $employee) {
-            $row = array();
+            $row = [];
             $row[1] = $employee->getClassKey();
 
             $omClass = BookstoreEmployeePeer::getOMClass($row, 0, false);
-            $actualClass = get_class($employee);
+            $actualClass = $employee::class;
 
             $this->assertEquals($omClass, $actualClass, 'PropelOnDemandFormatter::format() should handle single table inheritance');
         }

@@ -21,27 +21,17 @@ class VendorInfo extends XMLElement
 {
 
     /**
-     * The vendor RDBMS type.
-     *
-     * @var        string
-     */
-    private $type;
-
-    /**
      * Vendor parameters.
-     *
-     * @var        array
      */
-    private $parameters = array();
+    private array $parameters = [];
 
     /**
      * Creates a new VendorInfo instance.
      *
      * @param string $type RDBMS type (optional)
      */
-    public function __construct($type = null)
+    public function __construct(private $type = null)
     {
-        $this->type = $type;
     }
 
     /**
@@ -91,7 +81,7 @@ class VendorInfo extends XMLElement
      * @param string $name
      * @param mixed  $value The value for the parameter.
      */
-    public function setParameter($name, $value)
+    public function setParameter($name, mixed $value)
     {
         $this->parameters[$name] = $value;
     }
@@ -105,11 +95,7 @@ class VendorInfo extends XMLElement
      */
     public function getParameter($name)
     {
-        if (isset($this->parameters[$name])) {
-            return $this->parameters[$name];
-        }
-
-        return null; // just to be explicit
+        return $this->parameters[$name] ?? null; // just to be explicit
     }
 
     /**
@@ -129,7 +115,7 @@ class VendorInfo extends XMLElement
      *
      * @param array $params Parameter data.
      */
-    public function setParameters(array $params = array())
+    public function setParameters(array $params = [])
     {
         $this->parameters = $params;
     }

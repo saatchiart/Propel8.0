@@ -31,53 +31,53 @@ class BasePeer
 {
 
     /** Array (hash) that contains the cached mapBuilders. */
-    private static $mapBuilders = array();
+    private static array $mapBuilders = [];
 
     /** Array (hash) that contains cached validators */
-    private static $validatorMap = array();
+    private static array $validatorMap = [];
 
     /**
      * phpname type
      * e.g. 'AuthorId'
      */
-    const TYPE_PHPNAME = 'phpName';
+    final public const TYPE_PHPNAME = 'phpName';
 
     /**
      * studlyphpname type
      * e.g. 'authorId'
      */
-    const TYPE_STUDLYPHPNAME = 'studlyPhpName';
+    final public const TYPE_STUDLYPHPNAME = 'studlyPhpName';
 
     /**
      * column (peer) name type
      * e.g. 'book.AUTHOR_ID'
      */
-    const TYPE_COLNAME = 'colName';
+    final public const TYPE_COLNAME = 'colName';
 
     /**
      * column part of the column peer name
      * e.g. 'AUTHOR_ID'
      */
-    const TYPE_RAW_COLNAME = 'rawColName';
+    final public const TYPE_RAW_COLNAME = 'rawColName';
 
     /**
      * column fieldname type
      * e.g. 'author_id'
      */
-    const TYPE_FIELDNAME = 'fieldName';
+    final public const TYPE_FIELDNAME = 'fieldName';
 
     /**
      * num type
      * simply the numerical array index, e.g. 4
      */
-    const TYPE_NUM = 'num';
+    final public const TYPE_NUM = 'num';
 
     public static function getFieldnames($classname, $type = self::TYPE_PHPNAME)
     {
         // TODO we should take care of including the peer class here
 
         $peerclass = 'Base' . $classname . 'Peer'; // TODO is this always true?
-        $callable = array($peerclass, 'getFieldnames');
+        $callable = [$peerclass, 'getFieldnames'];
 
         return call_user_func($callable, $type);
     }
@@ -87,8 +87,8 @@ class BasePeer
         // TODO we should take care of including the peer class here
 
         $peerclass = 'Base' . $classname . 'Peer'; // TODO is this always true?
-        $callable = array($peerclass, 'translateFieldname');
-        $args = array($fieldname, $fromType, $toType);
+        $callable = [$peerclass, 'translateFieldname'];
+        $args = [$fieldname, $fromType, $toType];
 
         return call_user_func_array($callable, $args);
     }
@@ -128,8 +128,8 @@ class BasePeer
 
         foreach ($tables as $tableName => $columns) {
 
-            $whereClause = array();
-            $params = array();
+            $whereClause = [];
+            $params = [];
             $stmt = null;
             try {
                 $sql = $db->getDeleteFromClause($criteria, $tableName);
@@ -177,6 +177,7 @@ class BasePeer
      */
     public static function doDeleteAll($tableName, PropelPDO $con, $databaseName = null)
     {
+        $sql = null;
         try {
             $db = Propel::getDB($databaseName);
             if ($db->useQuoteIdentifier()) {
@@ -219,6 +220,7 @@ class BasePeer
      */
     public static function doInsert(Criteria $criteria, PropelPDO $con)
     {
+        $sql = null;
         // the primary key
         $id = null;
 
@@ -262,14 +264,14 @@ class BasePeer
             $adapter = Propel::getDB($criteria->getDBName());
 
             $qualifiedCols = $criteria->keys(); // we need table.column cols when populating values
-            $columns = array(); // but just 'column' cols for the SQL
+            $columns = []; // but just 'column' cols for the SQL
             foreach ($qualifiedCols as $qualifiedCol) {
-                $columns[] = substr($qualifiedCol, strrpos($qualifiedCol, '.') + 1);
+                $columns[] = substr((string) $qualifiedCol, strrpos((string) $qualifiedCol, '.') + 1);
             }
 
             // add identifiers
             if ($adapter->useQuoteIdentifier()) {
-                $columns = array_map(array($adapter, 'quoteIdentifier'), $columns);
+                $columns = array_map($adapter->quoteIdentifier(...), $columns);
                 $tableName = $adapter->quoteIdentifierTable($tableName);
             }
 
@@ -291,7 +293,7 @@ class BasePeer
             $db->cleanupSQL($sql, $params, $criteria, $dbMap);
 
             $stmt = $con->prepare($sql);
-            $db->bindValues($stmt, $params, $dbMap, $db);
+            $db->bindValues($stmt, $params, $dbMap);
             $stmt->execute();
         } catch (Exception $e) {
             Propel::log($e->getMessage(), Propel::LOG_ERR);
@@ -338,7 +340,7 @@ class BasePeer
         // Get list of required tables, containing all columns
         $tablesColumns = $selectCriteria->getTablesColumns();
         if (empty($tablesColumns) && ($table = $selectCriteria->getPrimaryTableName())) {
-            $tablesColumns = array($table => array());
+            $tablesColumns = [$table => []];
         }
 
         // we also need the columns for the update SQL
@@ -358,8 +360,8 @@ class BasePeer
 
         foreach ($tablesColumns as $tableName => $columns) {
 
-            $whereClause = array();
-            $params = array();
+            $whereClause = [];
+            $params = [];
             $stmt = null;
             try {
                 $sql = 'UPDATE ';
@@ -381,7 +383,7 @@ class BasePeer
                 $sql .= " SET ";
                 $p = 1;
                 foreach ($updateTablesColumns[$tableName] as $col) {
-                    $updateColumnName = substr($col, strrpos($col, '.') + 1);
+                    $updateColumnName = substr((string) $col, strrpos((string) $col, '.') + 1);
                     // add identifiers for the actual database?
                     if ($db->useQuoteIdentifier()) {
                         $updateColumnName = $db->quoteIdentifier($updateColumnName);
@@ -396,7 +398,7 @@ class BasePeer
                                 $raw = $param['raw'];
                                 $rawcvt = '';
                                 // parse the $params['raw'] for ? chars
-                                for ($r = 0, $len = strlen($raw); $r < $len; $r++) {
+                                for ($r = 0, $len = strlen((string) $raw); $r < $len; $r++) {
                                     if ($raw[$r] == '?') {
                                         $rawcvt .= ':p' . $p++;
                                     } else {
@@ -434,7 +436,7 @@ class BasePeer
                 $stmt = $con->prepare($sql);
 
                 // Replace ':p?' with the actual values
-                $db->bindValues($stmt, $params, $dbMap, $db);
+                $db->bindValues($stmt, $params, $dbMap);
 
                 $stmt->execute();
 
@@ -466,6 +468,7 @@ class BasePeer
      */
     public static function doSelect(Criteria $criteria, PropelPDO $con = null)
     {
+        $sql = null;
         $dbMap = Propel::getDatabaseMap($criteria->getDbName());
         $db = Propel::getDB($criteria->getDbName());
         $stmt = null;
@@ -476,7 +479,7 @@ class BasePeer
 
         try {
 
-            $params = array();
+            $params = [];
             $sql = self::createSelectSql($criteria, $params);
 
             $stmt = $con->prepare($sql);
@@ -525,7 +528,7 @@ class BasePeer
 
         try {
 
-            $params = array();
+            $params = [];
 
             if ($needsComplexCount) {
                 if (self::needsSelectAliases($criteria)) {
@@ -569,7 +572,7 @@ class BasePeer
     {
         $dbMap = Propel::getDatabaseMap($dbName);
         $tableMap = $dbMap->getTable($tableName);
-        $failureMap = array(); // map of ValidationFailed objects
+        $failureMap = []; // map of ValidationFailed objects
         foreach ($columns as $colName => $colValue) {
             if ($tableMap->hasColumn($colName)) {
                 $col = $tableMap->getColumn($colName);
@@ -627,10 +630,10 @@ class BasePeer
      */
     public static function needsSelectAliases(Criteria $criteria)
     {
-        $columnNames = array();
+        $columnNames = [];
         foreach ($criteria->getSelectColumns() as $fullyQualifiedColumnName) {
-            if ($pos = strrpos($fullyQualifiedColumnName, '.')) {
-                $columnName = substr($fullyQualifiedColumnName, $pos);
+            if ($pos = strrpos((string) $fullyQualifiedColumnName, '.')) {
+                $columnName = substr((string) $fullyQualifiedColumnName, $pos);
                 if (isset($columnNames[$columnName])) {
                     // more than one column with the same name, so aliasing is required
                     return true;
@@ -661,11 +664,11 @@ class BasePeer
         $db = Propel::getDB($criteria->getDbName());
         $dbMap = Propel::getDatabaseMap($criteria->getDbName());
 
-        $fromClause = array();
-        $joinClause = array();
-        $joinTables = array();
-        $whereClause = array();
-        $orderByClause = array();
+        $fromClause = [];
+        $joinClause = [];
+        $joinTables = [];
+        $whereClause = [];
+        $orderByClause = [];
 
         $orderBy = $criteria->getOrderByColumns();
         $groupBy = $criteria->getGroupByColumns();
@@ -722,7 +725,7 @@ class BasePeer
 
         // Unique from clause elements
         $fromClause = array_unique($fromClause);
-        $fromClause = array_diff($fromClause, array(''));
+        $fromClause = array_diff($fromClause, ['']);
 
         // tables should not exist in both the from and join clauses
         if ($joinTables && $fromClause) {
@@ -750,28 +753,28 @@ class BasePeer
 
                 // Add function expression as-is.
 
-                if (strpos($orderByColumn, '(') !== false) {
+                if (str_contains((string) $orderByColumn, '(')) {
                     $orderByClause[] = $orderByColumn;
                     continue;
                 }
 
                 // Split orderByColumn (i.e. "table.column DESC")
 
-                $dotPos = strrpos($orderByColumn, '.');
+                $dotPos = strrpos((string) $orderByColumn, '.');
 
                 if ($dotPos !== false) {
-                    $tableName = substr($orderByColumn, 0, $dotPos);
-                    $columnName = substr($orderByColumn, $dotPos + 1);
+                    $tableName = substr((string) $orderByColumn, 0, $dotPos);
+                    $columnName = substr((string) $orderByColumn, $dotPos + 1);
                 } else {
                     $tableName = '';
                     $columnName = $orderByColumn;
                 }
 
-                $spacePos = strpos($columnName, ' ');
+                $spacePos = strpos((string) $columnName, ' ');
 
                 if ($spacePos !== false) {
-                    $direction = substr($columnName, $spacePos);
-                    $columnName = substr($columnName, 0, $spacePos);
+                    $direction = substr((string) $columnName, $spacePos);
+                    $columnName = substr((string) $columnName, 0, $spacePos);
                 } else {
                     $direction = '';
                 }
@@ -805,8 +808,8 @@ class BasePeer
         // tables should not exist as alias of subQuery
         if ($criteria->hasSelectQueries()) {
             foreach ($fromClause as $key => $ftable) {
-                if (strpos($ftable, ' ') !== false) {
-                    list($realtable, $tableName) = explode(' ', $ftable);
+                if (str_contains((string) $ftable, ' ')) {
+                    [$realtable, $tableName] = explode(' ', (string) $ftable);
                 } else {
                     $tableName = $ftable;
                 }
@@ -818,8 +821,8 @@ class BasePeer
 
         // from / join tables quoted if it is necessary
         if ($db->useQuoteIdentifier()) {
-            $fromClause = array_map(array($db, 'quoteIdentifierTable'), $fromClause);
-            $joinClause = $joinClause ? $joinClause : array_map(array($db, 'quoteIdentifierTable'), $joinClause);
+            $fromClause = array_map($db->quoteIdentifierTable(...), $fromClause);
+            $joinClause = $joinClause ?: array_map($db->quoteIdentifierTable(...), $joinClause);
         }
 
         // add subQuery to From after adding quotes
@@ -847,7 +850,7 @@ class BasePeer
 
         // APPLY OFFSET & LIMIT to the query.
         if ($criteria->getLimit() || $criteria->getOffset()) {
-            $db->applyLimit($sql, $criteria->getOffset(), $criteria->getLimit(), $criteria);
+            $db->applyLimit($sql, $criteria->getOffset(), $criteria->getLimit());
         }
 
         return $sql;
@@ -858,17 +861,16 @@ class BasePeer
      * This is useful for building an array even when it is not using the appendPsTo() method.
      *
      * @param array    $columns
-     * @param Criteria $values
      *
      * @return array params array('column' => ..., 'table' => ..., 'value' => ...)
      */
     private static function buildParams($columns, Criteria $values)
     {
-        $params = array();
+        $params = [];
         foreach ($columns as $key) {
             if ($values->containsKey($key)) {
                 $crit = $values->getCriterion($key);
-                $params[] = array('column' => $crit->getColumn(), 'table' => $crit->getTable(), 'value' => $crit->getValue());
+                $params[] = ['column' => $crit->getColumn(), 'table' => $crit->getTable(), 'value' => $crit->getValue()];
             }
         }
 
@@ -886,7 +888,7 @@ class BasePeer
     public static function getValidator($classname)
     {
         try {
-            $v = isset(self::$validatorMap[$classname]) ? self::$validatorMap[$classname] : null;
+            $v = self::$validatorMap[$classname] ?? null;
             if ($v === null) {
                 $cls = Propel::importClass($classname);
                 $v = new $cls();

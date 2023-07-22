@@ -37,10 +37,10 @@ class PHP5PeerBuilder extends PeerBuilder
         $table = $this->getTable();
 
         // Check to see if any of the column constants are PHP reserved words.
-        $colConstants = array();
+        $colConstants = [];
 
         foreach ($table->getColumns() as $col) {
-            $colConstants[] = $this->getColumnName($col);
+            $colConstants[] = static::getColumnName($col);
         }
 
         $reservedConstants = array_map('strtoupper', ClassTools::getPhpReservedWords());
@@ -219,7 +219,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
     const OM_CLASS = '$tablePhpName';
 
     /** the related TableMap class for this table */
-    const TM_CLASS = '" . addslashes($this->getTableMapClass()) . "';
+    const TM_CLASS = '" . addslashes((string) $this->getTableMapClass()) . "';
 
     /** The total number of columns. */
     const NUM_COLUMNS = " . $this->getTable()->getNumColumns() . ";
@@ -272,7 +272,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
         foreach ($this->getTable()->getColumns() as $col) {
             $script .= "
     /** the column name for the " . $col->getName() . " field */
-    const " . $this->getColumnName($col) . " = '" . $this->getTable()->getName() . "." . $col->getName() . "';
+    const " . static::getColumnName($col) . " = '" . $this->getTable()->getName() . "." . $col->getName() . "';
 ";
         } // foreach
     }
@@ -290,7 +290,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
     /** The enumerated values for the " . $col->getName() . " field */";
                 foreach ($col->getValueSet() as $value) {
                     $script .= "
-    const " . $this->getColumnName($col) . '_' . $this->getEnumValueConstant($value) . " = '" . $value . "';";
+    const " . static::getColumnName($col) . '_' . $this->getEnumValueConstant($value) . " = '" . $value . "';";
                 }
                 $script .= "
 ";
@@ -300,7 +300,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
 
     protected function getEnumValueConstant($value)
     {
-        return strtoupper(preg_replace('/[^a-zA-Z0-9_\x7f-\xff]/', '_', $value));
+        return strtoupper(preg_replace('/[^a-zA-Z0-9_\x7f-\xff]/', '_', (string) $value));
     }
 
     protected function addFieldNamesAttribute(&$script)
@@ -412,10 +412,10 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
         foreach ($this->getTable()->getColumns() as $col) {
             if ($col->isEnumType() || $col->getValueSet()) {
                 $script .= "
-        " . $this->getPeerClassname() . "::" . $this->getColumnName($col) . " => array(
+        " . $this->getPeerClassname() . "::" . static::getColumnName($col) . " => array(
 ";
                 foreach ($col->getValueSet() as $value) {
-                    $script .= "			" . $this->getStubPeerBuilder()->getClassname() . '::' . $this->getColumnName($col) . '_' . $this->getEnumValueConstant($value) . ",
+                    $script .= "			" . $this->getStubPeerBuilder()->getClassname() . '::' . static::getColumnName($col) . '_' . $this->getEnumValueConstant($value) . ",
 ";
                 }
                 $script .= "		),";
@@ -629,19 +629,19 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
 
                     $script .= "
     /** A key representing a particular subclass */
-    const CLASSKEY_" . strtoupper($child->getKey()) . " = '" . $child->getKey() . "';
+    const CLASSKEY_" . strtoupper((string) $child->getKey()) . " = '" . $child->getKey() . "';
 ";
 
-                    if (strtoupper($child->getClassname()) != strtoupper($child->getKey())) {
+                    if (strtoupper((string) $child->getClassname()) != strtoupper((string) $child->getKey())) {
                         $script .= "
     /** A key representing a particular subclass */
-    const CLASSKEY_" . strtoupper($child->getClassname()) . " = '" . $child->getKey() . "';
+    const CLASSKEY_" . strtoupper((string) $child->getClassname()) . " = '" . $child->getKey() . "';
 ";
                     }
 
                     $script .= "
     /** A class that can be returned by this peer. */
-    const CLASSNAME_" . strtoupper($child->getKey()) . " = '" . $fqcn . "';
+    const CLASSNAME_" . strtoupper((string) $child->getKey()) . " = '" . $fqcn . "';
 ";
                 } /* foreach children */
             } /* if col->isenumerated...() */
@@ -701,7 +701,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
         foreach ($this->getTable()->getColumns() as $col) {
             if (!$col->isLazyLoad()) {
                 $script .= "
-            \$criteria->addSelectColumn(" . $this->getPeerClassname() . "::" . $this->getColumnName($col) . ");";
+            \$criteria->addSelectColumn(" . $this->getPeerClassname() . "::" . static::getColumnName($col) . ");";
             } // if !col->isLazyLoad
         } // foreach
         $script .= "
@@ -930,7 +930,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
 
         $pks = $this->getTable()->getPrimaryKey();
 
-        $php = array();
+        $php = [];
         foreach ($pks as $pk) {
             if ($pk->isTemporalType()) {
                 $php[] = '$obj->get' . $pk->getPhpName() . "('U')";
@@ -979,7 +979,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
         $script .= "
             if (is_object(\$value) && \$value instanceof " . $this->getObjectClassname() . ") {";
 
-        $php = array();
+        $php = [];
         foreach ($pks as $pk) {
             $php[] = '$value->get' . $pk->getPhpName() . '()';
         }
@@ -991,7 +991,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
                 // assume we've been passed a primary key";
 
         if (count($pks) > 1) {
-            $php = array();
+            $php = [];
             for ($i = 0; $i < count($pks); $i++) {
                 $php[] = "\$value[$i]";
             }
@@ -1136,8 +1136,8 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
         // We have to iterate through all the columns so that we know the offset of the primary
         // key columns.
         $n = 0;
-        $pk = array();
-        $cond = array();
+        $pk = [];
+        $cond = [];
         foreach ($this->getTable()->getColumns() as $col) {
             if (!$col->isLazyLoad()) {
                 if ($col->isPrimaryKey()) {
@@ -1167,6 +1167,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
      */
     protected function addGetPrimaryKeyFromRow(&$script)
     {
+        $pk = null;
         $script .= "
     /**
      * Retrieves the primary key from the DB resultset row
@@ -1184,7 +1185,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
         // key columns.
         $table = $this->getTable();
         $n = 0;
-        $pks = array();
+        $pks = [];
         foreach ($table->getColumns() as $col) {
             if (!$col->isLazyLoad()) {
                 if ($col->isPrimaryKey()) {
@@ -1356,8 +1357,8 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
 ";
             foreach ($col->getChildren() as $child) {
                 $script .= "
-                case " . $this->getPeerClassname() . "::CLASSKEY_" . strtoupper($child->getKey()) . ":
-                    \$omClass = " . $this->getPeerClassname() . "::CLASSNAME_" . strtoupper($child->getKey()) . ";
+                case " . $this->getPeerClassname() . "::CLASSKEY_" . strtoupper((string) $child->getKey()) . ":
+                    \$omClass = " . $this->getPeerClassname() . "::CLASSNAME_" . strtoupper((string) $child->getKey()) . ";
                     break;
 ";
             } /* foreach */
@@ -1838,7 +1839,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
             // delete related $fkClassName objects
             \$criteria = new Criteria(" . $joinedTablePeerBuilder->getPeerClassname() . "::DATABASE_NAME);
             ";
-                    for ($x = 0, $xlen = count($columnNamesF); $x < $xlen; $x++) {
+                    for ($x = 0, $xlen = is_countable($columnNamesF) ? count($columnNamesF) : 0; $x < $xlen; $x++) {
                         $columnFK = $tblFK->getColumn($columnNamesF[$x]);
                         $columnL = $table->getColumn($columnNamesL[$x]);
 
@@ -1917,7 +1918,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
             \$selectCriteria = new Criteria(" . $this->getPeerClassname() . "::DATABASE_NAME);
             \$updateValues = new Criteria(" . $this->getPeerClassname() . "::DATABASE_NAME);";
 
-                    for ($x = 0, $xlen = count($columnNamesF); $x < $xlen; $x++) {
+                    for ($x = 0, $xlen = is_countable($columnNamesF) ? count($columnNamesF) : 0; $x < $xlen; $x++) {
                         $columnFK = $tblFK->getColumn($columnNamesF[$x]);
                         $columnL = $table->getColumn($columnNamesL[$x]);
                         $script .= "
@@ -2091,7 +2092,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
     /**
      * Retrieve object using using composite pkey values.";
         foreach ($table->getPrimaryKey() as $col) {
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             $cptype = $col->getPhpType();
             $script .= "
      * @param   $cptype $" . $clo;
@@ -2102,9 +2103,9 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
      */
     public static function " . $this->getRetrieveMethodName() . "(";
 
-        $php = array();
+        $php = [];
         foreach ($table->getPrimaryKey() as $col) {
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             $php[] = '$' . $clo;
         } /* foreach */
 
@@ -2122,7 +2123,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
         }
         \$criteria = new Criteria(" . $this->getPeerClassname() . "::DATABASE_NAME);";
         foreach ($table->getPrimaryKey() as $col) {
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             $script .= "
         \$criteria->add(" . $this->getColumnConstant($col) . ", $" . $clo . ");";
         }
@@ -2199,13 +2200,12 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
     /**
      * Get the column offsets of the primary key(s) for specified table.
      *
-     * @param Table $tbl
      *
      * @return array int[] The column offsets of the primary key(s).
      */
     protected function getPrimaryKeyColOffsets(Table $tbl)
     {
-        $offsets = array();
+        $offsets = [];
         $idx = 0;
         foreach ($tbl->getColumns() as $col) {
             if ($col->isPrimaryKey()) {
@@ -2222,7 +2222,7 @@ abstract class " . $this->getClassname() . $extendingPeerClass . "
         $script = '';
         $lfMap = $fk->getLocalForeignMapping();
         $lftCols = $fk->getLocalColumns();
-        if (count($lftCols) == 1) {
+        if ((is_countable($lftCols) ? count($lftCols) : 0) == 1) {
             // simple foreign key
             $lftCol = $lftCols[0];
             $script .= sprintf("

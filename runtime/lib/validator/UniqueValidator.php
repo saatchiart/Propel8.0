@@ -43,7 +43,7 @@ class UniqueValidator implements BasicValidator
         $table = $column->getTable()->getClassName();
 
         $clazz = $table . 'Peer';
-        $count = call_user_func(array($clazz, 'doCount'), $c);
+        $count = call_user_func([$clazz, 'doCount'], $c);
 
         $isValid = ($count === 0);
 

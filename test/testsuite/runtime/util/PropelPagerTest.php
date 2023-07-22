@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test the utility class PropelPager
@@ -20,7 +20,7 @@ require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmp
 class PropelPagerTest extends BookstoreEmptyTestBase
 {
   private $authorId;
-  private $books;
+  private array $books;
 
   protected function setUp(): void
   {
@@ -138,7 +138,7 @@ class PropelPagerTest extends BookstoreEmptyTestBase
     $cr->add(BookPeer::AUTHOR_ID, $this->authorId);
     $cr->addAscendingOrderByColumn(BookPeer::TITLE);
     $pager = new PropelPager($cr, "BookPeer", "doSelect");
-    $books = array();
+    $books = [];
     foreach ($pager as $book) {
       $books[] = $book;
     }

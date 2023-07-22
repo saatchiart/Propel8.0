@@ -26,7 +26,7 @@ class PropelJSONParser extends PropelParser
      */
     public function fromArray($array)
     {
-        return json_encode($array);
+        return json_encode($array, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -50,7 +50,7 @@ class PropelJSONParser extends PropelParser
      */
     public function toArray($data)
     {
-        return json_decode($data, true);
+        return json_decode($data, true, 512, JSON_THROW_ON_ERROR);
     }
 
     /**

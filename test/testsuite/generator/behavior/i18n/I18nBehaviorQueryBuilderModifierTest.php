@@ -9,9 +9,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/behavior/i18n/I18nBehavior.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../generator/lib/behavior/i18n/I18nBehavior.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 
 /**
  * Tests for I18nBehavior class query modifier
@@ -59,7 +59,7 @@ EOF;
     {
         $q = I18nBehaviorTest11Query::create()
             ->joinI18n();
-        $params = array();
+        $params = [];
         $sql = BasePeer::createSelectSQL($q, $params);
         $expectedSQL = 'SELECT  FROM i18n_behavior_test_11 LEFT JOIN i18n_behavior_test_11_i18n ON (i18n_behavior_test_11.id=i18n_behavior_test_11_i18n.id AND i18n_behavior_test_11_i18n.locale = :p1)';
         $this->assertEquals($expectedSQL, $sql);
@@ -70,7 +70,7 @@ EOF;
     {
         $q = I18nBehaviorTest11Query::create()
             ->joinI18n('fr_FR');
-        $params = array();
+        $params = [];
         $sql = BasePeer::createSelectSQL($q, $params);
         $expectedSQL = 'SELECT  FROM i18n_behavior_test_11 LEFT JOIN i18n_behavior_test_11_i18n ON (i18n_behavior_test_11.id=i18n_behavior_test_11_i18n.id AND i18n_behavior_test_11_i18n.locale = :p1)';
         $this->assertEquals($expectedSQL, $sql);
@@ -81,7 +81,7 @@ EOF;
     {
         $q = I18nBehaviorTest11Query::create()
             ->joinI18n('en_US', 'I18n');
-        $params = array();
+        $params = [];
         $sql = BasePeer::createSelectSQL($q, $params);
         $expectedSQL = 'SELECT  FROM i18n_behavior_test_11 LEFT JOIN i18n_behavior_test_11_i18n I18n ON (i18n_behavior_test_11.id=I18n.id AND I18n.locale = :p1)';
         $this->assertEquals($expectedSQL, $sql);
@@ -92,7 +92,7 @@ EOF;
     {
         $q = I18nBehaviorTest11Query::create()
             ->joinI18n('en_US', null, Criteria::INNER_JOIN);
-        $params = array();
+        $params = [];
         $sql = BasePeer::createSelectSQL($q, $params);
         $expectedSQL = 'SELECT  FROM i18n_behavior_test_11 INNER JOIN i18n_behavior_test_11_i18n ON (i18n_behavior_test_11.id=i18n_behavior_test_11_i18n.id AND i18n_behavior_test_11_i18n.locale = :p1)';
         $this->assertEquals($expectedSQL, $sql);
@@ -117,7 +117,7 @@ EOF;
             ->useI18nQuery('fr_FR')
                 ->filterByBar('bar')
             ->endUse();
-        $params = array();
+        $params = [];
         $sql = BasePeer::createSelectSQL($q, $params);
         $expectedSQL = 'SELECT  FROM i18n_behavior_test_11 LEFT JOIN i18n_behavior_test_11_i18n ON (i18n_behavior_test_11.id=i18n_behavior_test_11_i18n.id AND i18n_behavior_test_11_i18n.locale = :p1) WHERE i18n_behavior_test_11_i18n.bar=:p2';
         $this->assertEquals($expectedSQL, $sql);
@@ -131,7 +131,7 @@ EOF;
             ->useI18nQuery('fr_FR', 'I18n')
                 ->filterByBar('bar')
             ->endUse();
-        $params = array();
+        $params = [];
         $sql = BasePeer::createSelectSQL($q, $params);
         $expectedSQL = 'SELECT  FROM i18n_behavior_test_11 LEFT JOIN i18n_behavior_test_11_i18n I18n ON (i18n_behavior_test_11.id=I18n.id AND I18n.locale = :p1) WHERE I18n.bar=:p2';
         $this->assertEquals($expectedSQL, $sql);
@@ -157,7 +157,7 @@ EOF;
     {
         $q = I18nBehaviorTest11Query::create()
             ->joinWithI18n();
-        $params = array();
+        $params = [];
         $sql = BasePeer::createSelectSQL($q, $params);
         $expectedSQL = 'SELECT i18n_behavior_test_11.id, i18n_behavior_test_11.foo, i18n_behavior_test_11_i18n.id, i18n_behavior_test_11_i18n.locale, i18n_behavior_test_11_i18n.bar FROM i18n_behavior_test_11 LEFT JOIN i18n_behavior_test_11_i18n ON (i18n_behavior_test_11.id=i18n_behavior_test_11_i18n.id AND i18n_behavior_test_11_i18n.locale = :p1)';
         $this->assertEquals($expectedSQL, $sql);
@@ -253,7 +253,7 @@ EOF;
     // $o->setTranslation($t2, 'en_US'); // this is what happens during joined hydration
     // now the translation collection exists
     // $t2 = $o->getTranslation('fr_FR'); // we MUST issue a query here
-    public function testJoinWithI18nDoesNotExecuteAdditionalQueryWhenNoTranslationIsFound()
+    public function testJoinWithI18nDoesNotExecuteAdditionalQueryWhenNoTranslationIsFound(): never
     {
         $this->markTestSkipped();
         $con = Propel::getConnection(I18nBehaviorTest11Peer::DATABASE_NAME);

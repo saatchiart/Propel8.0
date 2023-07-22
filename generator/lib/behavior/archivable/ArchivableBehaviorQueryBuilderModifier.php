@@ -32,7 +32,6 @@ class ArchivableBehaviorQueryBuilderModifier
     /**
      * Add attributes to the
      *
-     * @param QueryBuilder $builder
      *
      * @return string
      */
@@ -67,8 +66,6 @@ if (\$this->archiveOnDelete) {
     }
 
     /**
-     * @param QueryBuilder $builder
-     *
      * @return string
      */
     public function postUpdateQuery(QueryBuilder $builder)
@@ -87,8 +84,6 @@ if (\$this->archiveOnUpdate) {
     }
 
     /**
-     * @param QueryBuilder $builder
-     *
      * @return string the PHP code to be added to the builder
      */
     public function queryMethods(QueryBuilder $builder)
@@ -112,10 +107,7 @@ if (\$this->archiveOnUpdate) {
      */
     protected function addArchive(QueryBuilder $builder)
     {
-        return $this->behavior->renderTemplate('queryArchive', array(
-            'archiveTablePhpName' => $this->behavior->getArchiveTablePhpName($builder),
-            'modelPeerName'       => $builder->getPeerClassname(),
-        ));
+        return $this->behavior->renderTemplate('queryArchive', ['archiveTablePhpName' => $this->behavior->getArchiveTablePhpName($builder), 'modelPeerName'       => $builder->getPeerClassname()]);
     }
 
     /**

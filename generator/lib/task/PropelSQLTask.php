@@ -22,10 +22,8 @@ class PropelSQLTask extends AbstractPropelDataModelTask
 
     /**
      * The properties file that maps an SQL file to a particular database.
-     *
-     * @var        PhingFile
      */
-    private $sqldbmap;
+    private ?\PhingFile $sqldbmap = null;
 
     /**
      * Name of the database.
@@ -163,7 +161,7 @@ class PropelSQLTask extends AbstractPropelDataModelTask
                     $platform->setIdentifierQuoting(true);
                 }
 
-                $this->log('Using ' . get_class($platform), Project::MSG_VERBOSE);
+                $this->log('Using ' . $platform::class, Project::MSG_VERBOSE);
                 $ddl = $platform->getAddTablesDDL($database);
 
                 if (file_exists($absPath) && $ddl == file_get_contents($absPath)) {
@@ -233,7 +231,7 @@ class PropelSQLTask extends AbstractPropelDataModelTask
 
             $dataModels = $this->getDataModels();
             $dataModel = array_shift($dataModels);
-            $packagedDataModels = array();
+            $packagedDataModels = [];
 
             $platform = $this->getGeneratorConfig()->getConfiguredPlatform();
 
@@ -259,15 +257,7 @@ class PropelSQLTask extends AbstractPropelDataModelTask
 
     protected function cloneDatabase($db)
     {
-        $attributes = array (
-            'name' => $db->getName(),
-            'baseClass' => $db->getBaseClass(),
-            'basePeer' => $db->getBasePeer(),
-            'defaultIdMethod' => $db->getDefaultIdMethod(),
-            'defaultPhpNamingMethod' => $db->getDefaultPhpNamingMethod(),
-            'defaultTranslateMethod' => $db->getDefaultTranslateMethod(),
-            'heavyIndexing' => $db->getHeavyIndexing(),
-        );
+        $attributes = ['name' => $db->getName(), 'baseClass' => $db->getBaseClass(), 'basePeer' => $db->getBasePeer(), 'defaultIdMethod' => $db->getDefaultIdMethod(), 'defaultPhpNamingMethod' => $db->getDefaultPhpNamingMethod(), 'defaultTranslateMethod' => $db->getDefaultTranslateMethod(), 'heavyIndexing' => $db->getHeavyIndexing()];
 
         $clone = new Database();
         $clone->loadFromXML($attributes);

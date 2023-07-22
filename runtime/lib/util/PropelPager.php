@@ -94,17 +94,17 @@ class PropelPager implements Countable, Iterator
 {
 
     private $recordCount;
-    private $pages;
+    private float|int|null $pages = null;
     private $peerClass;
     private $peerSelectMethod;
     private $peerCountMethod;
-    private $criteria;
-    private $countCriteria;
+    private \Criteria $criteria;
+    private ?\Criteria $countCriteria = null;
     private $page;
     private $rs = null;
 
     //Iterator vars
-    private $currentKey = 0;
+    private int $currentKey = 0;
 
     /** @var        int Start row (offset) */
     protected $start = 0;
@@ -137,7 +137,6 @@ class PropelPager implements Countable, Iterator
     /**
      * Set the criteria for this pager.
      *
-     * @param Criteria $c
      *
      * @return void
      */
@@ -292,7 +291,7 @@ class PropelPager implements Countable, Iterator
     {
         $this->criteria->setOffset($this->start);
         $this->criteria->setLimit($this->max);
-        $this->rs = call_user_func(array($this->getPeerClass(), $this->getPeerSelectMethod()), $this->criteria);
+        $this->rs = call_user_func([$this->getPeerClass(), $this->getPeerSelectMethod()], $this->criteria);
     }
 
     /**
@@ -375,7 +374,7 @@ class PropelPager implements Countable, Iterator
         $start = $this->getPage() - 1;
         $end = $this->getPage() - $range;
         $first = $this->getFirstPage();
-        $links = array();
+        $links = [];
         for ($i = $start; $i > $end; $i--) {
             if ($i < $first) {
                 break;
@@ -399,7 +398,7 @@ class PropelPager implements Countable, Iterator
         $start = $this->getPage() + 1;
         $end = $this->getPage() + $range;
         $last = $this->getLastPage();
-        $links = array();
+        $links = [];
         for ($i = $start; $i < $end; $i++) {
             if ($i > $last) {
                 break;
@@ -527,7 +526,7 @@ class PropelPager implements Countable, Iterator
             $this->countCriteria->setLimit(0);
             $this->countCriteria->setOffset(0);
 
-            $this->recordCount = call_user_func(array($this->getPeerClass(), $this->getPeerCountMethod()), $this->countCriteria);
+            $this->recordCount = call_user_func([$this->getPeerClass(), $this->getPeerCountMethod()], $this->countCriteria);
         }
 
         return $this->recordCount;
@@ -562,7 +561,7 @@ class PropelPager implements Countable, Iterator
      */
     public function count()
     {
-        return count($this->getResult());
+        return is_countable($this->getResult()) ? count($this->getResult()) : 0;
     }
 
     /**

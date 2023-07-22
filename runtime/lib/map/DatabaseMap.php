@@ -26,23 +26,19 @@
  */
 class DatabaseMap
 {
-    /** @var string Name of the database. */
-    protected $name;
-
     /** @var array TableMap[] Tables in the database, using table name as key */
-    protected $tables = array();
+    protected $tables = [];
 
     /** @var array TableMap[] Tables in the database, using table phpName as key */
-    protected $tablesByPhpName = array();
+    protected $tablesByPhpName = [];
 
     /**
      * Constructor.
      *
      * @param string $name Name of the database.
      */
-    public function __construct($name)
+    public function __construct(protected $name)
     {
-        $this->name = $name;
     }
 
     /**
@@ -150,7 +146,7 @@ class DatabaseMap
      */
     public function getColumn($qualifiedColumnName)
     {
-        list($tableName, $columnName) = explode('.', $qualifiedColumnName);
+        [$tableName, $columnName] = explode('.', (string) $qualifiedColumnName);
 
         return $this->getTable($tableName)->getColumn($columnName, false);
     }

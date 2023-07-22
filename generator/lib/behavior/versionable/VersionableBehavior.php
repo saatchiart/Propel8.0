@@ -21,16 +21,7 @@
 class VersionableBehavior extends Behavior
 {
     // default parameters value
-    protected $parameters = array(
-        'version_column' => 'version',
-        'version_table'  => '',
-        'log_created_at' => 'false',
-        'log_created_by' => 'false',
-        'log_comment'    => 'false',
-        'version_created_at_column' => 'version_created_at',
-        'version_created_by_column' => 'version_created_by',
-        'version_comment_column' => 'version_comment'
-    );
+    protected $parameters = ['version_column' => 'version', 'version_table'  => '', 'log_created_at' => 'false', 'log_created_by' => 'false', 'log_comment'    => 'false', 'version_created_at_column' => 'version_created_at', 'version_created_by_column' => 'version_created_by', 'version_comment_column' => 'version_comment'];
 
     /**
      * @var Table
@@ -70,11 +61,7 @@ class VersionableBehavior extends Behavior
         $table = $this->getTable();
         // add the version column
         if (!$table->hasColumn($this->getParameter('version_column'))) {
-            $table->addColumn(array(
-                'name'    => $this->getParameter('version_column'),
-                'type'    => 'INTEGER',
-                'default' => 0
-            ));
+            $table->addColumn(['name'    => $this->getParameter('version_column'), 'type'    => 'INTEGER', 'default' => 0]);
         }
     }
 
@@ -82,17 +69,13 @@ class VersionableBehavior extends Behavior
     {
         $table = $this->getTable();
         if ($this->getParameter('log_created_at') == 'true' && !$table->hasColumn($this->getParameter('version_created_at_column'))) {
-            $table->addColumn(array('name' => $this->getParameter('version_created_at_column'), 'type' => 'TIMESTAMP'));
+            $table->addColumn(['name' => $this->getParameter('version_created_at_column'), 'type' => 'TIMESTAMP']);
         }
         if ($this->getParameter('log_created_by') == 'true' && !$table->hasColumn($this->getParameter('version_created_by_column'))) {
-            $table->addColumn(array('name' => $this->getParameter('version_created_by_column'), 'type' => 'VARCHAR', 'size' => 100));
+            $table->addColumn(['name' => $this->getParameter('version_created_by_column'), 'type' => 'VARCHAR', 'size' => 100]);
         }
         if ($this->getParameter('log_comment') == 'true' && !$table->hasColumn($this->getParameter('version_comment_column'))) {
-            $table->addColumn(array(
-                'name' => $this->getParameter('version_comment_column'),
-                'type' => 'VARCHAR',
-                'size' => 255
-            ));
+            $table->addColumn(['name' => $this->getParameter('version_comment_column'), 'type' => 'VARCHAR', 'size' => 255]);
         }
     }
 
@@ -100,16 +83,10 @@ class VersionableBehavior extends Behavior
     {
         $table = $this->getTable();
         $database = $table->getDatabase();
-        $versionTableName = $this->getParameter('version_table') ? $this->getParameter('version_table') : ($table->getName() . '_version');
+        $versionTableName = $this->getParameter('version_table') ?: $table->getName() . '_version';
         if (!$database->hasTable($versionTableName)) {
             // create the version table
-            $versionTable = $database->addTable(array(
-                'name'      => $versionTableName,
-                'phpName'   => $this->getVersionTablePhpName(),
-                'package'   => $table->getPackage(),
-                'schema'    => $table->getSchema(),
-                'namespace' => $table->getNamespace() ? '\\' . $table->getNamespace() : null,
-            ));
+            $versionTable = $database->addTable(['name'      => $versionTableName, 'phpName'   => $this->getVersionTablePhpName(), 'package'   => $table->getPackage(), 'schema'    => $table->getSchema(), 'namespace' => $table->getNamespace() ? '\\' . $table->getNamespace() : null]);
             $versionTable->isVersionTable = true;
             // every behavior adding a table should re-execute database behaviors
             foreach ($database->getBehaviors() as $behavior) {
@@ -155,11 +132,7 @@ class VersionableBehavior extends Behavior
         foreach ($this->getVersionableFks() as $fk) {
             $fkVersionColumnName = $fk->getLocalColumnName() . '_version';
             if (!$versionTable->hasColumn($fkVersionColumnName)) {
-                $versionTable->addColumn(array(
-                    'name'    => $fkVersionColumnName,
-                    'type'    => 'INTEGER',
-                    'default' => 0
-                ));
+                $versionTable->addColumn(['name'    => $fkVersionColumnName, 'type'    => 'INTEGER', 'default' => 0]);
             }
         }
 
@@ -167,23 +140,14 @@ class VersionableBehavior extends Behavior
             $fkTableName = $fk->getTable()->getName();
 
             if ($fk->isLocalPrimaryKey()) {
-                $columns = array(
-                    $fkTableName . '_id' => $fk->getForeignColumn()->getType(),
-                    $fkTableName . '_version' => 'INTEGER',
-                );
+                $columns = [$fkTableName . '_id' => $fk->getForeignColumn()->getType(), $fkTableName . '_version' => 'INTEGER'];
             } else {
-                $columns = array(
-                    $fkTableName . '_ids' => 'ARRAY',
-                    $fkTableName . '_versions' => 'ARRAY',
-                );
+                $columns = [$fkTableName . '_ids' => 'ARRAY', $fkTableName . '_versions' => 'ARRAY'];
             }
 
             foreach ($columns as $eachName => $eachType) {
                 if (!$versionTable->hasColumn($eachName)) {
-                    $versionTable->addColumn(array(
-                        'name'    => $eachName,
-                        'type'    => $eachType,
-                    ));
+                    $versionTable->addColumn(['name'    => $eachName, 'type'    => $eachType]);
                 }
             }
         }
@@ -204,7 +168,7 @@ class VersionableBehavior extends Behavior
      */
     public function getVersionableFks()
     {
-        $versionableFKs = array();
+        $versionableFKs = [];
         if ($fks = $this->getTable()->getForeignKeys()) {
             foreach ($fks as $fk) {
                 if ($fk->getForeignTable()->hasBehavior($this->getName()) && !$fk->isComposite()) {
@@ -221,7 +185,7 @@ class VersionableBehavior extends Behavior
      */
     public function getVersionableReferrers()
     {
-        $versionableReferrers = array();
+        $versionableReferrers = [];
         if ($fks = $this->getTable()->getReferrers()) {
             foreach ($fks as $fk) {
                 if ($fk->getTable()->hasBehavior($this->getName()) && !$fk->isComposite()) {

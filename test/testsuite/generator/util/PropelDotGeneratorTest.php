@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/util/PropelDotGenerator.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/AppData.php';
+require_once __DIR__ . '/../../../../generator/lib/util/PropelDotGenerator.php';
+require_once __DIR__ . '/../../../../generator/lib/model/AppData.php';
 
 /**
  *
@@ -22,11 +22,7 @@ class PropelDotGeneratorTest extends \PHPUnit\Framework\TestCase
         $db = new Database();
         $db->setName('Empty');
 
-        $expected = implode("\n", array(
-            'digraph G {',
-            '}',
-            '',
-        ));
+        $expected = implode("\n", ['digraph G {', '}', '']);
         $this->assertEquals($expected, PropelDotGenerator::create($db));
     }
 
@@ -46,12 +42,7 @@ class PropelDotGeneratorTest extends \PHPUnit\Framework\TestCase
         $db->setName('SingleTable');
         $db->addTable($table);
 
-        $expected = implode("\n", array(
-            'digraph G {',
-                '"t" [label="{<table>t|<cols>id (integer) [PK]\l}", shape=record];',
-            '}',
-            '',
-        ));
+        $expected = implode("\n", ['digraph G {', '"t" [label="{<table>t|<cols>id (integer) [PK]\l}", shape=record];', '}', '']);
         $this->assertEquals($expected, PropelDotGenerator::create($db));
     }
 
@@ -82,13 +73,7 @@ class PropelDotGeneratorTest extends \PHPUnit\Framework\TestCase
         $table->addColumn($column);
         $db->addTable($table);
 
-        $expected = implode("\n", array(
-            'digraph G {',
-                '"table_one" [label="{<table>table_one|<cols>id (integer) [PK]\l}", shape=record];',
-                '"table_two" [label="{<table>table_two|<cols>id (integer) [PK]\l}", shape=record];',
-            '}',
-            '',
-        ));
+        $expected = implode("\n", ['digraph G {', '"table_one" [label="{<table>table_one|<cols>id (integer) [PK]\l}", shape=record];', '"table_two" [label="{<table>table_two|<cols>id (integer) [PK]\l}", shape=record];', '}', '']);
         $this->assertEquals($expected, PropelDotGenerator::create($db));
     }
 
@@ -132,14 +117,7 @@ class PropelDotGeneratorTest extends \PHPUnit\Framework\TestCase
 
         $db->addTable($table);
 
-        $expected = implode("\n", array(
-            'digraph G {',
-                '"table_one" [label="{<table>table_one|<cols>id (integer) [PK]\l}", shape=record];',
-                '"table_two" [label="{<table>table_two|<cols>id (integer) [PK]\lforeign_id (integer) [FK]\l}", shape=record];',
-                '"table_two":cols -> "table_one":table [label="foreign_id=id"];',
-            '}',
-            '',
-        ));
+        $expected = implode("\n", ['digraph G {', '"table_one" [label="{<table>table_one|<cols>id (integer) [PK]\l}", shape=record];', '"table_two" [label="{<table>table_two|<cols>id (integer) [PK]\lforeign_id (integer) [FK]\l}", shape=record];', '"table_two":cols -> "table_one":table [label="foreign_id=id"];', '}', '']);
         $this->assertEquals($expected, PropelDotGenerator::create($db));
     }
 
@@ -184,14 +162,7 @@ class PropelDotGeneratorTest extends \PHPUnit\Framework\TestCase
 
         $db->addTable($table);
 
-        $expected = implode("\n", array(
-            'digraph G {',
-                '"table_one" [label="{<table>table_one|<cols>id (integer) [PK]\l}", shape=record];',
-                '"table_two" [label="{<table>table_two|<cols>id (integer) [PK]\lforeign_id (integer) [FK] [PK]\l}", shape=record];',
-                '"table_two":cols -> "table_one":table [label="foreign_id=id"];',
-            '}',
-            '',
-        ));
+        $expected = implode("\n", ['digraph G {', '"table_one" [label="{<table>table_one|<cols>id (integer) [PK]\l}", shape=record];', '"table_two" [label="{<table>table_two|<cols>id (integer) [PK]\lforeign_id (integer) [FK] [PK]\l}", shape=record];', '"table_two":cols -> "table_one":table [label="foreign_id=id"];', '}', '']);
         $this->assertEquals($expected, PropelDotGenerator::create($db));
     }
 }

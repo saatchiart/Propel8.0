@@ -20,18 +20,10 @@
  */
 class I18nBehavior extends Behavior
 {
-    const DEFAULT_LOCALE = 'en_US';
+    final public const DEFAULT_LOCALE = 'en_US';
 
     // default parameters value
-    protected $parameters = array(
-        'i18n_table'    => '%TABLE%_i18n',
-        'i18n_phpname'  => '%PHPNAME%I18n',
-        'i18n_columns'  => '',
-        'i18n_pk_name'  => null,
-        'locale_column' => 'locale',
-        'default_locale' => null,
-        'locale_alias'  => '',
-    );
+    protected $parameters = ['i18n_table'    => '%TABLE%_i18n', 'i18n_phpname'  => '%PHPNAME%I18n', 'i18n_columns'  => '', 'i18n_pk_name'  => null, 'locale_column' => 'locale', 'default_locale' => null, 'locale_alias'  => ''];
 
     protected $tableModificationOrder = 70;
 
@@ -45,10 +37,7 @@ class I18nBehavior extends Behavior
     {
         foreach ($this->getDatabase()->getTables() as $table) {
             if ($table->hasBehavior('i18n') && !$table->getBehavior('i18n')->getParameter('default_locale')) {
-                $table->getBehavior('i18n')->addParameter(array(
-                    'name' => 'default_locale',
-                    'value' => $this->getParameter('default_locale')
-                ));
+                $table->getBehavior('i18n')->addParameter(['name' => 'default_locale', 'value' => $this->getParameter('default_locale')]);
             }
         }
     }
@@ -69,13 +58,7 @@ class I18nBehavior extends Behavior
         if ($database->hasTable($i18nTableName)) {
             $this->i18nTable = $database->getTable($i18nTableName);
         } else {
-            $this->i18nTable = $database->addTable(array(
-                'name'      => $i18nTableName,
-                'phpName'   => $this->getI18nTablePhpName(),
-                'package'   => $table->getPackage(),
-                'schema'    => $table->getSchema(),
-                'namespace' => $table->getNamespace() ? '\\' . $table->getNamespace() : null,
-            ));
+            $this->i18nTable = $database->addTable(['name'      => $i18nTableName, 'phpName'   => $this->getI18nTablePhpName(), 'package'   => $table->getPackage(), 'schema'    => $table->getSchema(), 'namespace' => $table->getNamespace() ? '\\' . $table->getNamespace() : null]);
             // every behavior adding a table should re-execute database behaviors
             foreach ($database->getBehaviors() as $behavior) {
                 $behavior->modifyDatabase();
@@ -124,13 +107,7 @@ class I18nBehavior extends Behavior
     {
         $localeColumnName = $this->getLocaleColumnName();
         if (!$this->i18nTable->hasColumn($localeColumnName)) {
-            $this->i18nTable->addColumn(array(
-                'name'       => $localeColumnName,
-                'type'       => PropelTypes::VARCHAR,
-                'size'       => 5,
-                'default'    => $this->getDefaultLocale(),
-                'primaryKey' => 'true',
-            ));
+            $this->i18nTable->addColumn(['name'       => $localeColumnName, 'type'       => PropelTypes::VARCHAR, 'size'       => 5, 'default'    => $this->getDefaultLocale(), 'primaryKey' => 'true']);
         }
     }
 
@@ -179,7 +156,7 @@ class I18nBehavior extends Behavior
 
     protected function getI18nColumnNamesFromConfig()
     {
-        $columnNames = explode(',', $this->getParameter('i18n_columns'));
+        $columnNames = explode(',', (string) $this->getParameter('i18n_columns'));
         foreach ($columnNames as $key => $columnName) {
             if ($columnName = trim($columnName)) {
                 $columnNames[$key] = $columnName;
@@ -221,7 +198,7 @@ class I18nBehavior extends Behavior
 
     public function getI18nColumns()
     {
-        $columns = array();
+        $columns = [];
         $i18nTable = $this->getI18nTable();
         if ($columnNames = $this->getI18nColumnNamesFromConfig()) {
             // Strategy 1: use the i18n_columns parameter
@@ -246,10 +223,7 @@ class I18nBehavior extends Behavior
     {
         $table = $this->getTable();
 
-        return strtr($string, array(
-            '%TABLE%'   => $table->getNonPrefixedName(),
-            '%PHPNAME%' => $table->getPhpName(),
-        ));
+        return strtr($string, ['%TABLE%'   => $table->getNonPrefixedName(), '%PHPNAME%' => $table->getPhpName()]);
     }
 
     public function getObjectBuilderModifier()

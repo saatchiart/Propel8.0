@@ -25,16 +25,14 @@
 class RelationMap
 {
     // types
-    const MANY_TO_ONE = 1;
-    const ONE_TO_MANY = 2;
-    const ONE_TO_ONE = 3;
-    const MANY_TO_MANY = 4;
+    final public const MANY_TO_ONE = 1;
+    final public const ONE_TO_MANY = 2;
+    final public const ONE_TO_ONE = 3;
+    final public const MANY_TO_MANY = 4;
 
     // representations
-    const LOCAL_TO_FOREIGN = 0;
-    const LEFT_TO_RIGHT = 1;
-
-    protected $name;
+    final public const LOCAL_TO_FOREIGN = 0;
+    final public const LEFT_TO_RIGHT = 1;
     protected $pluralName;
     protected $type;
     protected $localTable;
@@ -42,11 +40,11 @@ class RelationMap
     /**
      * @var ColumnMap[]
      */
-    protected $localColumns = array();
+    protected $localColumns = [];
     /**
      * @var ColumnMap[]
      */
-    protected $foreignColumns = array();
+    protected $foreignColumns = [];
     protected $onUpdate;
     protected $onDelete;
 
@@ -55,9 +53,8 @@ class RelationMap
      *
      * @param string $name Name of the relation.
      */
-    public function __construct($name)
+    public function __construct(protected $name)
     {
-        $this->name = $name;
     }
 
     /**
@@ -82,7 +79,7 @@ class RelationMap
      */
     public function getPluralName()
     {
-        return null !== $this->pluralName ? $this->pluralName : ($this->name . 's');
+        return $this->pluralName ?? $this->name . 's';
     }
 
     /**
@@ -189,7 +186,7 @@ class RelationMap
      */
     public function getColumnMappings($direction = RelationMap::LOCAL_TO_FOREIGN)
     {
-        $h = array();
+        $h = [];
         if ($direction == RelationMap::LEFT_TO_RIGHT && $this->getType() == RelationMap::MANY_TO_ONE) {
             $direction = RelationMap::LOCAL_TO_FOREIGN;
         }
@@ -313,9 +310,9 @@ class RelationMap
      */
     public function getSymmetricalRelation()
     {
-        $localMapping = array($this->getLeftColumns(), $this->getRightColumns());
+        $localMapping = [$this->getLeftColumns(), $this->getRightColumns()];
         foreach ($this->getRightTable()->getRelations() as $relation) {
-            if ($localMapping == array($relation->getRightColumns(), $relation->getLeftColumns())) {
+            if ($localMapping == [$relation->getRightColumns(), $relation->getLeftColumns()]) {
                 return $relation;
             }
         }

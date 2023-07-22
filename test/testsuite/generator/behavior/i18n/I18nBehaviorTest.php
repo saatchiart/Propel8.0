@@ -9,9 +9,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/behavior/i18n/I18nBehavior.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../generator/lib/behavior/i18n/I18nBehavior.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 
 /**
  * Tests for I18nBehavior class
@@ -120,7 +120,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema1), array($schema2));
+        return [[$schema1], [$schema2]];
     }
 
     /**
@@ -226,10 +226,10 @@ EOF;
         $builder = new PropelQuickBuilder();
         $builder->setSchema($schema);
         $table = $builder->getDatabase()->getTable('i18n_behavior_test_0');
-        $this->assertEquals(array(), $table->getValidators());
+        $this->assertEquals([], $table->getValidators());
         $i18nTable = $builder->getDatabase()->getTable('i18n_behavior_test_0_i18n');
         $validators = $i18nTable->getValidators();
-        $this->assertEquals(1, count($validators));
+        $this->assertEquals(1, is_countable($validators) ? count($validators) : 0);
         $this->assertEquals('title', $validators[0]->getColumnName());
     }
 
@@ -252,9 +252,9 @@ EOF;
         $builder = new PropelQuickBuilder();
         $builder->setSchema($schema);
         $table = $builder->getDatabase()->getTable('i18n_behavior_test_0');
-        $this->assertEquals(1, count($table->getValidators()));
+        $this->assertEquals(1, is_countable($table->getValidators()) ? count($table->getValidators()) : 0);
         $i18nTable = $builder->getDatabase()->getTable('i18n_behavior_test_0_i18n');
-        $this->assertEquals(array(), $i18nTable->getValidators());
+        $this->assertEquals([], $i18nTable->getValidators());
     }
 
     public function testModifyTableUsesCustomI18nTableName()
@@ -379,7 +379,7 @@ EOF;
 
         // checks foreign key
         $fkList = $i18nTable->getColumnForeignKeys('custom_id');
-        $this->assertEquals(count($fkList), 1);
+        $this->assertEquals(is_countable($fkList) ? count($fkList) : 0, 1);
         $fk = array_pop($fkList);
         $this->assertEquals($fk->getForeignTableName(), 'i18n_behavior_test_0');
         $this->assertEquals($fk->getForeignColumnNames(), '[id]');

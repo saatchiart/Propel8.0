@@ -26,7 +26,7 @@ class PropelModelPager implements IteratorAggregate, Countable
         $lastPage = 1,
         $nbResults = 0,
         $objects = null,
-        $parameters = array(),
+        $parameters = [],
         $currentMaxLink = 1,
         $parameterHolder = null,
         $maxRecordLimit = false,
@@ -121,7 +121,7 @@ class PropelModelPager implements IteratorAggregate, Countable
 
     public function getLinks($nb_links = 5)
     {
-        $links = array();
+        $links = [];
         $tmp = $this->page - floor($nb_links / 2);
         $check = $this->lastPage - $nb_links + 1;
         $limit = ($check > 0) ? $check : 1;

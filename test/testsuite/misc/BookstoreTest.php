@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Tests a functional scenario using the Bookstore model
@@ -43,6 +43,23 @@ class BookstoreTest extends BookstoreEmptyTestBase
 
     public function testScenario()
     {
+        $rowling = null;
+        $scholastic = null;
+        $stephenson = null;
+        $morrow = null;
+        $byron = null;
+        $penguin = null;
+        $grass = null;
+        $vintage = null;
+        $phoenix = null;
+        $qs_id = null;
+        $dj = null;
+        $phoenix_id = null;
+        $td = null;
+        $stephenson_id = null;
+        $byron_id = null;
+        $morrow_id = null;
+        $penguin_id = null;
         // Add publisher records
         // ---------------------
 
@@ -66,7 +83,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
             $vintage->save();
             $vintage_id = $vintage->getId();
             $this->assertTrue(true, 'Save Publisher records');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('Save publisher records');
         }
 
@@ -97,7 +114,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
             $grass->save();
             $grass_id = $grass->getId();
             $this->assertTrue(true, 'Save Author records');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('Save Author records');
         }
 
@@ -139,7 +156,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
             $td->save();
             $td_id = $td->getId();
             $this->assertTrue(true, 'Save Book records');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('Save Author records');
         }
 
@@ -163,7 +180,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
             $r2->save();
             $r2_id = $r2->getId();
             $this->assertTrue(true, 'Save Review records');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('Save Review records');
         }
 
@@ -173,12 +190,12 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $crit = new Criteria();
         $crit->add(BookPeer::TITLE, 'Harry%', Criteria::LIKE);
         $results = BookPeer::doSelect($crit);
-      $this->assertEquals(1, count($results));
+      $this->assertEquals(1, is_countable($results) ? count($results) : 0);
 
         $crit2 = new Criteria();
-        $crit2->add(BookPeer::ISBN, array("0380977427", "0140422161"), Criteria::IN);
+        $crit2->add(BookPeer::ISBN, ["0380977427", "0140422161"], Criteria::IN);
       $results = BookPeer::doSelect($crit2);
-        $this->assertEquals(2, count($results));
+        $this->assertEquals(2, is_countable($results) ? count($results) : 0);
 
         // Perform a "limit" search
         // ------------------------
@@ -189,7 +206,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $crit->addAscendingOrderByColumn(BookPeer::TITLE);
 
         $results = BookPeer::doSelect($crit);
-        $this->assertEquals(2, count($results));
+        $this->assertEquals(2, is_countable($results) ? count($results) : 0);
 
         // we ordered on book title, so we expect to get
         $this->assertEquals("Harry Potter and the Order of the Phoenix", $results[0]->getTitle());
@@ -203,7 +220,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $qs_lookup = BookPeer::retrieveByPk($qs_id);
         $this->assertNotNull($qs_lookup, 'just-created book can be found by pk');
 
-        $new_title = "Quicksilver (".crc32(uniqid(rand())).")";
+        $new_title = "Quicksilver (".crc32(uniqid(random_int(0, mt_getrandmax()))).")";
         // Attempting to update found object
         $qs_lookup->setTitle($new_title);
         $qs_lookup->save();
@@ -233,9 +250,9 @@ class BookstoreTest extends BookstoreEmptyTestBase
         // Handle BLOB/CLOB Columns
         // ------------------------
 
-        $blob_path = dirname(__FILE__) . '/../../etc/lob/tin_drum.gif';
-        $blob2_path = dirname(__FILE__) . '/../../etc/lob/propel.gif';
-        $clob_path = dirname(__FILE__) . '/../../etc/lob/tin_drum.txt';
+        $blob_path = __DIR__ . '/../../etc/lob/tin_drum.gif';
+        $blob2_path = __DIR__ . '/../../etc/lob/propel.gif';
+        $clob_path = __DIR__ . '/../../etc/lob/tin_drum.txt';
 
         $m1 = new Media();
         $m1->setBook($phoenix);
@@ -262,7 +279,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
         // Test Validators
         // ---------------
 
-        require_once dirname(__FILE__) . '/../../tools/helpers/bookstore/validator/ISBNValidator.php';
+        require_once __DIR__ . '/../../tools/helpers/bookstore/validator/ISBNValidator.php';
 
         $bk1 = new Book();
         $bk1->setTitle("12345"); // min length is 10
@@ -270,7 +287,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
 
         $this->assertFalse($ret, 'validation failed');
         $failures = $bk1->getValidationFailures();
-        $this->assertEquals(1, count($failures), '1 validation message was returned');
+        $this->assertEquals(1, is_countable($failures) ? count($failures) : 0, '1 validation message was returned');
 
         $el = array_shift($failures);
         $this->assertStringContainsString("must be more than", $el->getMessage(), 'Expected validation message was returned');
@@ -282,7 +299,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $this->assertFalse($ret, 'validation failed');
 
         $failures = $bk2->getValidationFailures();
-        $this->assertEquals(1, count($failures), '1 validation message was returned');
+        $this->assertEquals(1, is_countable($failures) ? count($failures) : 0, '1 validation message was returned');
 
         $el = array_shift($failures);
         $this->assertStringContainsString("Book title already in database.", $el->getMessage(), 'Expected validation message was returned');
@@ -305,13 +322,9 @@ class BookstoreTest extends BookstoreEmptyTestBase
 
         $failures2 = $bk1->getValidationFailures();
 
-        $this->assertEquals(3, count($failures2), '3 validation messages were returned');
+        $this->assertEquals(3, is_countable($failures2) ? count($failures2) : 0, '3 validation messages were returned');
 
-        $expectedKeys = array(
-            AuthorPeer::LAST_NAME,
-            BookPeer::TITLE,
-            ReviewPeer::REVIEWED_BY,
-        );
+        $expectedKeys = [AuthorPeer::LAST_NAME, BookPeer::TITLE, ReviewPeer::REVIEWED_BY];
         $this->assertEquals($expectedKeys, array_keys($failures2), 'correct columns failed');
 
         $bk2 = new Book();
@@ -339,7 +352,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $records = BookPeer::doSelect($c);
         $count = BookPeer::doCount($c);
 
-        $this->assertEquals($count, count($records), 'correct number of results');
+        $this->assertEquals($count, is_countable($records) ? count($records) : 0, 'correct number of results');
 
         // Test many-to-many relationships
         // ---------------
@@ -456,18 +469,35 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $blc1->delete();
         $blc2->delete();
 
-        $this->assertEquals(array(), AuthorPeer::doSelect(new Criteria()), 'no records in [author] table');
-        $this->assertEquals(array(), PublisherPeer::doSelect(new Criteria()), 'no records in [publisher] table');
-        $this->assertEquals(array(), BookPeer::doSelect(new Criteria()), 'no records in [book] table');
-        $this->assertEquals(array(), ReviewPeer::doSelect(new Criteria()), 'no records in [review] table');
-        $this->assertEquals(array(), MediaPeer::doSelect(new Criteria()), 'no records in [media] table');
-        $this->assertEquals(array(), BookClubListPeer::doSelect(new Criteria()), 'no records in [book_club_list] table');
-        $this->assertEquals(array(), BookListRelPeer::doSelect(new Criteria()), 'no records in [book_x_list] table');
+        $this->assertEquals([], AuthorPeer::doSelect(new Criteria()), 'no records in [author] table');
+        $this->assertEquals([], PublisherPeer::doSelect(new Criteria()), 'no records in [publisher] table');
+        $this->assertEquals([], BookPeer::doSelect(new Criteria()), 'no records in [book] table');
+        $this->assertEquals([], ReviewPeer::doSelect(new Criteria()), 'no records in [review] table');
+        $this->assertEquals([], MediaPeer::doSelect(new Criteria()), 'no records in [media] table');
+        $this->assertEquals([], BookClubListPeer::doSelect(new Criteria()), 'no records in [book_club_list] table');
+        $this->assertEquals([], BookListRelPeer::doSelect(new Criteria()), 'no records in [book_x_list] table');
 
     }
 
     public function testScenarioUsingQuery()
     {
+        $rowling = null;
+        $scholastic = null;
+        $stephenson = null;
+        $morrow = null;
+        $byron = null;
+        $penguin = null;
+        $grass = null;
+        $vintage = null;
+        $phoenix = null;
+        $qs_id = null;
+        $dj = null;
+        $phoenix_id = null;
+        $td = null;
+        $stephenson_id = null;
+        $byron_id = null;
+        $morrow_id = null;
+        $penguin_id = null;
         // Add publisher records
         // ---------------------
 
@@ -491,7 +521,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
             $vintage->save();
             $vintage_id = $vintage->getId();
             $this->assertTrue(true, 'Save Publisher records');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('Save publisher records');
         }
 
@@ -522,7 +552,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
             $grass->save();
             $grass_id = $grass->getId();
             $this->assertTrue(true, 'Save Author records');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('Save Author records');
         }
 
@@ -564,7 +594,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
             $td->save();
             $td_id = $td->getId();
             $this->assertTrue(true, 'Save Book records');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('Save Author records');
         }
 
@@ -588,7 +618,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
             $r2->save();
             $r2_id = $r2->getId();
             $this->assertTrue(true, 'Save Review records');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('Save Review records');
         }
 
@@ -598,12 +628,12 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $results = BookQuery::create()
             ->filterByTitle('Harry%')
             ->find();
-        $this->assertEquals(1, count($results));
+        $this->assertEquals(1, is_countable($results) ? count($results) : 0);
 
         $results = BookQuery::create()
-            ->where('Book.ISBN IN ?', array("0380977427", "0140422161"))
+            ->where('Book.ISBN IN ?', ["0380977427", "0140422161"])
             ->find();
-        $this->assertEquals(2, count($results));
+        $this->assertEquals(2, is_countable($results) ? count($results) : 0);
 
         // Perform a "limit" search
         // ------------------------
@@ -613,7 +643,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
             ->offset(1)
             ->orderByTitle()
             ->find();
-        $this->assertEquals(2, count($results));
+        $this->assertEquals(2, is_countable($results) ? count($results) : 0);
         // we ordered on book title, so we expect to get
         $this->assertEquals("Harry Potter and the Order of the Phoenix", $results[0]->getTitle());
         $this->assertEquals("Quicksilver", $results[1]->getTitle());
@@ -626,7 +656,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $qs_lookup = BookQuery::create()->findPk($qs_id);
         $this->assertNotNull($qs_lookup, 'just-created book can be found by pk');
 
-        $new_title = "Quicksilver (".crc32(uniqid(rand())).")";
+        $new_title = "Quicksilver (".crc32(uniqid(random_int(0, mt_getrandmax()))).")";
         // Attempting to update found object
         $qs_lookup->setTitle($new_title);
         $qs_lookup->save();
@@ -655,9 +685,9 @@ class BookstoreTest extends BookstoreEmptyTestBase
         // Handle BLOB/CLOB Columns
         // ------------------------
 
-        $blob_path = dirname(__FILE__) . '/../../etc/lob/tin_drum.gif';
-        $blob2_path = dirname(__FILE__) . '/../../etc/lob/propel.gif';
-        $clob_path = dirname(__FILE__) . '/../../etc/lob/tin_drum.txt';
+        $blob_path = __DIR__ . '/../../etc/lob/tin_drum.gif';
+        $blob2_path = __DIR__ . '/../../etc/lob/propel.gif';
+        $clob_path = __DIR__ . '/../../etc/lob/tin_drum.txt';
 
         $m1 = new Media();
         $m1->setBook($phoenix);
@@ -684,7 +714,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
         // Test Validators
         // ---------------
 
-        require_once dirname(__FILE__) . '/../../tools/helpers/bookstore/validator/ISBNValidator.php';
+        require_once __DIR__ . '/../../tools/helpers/bookstore/validator/ISBNValidator.php';
 
         $bk1 = new Book();
         $bk1->setTitle("12345"); // min length is 10
@@ -692,7 +722,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
 
         $this->assertFalse($ret, 'validation failed');
         $failures = $bk1->getValidationFailures();
-        $this->assertEquals(1, count($failures), '1 validation message was returned');
+        $this->assertEquals(1, is_countable($failures) ? count($failures) : 0, '1 validation message was returned');
 
         $el = array_shift($failures);
         $this->assertStringContainsString("must be more than", $el->getMessage(), 'Expected validation message was returned');
@@ -704,7 +734,7 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $this->assertFalse($ret, 'validation failed');
 
         $failures = $bk2->getValidationFailures();
-        $this->assertEquals(1, count($failures), '1 validation message was returned');
+        $this->assertEquals(1, is_countable($failures) ? count($failures) : 0, '1 validation message was returned');
 
         $el = array_shift($failures);
         $this->assertStringContainsString("Book title already in database.", $el->getMessage(), 'Expected validation message was returned');
@@ -727,13 +757,9 @@ class BookstoreTest extends BookstoreEmptyTestBase
 
         $failures2 = $bk1->getValidationFailures();
 
-        $this->assertEquals(3, count($failures2), '3 validation messages were returned');
+        $this->assertEquals(3, is_countable($failures2) ? count($failures2) : 0, '3 validation messages were returned');
 
-        $expectedKeys = array(
-            AuthorPeer::LAST_NAME,
-            BookPeer::TITLE,
-            ReviewPeer::REVIEWED_BY,
-        );
+        $expectedKeys = [AuthorPeer::LAST_NAME, BookPeer::TITLE, ReviewPeer::REVIEWED_BY];
         $this->assertEquals($expectedKeys, array_keys($failures2), 'correct columns failed');
 
         $bk2 = new Book();
@@ -761,11 +787,11 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $c = new Criteria();
         $records = BookPeer::doSelect($c);
         $count = BookPeer::doCount($c);
-        $this->assertEquals($count, count($records), 'correct number of results');
+        $this->assertEquals($count, is_countable($records) ? count($records) : 0, 'correct number of results');
 
         // new way
         $count = BookQuery::create()->count();
-        $this->assertEquals($count, count($records), 'correct number of results');
+        $this->assertEquals($count, is_countable($records) ? count($records) : 0, 'correct number of results');
 
         // Test many-to-many relationships
         // ---------------
@@ -908,13 +934,13 @@ class BookstoreTest extends BookstoreEmptyTestBase
         $blc2->delete();
         $blc3->delete();
 
-        $this->assertEquals(array(), AuthorPeer::doSelect(new Criteria()), 'no records in [author] table');
-        $this->assertEquals(array(), PublisherPeer::doSelect(new Criteria()), 'no records in [publisher] table');
-        $this->assertEquals(array(), BookPeer::doSelect(new Criteria()), 'no records in [book] table');
-        $this->assertEquals(array(), ReviewPeer::doSelect(new Criteria()), 'no records in [review] table');
-        $this->assertEquals(array(), MediaPeer::doSelect(new Criteria()), 'no records in [media] table');
-        $this->assertEquals(array(), BookClubListPeer::doSelect(new Criteria()), 'no records in [book_club_list] table');
-        $this->assertEquals(array(), BookListRelPeer::doSelect(new Criteria()), 'no records in [book_x_list] table');
-        $this->assertEquals(array(), BookListFavoritePeer::doSelect(new Criteria()), 'no records in [book_club_list_favorite_books] table');
+        $this->assertEquals([], AuthorPeer::doSelect(new Criteria()), 'no records in [author] table');
+        $this->assertEquals([], PublisherPeer::doSelect(new Criteria()), 'no records in [publisher] table');
+        $this->assertEquals([], BookPeer::doSelect(new Criteria()), 'no records in [book] table');
+        $this->assertEquals([], ReviewPeer::doSelect(new Criteria()), 'no records in [review] table');
+        $this->assertEquals([], MediaPeer::doSelect(new Criteria()), 'no records in [media] table');
+        $this->assertEquals([], BookClubListPeer::doSelect(new Criteria()), 'no records in [book_club_list] table');
+        $this->assertEquals([], BookListRelPeer::doSelect(new Criteria()), 'no records in [book_x_list] table');
+        $this->assertEquals([], BookListFavoritePeer::doSelect(new Criteria()), 'no records in [book_club_list_favorite_books] table');
     }
 }

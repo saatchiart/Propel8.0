@@ -50,17 +50,14 @@ class ColumnMap
     // The TableMap for this column
     protected $table;
 
-    // The name of the column
-    protected $columnName;
-
     // The php name of the column
     protected $phpName;
 
     // The validators for this column
-    protected $validators = array();
+    protected $validators = [];
 
     // The allowed values for an ENUM column
-    protected $valueSet = array();
+    protected $valueSet = [];
 
     // Is this a primaryString column?
     protected $isPkString = false;
@@ -68,12 +65,12 @@ class ColumnMap
     /**
      * Constructor.
      *
-     * @param string $name The name of the column.
+     * @param string $columnName The name of the column.
      * @param      TableMap containingTable TableMap of the table this column is in.
      */
-    public function __construct($name, TableMap $containingTable)
+    public function __construct(// The name of the column
+    protected $columnName, TableMap $containingTable)
     {
-        $this->columnName = $name;
         $this->table = $containingTable;
     }
 
@@ -309,7 +306,7 @@ class ColumnMap
      *
      * @return void
      */
-    public function setDefaultValue($defaultValue)
+    public function setDefaultValue(mixed $defaultValue)
     {
         $this->defaultValue = $defaultValue;
     }
@@ -481,7 +478,6 @@ class ColumnMap
      * Performs DB-specific ignore case, but only if the column type necessitates it.
      *
      * @param string    $str The expression we want to apply the ignore case formatting to (e.g. the column name).
-     * @param DBAdapter $db
      *
      * @return string
      */

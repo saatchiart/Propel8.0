@@ -131,7 +131,7 @@ class DBMySQL extends DBAdapter
     public function quoteIdentifierTable($table)
     {
         // e.g. 'database.table alias' should be escaped as '`database`.`table` `alias`'
-        return '`' . strtr($table, array('.' => '`.`', ' ' => '` `')) . '`';
+        return '`' . strtr($table, ['.' => '`.`', ' ' => '` `']) . '`';
     }
 
     /**
@@ -222,27 +222,11 @@ class DBMySQL extends DBAdapter
         $params = parent::prepareParams($params);
         // Whitelist based on https://bugs.php.net/bug.php?id=47802
         // And https://bugs.php.net/bug.php?id=47802
-        $whitelist = array(
-            'ASCII',
-            'CP1250',
-            'CP1251',
-            'CP1252',
-            'CP1256',
-            'CP1257',
-            'GREEK',
-            'HEBREW',
-            'LATIN1',
-            'LATIN2',
-            'LATIN5',
-            'LATIN7',
-            'SWE7',
-            'UTF8',
-            'UTF-8',
-        );
+        $whitelist = ['ASCII', 'CP1250', 'CP1251', 'CP1252', 'CP1256', 'CP1257', 'GREEK', 'HEBREW', 'LATIN1', 'LATIN2', 'LATIN5', 'LATIN7', 'SWE7', 'UTF8', 'UTF-8'];
 
         if (isset($params['settings']['charset']['value'])) {
             if (version_compare(PHP_VERSION, '5.3.6', '<')) {
-                $charset = strtoupper($params['settings']['charset']['value']);
+                $charset = strtoupper((string) $params['settings']['charset']['value']);
 
                 if (!in_array($charset, $whitelist)) {
                     throw new PropelException(<<<EXCEPTION
@@ -253,7 +237,7 @@ EXCEPTION
                 );
                 }
             } else {
-                if (strpos($params['dsn'], ';charset=') === false) {
+                if (!str_contains((string) $params['dsn'], ';charset=')) {
                     $params['dsn'] .= ';charset=' . $params['settings']['charset']['value'];
                     unset($params['settings']['charset']);
                 }
@@ -275,7 +259,7 @@ EXCEPTION
     public function doExplainPlan(PropelPDO $con, $query)
     {
         if ($query instanceof ModelCriteria) {
-            $params = array();
+            $params = [];
             $dbMap = Propel::getDatabaseMap($query->getDbName());
             $sql = BasePeer::createSelectSql($query, $params);
             $sql = 'EXPLAIN ' . $sql;

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-require_once(dirname(__FILE__).'/sfYamlInline.php');
+require_once(__DIR__.'/sfYamlInline.php');
 
 if (!defined('PREG_BAD_UTF8_OFFSET_ERROR')) {
   define('PREG_BAD_UTF8_OFFSET_ERROR', 5);
@@ -26,10 +26,10 @@ class sfYamlParser
 {
   protected
     $offset        = 0,
-    $lines         = array(),
+    $lines         = [],
     $currentLineNb = -1,
     $currentLine   = '',
-    $refs          = array();
+    $refs          = [];
 
   /**
    * Constructor
@@ -59,7 +59,7 @@ class sfYamlParser
     $mbEncoding = mb_internal_encoding();
     mb_internal_encoding('UTF-8');
 
-    $data = array();
+    $data = [];
     while ($this->moveToNextLine()) {
       if ($this->isCurrentLineEmpty()) {
         continue;
@@ -78,14 +78,14 @@ class sfYamlParser
         }
 
         // array
-        if (!isset($values['value']) || '' == trim($values['value'], ' ') || 0 === strpos(ltrim($values['value'], ' '), '#')) {
+        if (!isset($values['value']) || '' == trim($values['value'], ' ') || str_starts_with(ltrim($values['value'], ' '), '#')) {
           $c = $this->getRealCurrentLineNb() + 1;
           $parser = new sfYamlParser($c);
           $parser->refs =& $this->refs;
           $data[] = $parser->parse($this->getNextEmbedBlock());
         } else {
           if (preg_match('/^([^ ]+)\: +({.*?)$/u', $values['value'], $matches)) {
-            $data[] = array($matches[1] => sfYamlInline::load($matches[2]));
+            $data[] = [$matches[1] => sfYamlInline::load($matches[2])];
           } else {
             $data[] = $this->parseValue($values['value']);
           }
@@ -94,7 +94,7 @@ class sfYamlParser
         $key = sfYamlInline::parseScalar($values['key']);
 
         if ('<<' === $key) {
-          if (isset($values['value']) && '*' === substr($values['value'], 0, 1)) {
+          if (isset($values['value']) && str_starts_with($values['value'], '*')) {
             $isInPlace = substr($values['value'], 1);
             if (!array_key_exists($isInPlace, $this->refs)) {
               throw new InvalidArgumentException(sprintf('Reference "%s" does not exist at line %s (%s).', $isInPlace, $this->getRealCurrentLineNb() + 1, $this->currentLine));
@@ -110,7 +110,7 @@ class sfYamlParser
             $parser->refs =& $this->refs;
             $parsed = $parser->parse($value);
 
-            $merged = array();
+            $merged = [];
             if (!is_array($parsed)) {
               throw new InvalidArgumentException(sprintf("YAML merge keys used with a scalar value instead of an array at line %s (%s)", $this->getRealCurrentLineNb() + 1, $this->currentLine));
             } elseif (isset($parsed[0])) {
@@ -138,7 +138,7 @@ class sfYamlParser
           $data = $isProcessed;
         }
         // hash
-        else if (!isset($values['value']) || '' == trim($values['value'], ' ') || 0 === strpos(ltrim($values['value'], ' '), '#')) {
+        else if (!isset($values['value']) || '' == trim($values['value'], ' ') || str_starts_with(ltrim($values['value'], ' '), '#')) {
           // if next line is less indented or equal, then it means that the current value is null
           if ($this->isNextLineIndented()) {
             $data[$key] = null;
@@ -161,10 +161,10 @@ class sfYamlParser
           $value = sfYamlInline::load($this->lines[0]);
           if (is_array($value)) {
             $first = reset($value);
-            if ('*' === substr($first, 0, 1)) {
-              $data = array();
+            if (str_starts_with((string) $first, '*')) {
+              $data = [];
               foreach ($value as $alias) {
-                $data[] = $this->refs[substr($alias, 1)];
+                $data[] = $this->refs[substr((string) $alias, 1)];
               }
               $value = $data;
             }
@@ -177,25 +177,14 @@ class sfYamlParser
           return $value;
         }
 
-        switch (preg_last_error()) {
-          case PREG_INTERNAL_ERROR:
-            $error = 'Internal PCRE error on line';
-            break;
-          case PREG_BACKTRACK_LIMIT_ERROR:
-            $error = 'pcre.backtrack_limit reached on line';
-            break;
-          case PREG_RECURSION_LIMIT_ERROR:
-            $error = 'pcre.recursion_limit reached on line';
-            break;
-          case PREG_BAD_UTF8_ERROR:
-            $error = 'Malformed UTF-8 data on line';
-            break;
-          case PREG_BAD_UTF8_OFFSET_ERROR:
-            $error = 'Offset doesn\'t correspond to the begin of a valid UTF-8 code point on line';
-            break;
-          default:
-            $error = 'Unable to parse line';
-        }
+        $error = match (preg_last_error()) {
+            PREG_INTERNAL_ERROR => 'Internal PCRE error on line',
+            PREG_BACKTRACK_LIMIT_ERROR => 'pcre.backtrack_limit reached on line',
+            PREG_RECURSION_LIMIT_ERROR => 'pcre.recursion_limit reached on line',
+            PREG_BAD_UTF8_ERROR => 'Malformed UTF-8 data on line',
+            PREG_BAD_UTF8_OFFSET_ERROR => 'Offset doesn\'t correspond to the begin of a valid UTF-8 code point on line',
+            default => 'Unable to parse line',
+        };
 
         throw new InvalidArgumentException(sprintf('%s %d (%s).', $error, $this->getRealCurrentLineNb() + 1, $this->currentLine));
       }
@@ -229,7 +218,7 @@ class sfYamlParser
    */
   protected function getCurrentLineIndentation()
   {
-    return strlen($this->currentLine) - strlen(ltrim($this->currentLine, ' '));
+    return strlen((string) $this->currentLine) - strlen(ltrim((string) $this->currentLine, ' '));
   }
 
   /**
@@ -247,12 +236,12 @@ class sfYamlParser
       throw new InvalidArgumentException(sprintf('Indentation problem at line %d (%s)', $this->getRealCurrentLineNb() + 1, $this->currentLine));
     }
 
-    $data = array(substr($this->currentLine, $newIndent));
+    $data = [substr((string) $this->currentLine, $newIndent)];
 
     while ($this->moveToNextLine()) {
       if ($this->isCurrentLineEmpty()) {
         if ($this->isCurrentLineBlank()) {
-          $data[] = substr($this->currentLine, $newIndent);
+          $data[] = substr((string) $this->currentLine, $newIndent);
         }
 
         continue;
@@ -260,11 +249,11 @@ class sfYamlParser
 
       $indent = $this->getCurrentLineIndentation();
 
-      if (preg_match('#^(?P<text> *)$#', $this->currentLine, $match)) {
+      if (preg_match('#^(?P<text> *)$#', (string) $this->currentLine, $match)) {
         // empty line
         $data[] = $match['text'];
       } elseif ($indent >= $newIndent) {
-        $data[] = substr($this->currentLine, $newIndent);
+        $data[] = substr((string) $this->currentLine, $newIndent);
       } elseif (0 == $indent) {
         $this->moveToPreviousLine();
 
@@ -282,7 +271,7 @@ class sfYamlParser
    */
   protected function moveToNextLine()
   {
-    if ($this->currentLineNb >= count($this->lines) - 1) {
+    if ($this->currentLineNb >= (is_countable($this->lines) ? count($this->lines) : 0) - 1) {
       return false;
     }
 
@@ -308,7 +297,7 @@ class sfYamlParser
    */
   protected function parseValue($value)
   {
-    if ('*' === substr($value, 0, 1)) {
+    if (str_starts_with($value, '*')) {
       if (false !== $pos = strpos($value, '#')) {
         $value = substr($value, 1, $pos - 2);
       } else {
@@ -323,7 +312,7 @@ class sfYamlParser
     }
 
     if (preg_match('/^(?P<separator>\||>)(?P<modifiers>\+|\-|\d+|\+\d+|\-\d+|\d+\+|\d+\-)?(?P<comments> +#.*)?$/', $value, $matches)) {
-      $modifiers = isset($matches['modifiers']) ? $matches['modifiers'] : '';
+      $modifiers = $matches['modifiers'] ?? '';
 
       return $this->parseFoldedScalar($matches['separator'], preg_replace('#\d+#', '', $modifiers), abs((int)$modifiers));
     } else {
@@ -357,7 +346,7 @@ class sfYamlParser
       return '';
     }
 
-    if (!preg_match('#^(?P<indent>'.($indentation ? str_repeat(' ', $indentation) : ' +').')(?P<text>.*)$#u', $this->currentLine, $matches)) {
+    if (!preg_match('#^(?P<indent>'.($indentation ? str_repeat(' ', $indentation) : ' +').')(?P<text>.*)$#u', (string) $this->currentLine, $matches)) {
       $this->moveToPreviousLine();
 
       return '';
@@ -367,17 +356,17 @@ class sfYamlParser
     $previousIndent = 0;
 
     $text .= $matches['text'].$separator;
-    while ($this->currentLineNb + 1 < count($this->lines)) {
+    while ($this->currentLineNb + 1 < (is_countable($this->lines) ? count($this->lines) : 0)) {
       $this->moveToNextLine();
 
-      if (preg_match('#^(?P<indent> {'.strlen($textIndent).',})(?P<text>.+)$#u', $this->currentLine, $matches)) {
+      if (preg_match('#^(?P<indent> {'.strlen($textIndent).',})(?P<text>.+)$#u', (string) $this->currentLine, $matches)) {
         if (' ' == $separator && $previousIndent != $matches['indent']) {
           $text = substr($text, 0, -1)."\n";
         }
         $previousIndent = $matches['indent'];
 
         $text .= str_repeat(' ', $diff = strlen($matches['indent']) - strlen($textIndent)).$matches['text'].($diff ? "\n" : $separator);
-      } elseif (preg_match('#^(?P<text> *)$#', $this->currentLine, $matches)) {
+      } elseif (preg_match('#^(?P<text> *)$#', (string) $this->currentLine, $matches)) {
         $text .= preg_replace('#^ {1,'.strlen($textIndent).'}#', '', $matches['text'])."\n";
       } else {
         $this->moveToPreviousLine();
@@ -450,7 +439,7 @@ class sfYamlParser
    */
   protected function isCurrentLineBlank()
   {
-    return '' == trim($this->currentLine, ' ');
+    return '' == trim((string) $this->currentLine, ' ');
   }
 
   /**
@@ -461,7 +450,7 @@ class sfYamlParser
   protected function isCurrentLineComment()
   {
     //checking explicitly the first char of the trim is faster than loops or strpos
-    $ltrimmedLine = ltrim($this->currentLine, ' ');
+    $ltrimmedLine = ltrim((string) $this->currentLine, ' ');
 
     return $ltrimmedLine[0] === '#';
   }
@@ -475,7 +464,7 @@ class sfYamlParser
    */
   protected function cleanup($value)
   {
-    $value = str_replace(array("\r\n", "\r"), "\n", $value);
+    $value = str_replace(["\r\n", "\r"], "\n", $value);
 
     if (!preg_match("#\n$#", $value)) {
       $value .= "\n";

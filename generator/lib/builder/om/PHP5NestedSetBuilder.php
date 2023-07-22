@@ -990,6 +990,7 @@ abstract class " . $this->getClassname() . " extends " . $this->getObjectBuilder
 
     protected function addGetLeft(&$script)
     {
+        $left_col_getter_name = null;
         $table = $this->getTable();
 
         foreach ($table->getColumns() as $col) {
@@ -1014,6 +1015,7 @@ abstract class " . $this->getClassname() . " extends " . $this->getObjectBuilder
 
     protected function addGetRight(&$script)
     {
+        $right_col_getter_name = null;
         $table = $this->getTable();
 
         foreach ($table->getColumns() as $col) {
@@ -1072,6 +1074,7 @@ abstract class " . $this->getClassname() . " extends " . $this->getObjectBuilder
 
     protected function addSetLeft(&$script)
     {
+        $left_col_setter_name = null;
         $objectClassName = $this->getStubObjectBuilder()->getClassname();
         $table = $this->getTable();
 
@@ -1100,6 +1103,7 @@ abstract class " . $this->getClassname() . " extends " . $this->getObjectBuilder
 
     protected function addSetRight(&$script)
     {
+        $right_col_setter_name = null;
         $objectClassName = $this->getStubObjectBuilder()->getClassname();
         $table = $this->getTable();
 

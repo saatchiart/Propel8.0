@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
 
 /**
  * Test class for ModelJoin.
@@ -48,8 +48,8 @@ class ModelJoinTest extends BookstoreTestBase
         $join = new ModelJoin();
         $join->setTableMap($bookTable);
         $join->setRelationMap($bookTable->getRelation('Author'));
-        $this->assertEquals(array(BookPeer::AUTHOR_ID), $join->getLeftColumns(), 'setRelationMap() automatically sets the left columns');
-        $this->assertEquals(array(AuthorPeer::ID), $join->getRightColumns(), 'setRelationMap() automatically sets the right columns');
+        $this->assertEquals([BookPeer::AUTHOR_ID], $join->getLeftColumns(), 'setRelationMap() automatically sets the left columns');
+        $this->assertEquals([AuthorPeer::ID], $join->getRightColumns(), 'setRelationMap() automatically sets the right columns');
     }
 
     public function testSetRelationMapLeftAlias()
@@ -58,8 +58,8 @@ class ModelJoinTest extends BookstoreTestBase
         $join = new ModelJoin();
         $join->setTableMap($bookTable);
         $join->setRelationMap($bookTable->getRelation('Author'), 'b');
-        $this->assertEquals(array('b.author_id'), $join->getLeftColumns(), 'setRelationMap() automatically sets the left columns using the left table alias');
-        $this->assertEquals(array(AuthorPeer::ID), $join->getRightColumns(), 'setRelationMap() automatically sets the right columns');
+        $this->assertEquals(['b.author_id'], $join->getLeftColumns(), 'setRelationMap() automatically sets the left columns using the left table alias');
+        $this->assertEquals([AuthorPeer::ID], $join->getRightColumns(), 'setRelationMap() automatically sets the right columns');
     }
 
     public function testSetRelationMapRightAlias()
@@ -68,8 +68,8 @@ class ModelJoinTest extends BookstoreTestBase
         $join = new ModelJoin();
         $join->setTableMap($bookTable);
         $join->setRelationMap($bookTable->getRelation('Author'), null, 'a');
-        $this->assertEquals(array(BookPeer::AUTHOR_ID), $join->getLeftColumns(), 'setRelationMap() automatically sets the left columns');
-        $this->assertEquals(array('a.id'), $join->getRightColumns(), 'setRelationMap() automatically sets the right columns  using the right table alias');
+        $this->assertEquals([BookPeer::AUTHOR_ID], $join->getLeftColumns(), 'setRelationMap() automatically sets the left columns');
+        $this->assertEquals(['a.id'], $join->getRightColumns(), 'setRelationMap() automatically sets the right columns  using the right table alias');
     }
 
     public function testSetRelationMapComposite()
@@ -78,7 +78,7 @@ class ModelJoinTest extends BookstoreTestBase
         $join = new ModelJoin();
         $join->setTableMap($table);
         $join->setRelationMap($table->getRelation('BookOpinion'));
-        $this->assertEquals(array(ReaderFavoritePeer::BOOK_ID, ReaderFavoritePeer::READER_ID), $join->getLeftColumns(), 'setRelationMap() automatically sets the left columns for composite relationships');
-        $this->assertEquals(array(BookOpinionPeer::BOOK_ID, BookOpinionPeer::READER_ID), $join->getRightColumns(), 'setRelationMap() automatically sets the right columns for composite relationships');
+        $this->assertEquals([ReaderFavoritePeer::BOOK_ID, ReaderFavoritePeer::READER_ID], $join->getLeftColumns(), 'setRelationMap() automatically sets the left columns for composite relationships');
+        $this->assertEquals([BookOpinionPeer::BOOK_ID, BookOpinionPeer::READER_ID], $join->getRightColumns(), 'setRelationMap() automatically sets the right columns for composite relationships');
     }
 }

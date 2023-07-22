@@ -9,7 +9,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Tests for AutoAddPkBehavior class
@@ -23,9 +23,9 @@ class AutoAddPkBehaviorTest extends BookstoreTestBase
     public function testDefault()
     {
         $table6 = Table6Peer::getTableMap();
-        $this->assertEquals(count($table6->getColumns()), 2, 'auto_add_pk adds one column by default');
+        $this->assertEquals(is_countable($table6->getColumns()) ? count($table6->getColumns()) : 0, 2, 'auto_add_pk adds one column by default');
         $pks = $table6->getPrimaryKeys();
-        $this->assertEquals(count($pks), 1, 'auto_add_pk adds a simple primary key by default');
+        $this->assertEquals(is_countable($pks) ? count($pks) : 0, 1, 'auto_add_pk adds a simple primary key by default');
         $pk = array_pop($pks);
         $this->assertEquals($pk->getName(), 'id', 'auto_add_pk adds an id column by default');
         $this->assertEquals($pk->getType(), 'INTEGER', 'auto_add_pk adds an integer column by default');
@@ -36,7 +36,7 @@ class AutoAddPkBehaviorTest extends BookstoreTestBase
     public function testNoTrigger()
     {
         $table7 = Table7Peer::getTableMap();
-        $this->assertEquals(count($table7->getColumns()), 2, 'auto_add_pk does not add a column when the table already has a primary key');
+        $this->assertEquals(is_countable($table7->getColumns()) ? count($table7->getColumns()) : 0, 2, 'auto_add_pk does not add a column when the table already has a primary key');
         $this->assertFalse(method_exists('Table7', 'getId'), 'auto_add_pk does not add an id column when the table already has a primary key');
         $pks = $table7->getPrimaryKeys();
         $pk = array_pop($pks);
@@ -46,7 +46,7 @@ class AutoAddPkBehaviorTest extends BookstoreTestBase
     public function testParameters()
     {
         $table8 = Table8Peer::getTableMap();
-        $this->assertEquals(count($table8->getColumns()), 3, 'auto_add_pk adds one column with custom parameters');
+        $this->assertEquals(is_countable($table8->getColumns()) ? count($table8->getColumns()) : 0, 3, 'auto_add_pk adds one column with custom parameters');
         $pks = $table8->getPrimaryKeys();
         $pk = array_pop($pks);
         $this->assertEquals($pk->getName(), 'identifier', 'auto_add_pk accepts customization of pk column name');

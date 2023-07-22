@@ -15,7 +15,7 @@
  * @author     Francois Zaninotto (Propel)
  * @package    propel.runtime.query
  */
-class ModelWith
+class ModelWith implements \Stringable
 {
     protected $modelName = '';
     protected $modelPeerName = '';
@@ -39,8 +39,6 @@ class ModelWith
     /**
      * Define the joined hydration schema based on a join object.
      * Fills the ModelWith properties using a ModelJoin as source
-     *
-     * @param ModelJoin $join
      */
     public function init(ModelJoin $join)
     {
@@ -185,7 +183,7 @@ class ModelWith
         return null === $this->leftPhpName;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return sprintf("modelName: %s, relationName: %s, relationMethod: %s, leftPhpName: %s, rightPhpName: %s", $this->modelName, $this->relationName, $this->relationMethod, $this->leftPhpName, $this->rightPhpName);
     }

@@ -8,8 +8,8 @@
  * @license		MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../runtime/lib/util/PropelDateTime.php';
-require_once dirname(__FILE__) . '/../../../../runtime/lib/exception/PropelException.php';
+require_once __DIR__ . '/../../../../runtime/lib/util/PropelDateTime.php';
+require_once __DIR__ . '/../../../../runtime/lib/exception/PropelException.php';
 
 /**
  * Test for DateTime subclass to support serialization.
@@ -173,24 +173,24 @@ class PropelDateTimeTest extends \PHPUnit\Framework\TestCase
 
     public function provideValidNewInstanceValues()
     {
-        return array(
-            'Y-m-d'		       => array('2011-08-10', '2011-08-10 00:00:00'),
+        return [
+            'Y-m-d'		       => ['2011-08-10', '2011-08-10 00:00:00'],
             // 1312960848 : Wed, 10 Aug 2011 07:20:48 GMT
-            'unix_timestamp'  => array('1312960848', '2011-08-10 07:20:48'),
-            'Y-m-d H:is'      => array('2011-08-10 10:22:15', '2011-08-10 10:22:15'),
-            'datetime_object' => array(new DateTime('2011-08-10 10:23:10'), '2011-08-10 10:23:10')
-        );
+            'unix_timestamp'  => ['1312960848', '2011-08-10 07:20:48'],
+            'Y-m-d H:is'      => ['2011-08-10 10:22:15', '2011-08-10 10:22:15'],
+            'datetime_object' => [new DateTime('2011-08-10 10:23:10'), '2011-08-10 10:23:10'],
+        ];
     }
 
     public function provideValidNewInstanceValuesGmt1()
     {
-        return array(
+        return [
             // "1312960848" : Wed, 10 Aug 2011 07:20:48 GMT
             // "2011-08-10 09:20:48" : GMT+1 DST (= GMT +2)
-            'unix_timestamp'	=> array('1312960848', '2011-08-10 09:20:48'),
+            'unix_timestamp'	=> ['1312960848', '2011-08-10 09:20:48'],
             // "1323517115" : Sat, 10 Dec 2011 11:38:35 GMT
             // "2011-12-10 12:38:35" : GMT +1
-            'unix_timestamp'	=> array('1323517115', '2011-12-10 12:38:35'),
-        );
+            'unix_timestamp'	=> ['1323517115', '2011-12-10 12:38:35'],
+        ];
     }
 }

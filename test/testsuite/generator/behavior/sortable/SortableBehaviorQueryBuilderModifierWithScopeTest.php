@@ -9,7 +9,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/behavior/BookstoreSortableTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/behavior/BookstoreSortableTestBase.php';
 
 /**
  * Tests for SortableBehavior class query modifier when the scope is enabled
@@ -87,7 +87,7 @@ class SortableBehaviorQueryBuilderModifierWithScopeTest extends BookstoreSortabl
         $this->assertEquals('row3', $ts[2]->getTitle(), 'findList() returns an ordered scoped list');
         $this->assertEquals('row4', $ts[3]->getTitle(), 'findList() returns an ordered scoped list');
         $ts = Table12Query::create()->findList(2);
-        $this->assertEquals(2, count($ts), 'findList() filters the query by scope');
+        $this->assertEquals(2, is_countable($ts) ? count($ts) : 0, 'findList() filters the query by scope');
         $this->assertEquals('row5', $ts[0]->getTitle(), 'findList() returns an ordered scoped list');
         $this->assertEquals('row6', $ts[1]->getTitle(), 'findList() returns an ordered scoped list');
     }
@@ -127,16 +127,16 @@ class SortableBehaviorQueryBuilderModifierWithScopeTest extends BookstoreSortabl
     public function testReorder()
     {
         $objects = Table12Query::create()->findList(1);
-        $ids = array();
+        $ids = [];
         foreach ($objects as $object) {
             $ids[]= $object->getPrimaryKey();
         }
-        $ranks = array(4, 3, 2, 1);
+        $ranks = [4, 3, 2, 1];
         $order = array_combine($ids, $ranks);
         Table12Query::create()->reorder($order);
-        $expected = array(1 => 'row4', 2 => 'row3', 3 => 'row2', 4 => 'row1');
+        $expected = [1 => 'row4', 2 => 'row3', 3 => 'row2', 4 => 'row1'];
         $this->assertEquals($expected, $this->getFixturesArrayWithScope(1), 'reorder() reorders the suite');
-        $expected = array(1 => 'row5', 2 => 'row6');
+        $expected = [1 => 'row5', 2 => 'row6'];
         $this->assertEquals($expected, $this->getFixturesArrayWithScope(2), 'reorder() leaves other suites unchanged');
     }
 }

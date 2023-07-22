@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Tests for SluggableBehavior class
@@ -22,10 +22,10 @@ class SluggableBehaviorTest extends BookstoreTestBase
     public function testParameters()
     {
         $table13 = Table13Peer::getTableMap();
-        $this->assertEquals(count($table13->getColumns()), 3, 'Sluggable adds one columns by default');
+        $this->assertEquals(is_countable($table13->getColumns()) ? count($table13->getColumns()) : 0, 3, 'Sluggable adds one columns by default');
         $this->assertTrue(method_exists('Table13', 'getSlug'), 'Sluggable adds a slug column by default');
         $table14 = Table14Peer::getTableMap();
-        $this->assertEquals(count($table14->getColumns()), 3, 'Sluggable does not add a column when it already exists');
+        $this->assertEquals(is_countable($table14->getColumns()) ? count($table14->getColumns()) : 0, 3, 'Sluggable does not add a column when it already exists');
         $this->assertTrue(method_exists('Table14', 'getUrl'), 'Sluggable allows customization of slug_column name');
         $this->assertTrue(method_exists('Table14', 'getSlug'), 'Sluggable adds a standard getter for the slug column');
     }
@@ -69,17 +69,7 @@ class SluggableBehaviorTest extends BookstoreTestBase
 
     public static function cleanupSlugProvider()
     {
-        return array(
-            array('', 'n-a'),
-            array('foo', 'foo'),
-            array('foo bar', 'foo-bar'),
-            array('foo  bar', 'foo-bar'),
-            array('FoO', 'foo'),
-            array('fôo', 'foo'),
-            array(' foo ', 'foo'),
-            array('f/o:o', 'f-o-o'),
-            array('foo1', 'foo1'),
-        );
+        return [['', 'n-a'], ['foo', 'foo'], ['foo bar', 'foo-bar'], ['foo  bar', 'foo-bar'], ['FoO', 'foo'], ['fôo', 'foo'], [' foo ', 'foo'], ['f/o:o', 'f-o-o'], ['foo1', 'foo1']];
     }
 
     /**
@@ -94,15 +84,7 @@ class SluggableBehaviorTest extends BookstoreTestBase
 
     public static function limitSlugSizeProvider()
     {
-        return array(
-            array('123', '123'),
-            array(str_repeat('*', 80), str_repeat('*', 80)),
-            array(str_repeat('*', 97), str_repeat('*', 97)),
-            array(str_repeat('*', 98), str_repeat('*', 97)),
-            array(str_repeat('*', 99), str_repeat('*', 97)),
-            array(str_repeat('*', 100), str_repeat('*', 97)),
-            array(str_repeat('*', 150), str_repeat('*', 97)),
-        );
+        return [['123', '123'], [str_repeat('*', 80), str_repeat('*', 80)], [str_repeat('*', 97), str_repeat('*', 97)], [str_repeat('*', 98), str_repeat('*', 97)], [str_repeat('*', 99), str_repeat('*', 97)], [str_repeat('*', 100), str_repeat('*', 97)], [str_repeat('*', 150), str_repeat('*', 97)]];
     }
 
     /**
@@ -285,7 +267,7 @@ class SluggableBehaviorTest extends BookstoreTestBase
             $t->save();
 
             $this->fail('Exception expected');
-        } catch (Exception $e) {
+        } catch (Exception) {
            $this->assertTrue(true, 'Exception successfully thrown');
        }
     }

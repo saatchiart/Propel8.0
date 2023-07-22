@@ -8,9 +8,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/util/PropelSchemaValidator.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/AppData.php';
+require_once __DIR__ . '/../../../../generator/lib/util/PropelSchemaValidator.php';
+require_once __DIR__ . '/../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../generator/lib/model/AppData.php';
 
 /**
  *
@@ -19,7 +19,7 @@ require_once dirname(__FILE__) . '/../../../../generator/lib/model/AppData.php';
 class SchemaValidatorTest extends \PHPUnit\Framework\TestCase
 {
 
-    private $xsdFile = 'generator/resources/xsd/database.xsd';
+    private string $xsdFile = 'generator/resources/xsd/database.xsd';
 
     protected function getAppDataForTable($table)
     {

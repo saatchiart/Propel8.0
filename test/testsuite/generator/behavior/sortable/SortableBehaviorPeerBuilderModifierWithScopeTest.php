@@ -9,7 +9,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/behavior/BookstoreSortableTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/behavior/BookstoreSortableTestBase.php';
 
 /**
  * Tests for SortableBehavior class
@@ -61,16 +61,16 @@ class SortableBehaviorPeerBuilderModifierWithScopeTest extends BookstoreSortable
         $c = new Criteria();
         Table12Peer::sortableApplyScopeCriteria($c, 1);
         $objects = Table12Peer::doSelectOrderByRank($c);
-        $ids = array();
+        $ids = [];
         foreach ($objects as $object) {
             $ids[]= $object->getPrimaryKey();
         }
-        $ranks = array(4, 3, 2, 1);
+        $ranks = [4, 3, 2, 1];
         $order = array_combine($ids, $ranks);
         Table12Peer::reorder($order);
-        $expected = array(1 => 'row4', 2 => 'row3', 3 => 'row2', 4 => 'row1');
+        $expected = [1 => 'row4', 2 => 'row3', 3 => 'row2', 4 => 'row1'];
         $this->assertEquals($expected, $this->getFixturesArrayWithScope(1), 'reorder() reorders the suite');
-        $expected = array(1 => 'row5', 2 => 'row6');
+        $expected = [1 => 'row5', 2 => 'row6'];
         $this->assertEquals($expected, $this->getFixturesArrayWithScope(2), 'reorder() leaves other suites unchanged');
     }
 
@@ -96,9 +96,9 @@ class SortableBehaviorPeerBuilderModifierWithScopeTest extends BookstoreSortable
 
     public function testRetrieveList()
     {
-      $this->assertEquals(4, count(Table12Peer::retrieveList(null)), 'retrieveList() returns the list of objects in the scope');
-      $this->assertEquals(4, count(Table12Peer::retrieveList(1)), 'retrieveList() returns the list of objects in the scope');
-      $this->assertEquals(2, count(Table12Peer::retrieveList(2)), 'retrieveList() returns the list of objects in the scope');
+      $this->assertEquals(4, is_countable(Table12Peer::retrieveList(null)) ? count(Table12Peer::retrieveList(null)) : 0, 'retrieveList() returns the list of objects in the scope');
+      $this->assertEquals(4, is_countable(Table12Peer::retrieveList(1)) ? count(Table12Peer::retrieveList(1)) : 0, 'retrieveList() returns the list of objects in the scope');
+      $this->assertEquals(2, is_countable(Table12Peer::retrieveList(2)) ? count(Table12Peer::retrieveList(2)) : 0, 'retrieveList() returns the list of objects in the scope');
     }
 
     public function testCountList()

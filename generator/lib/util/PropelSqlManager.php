@@ -74,9 +74,6 @@ class PropelSqlManager
         return $this->connections[$datasource];
     }
 
-    /**
-     * @param GeneratorConfigInterface $generatorConfig
-     */
     public function setGeneratorConfig(GeneratorConfigInterface $generatorConfig)
     {
         $this->generatorConfig = $generatorConfig;
@@ -128,7 +125,7 @@ class PropelSqlManager
     public function getDatabases()
     {
         if (null === $this->databases) {
-            $databases = array();
+            $databases = [];
             foreach ($this->getDataModels() as $package => $dataModel) {
                 foreach ($dataModel->getDatabases() as $database) {
                     if (!isset($databases[$database->getName()])) {
@@ -196,7 +193,7 @@ class PropelSqlManager
      */
     public function insertSql($datasource = null)
     {
-        $statementsToInsert = array();
+        $statementsToInsert = [];
         foreach ($this->getProperties($this->getSqlDbMapFilename()) as $sqlFile => $database) {
             if (null !== $datasource && $database !== $datasource) {
                 // skip
@@ -204,7 +201,7 @@ class PropelSqlManager
             }
 
             if (!isset($statementsToInsert[$database])) {
-                $statementsToInsert[$database] = array();
+                $statementsToInsert[$database] = [];
             }
             if (null === $database || (null !== $database && $database === $datasource)) {
                 $filename = $this->getWorkingDirectory() . DIRECTORY_SEPARATOR . $sqlFile;
@@ -249,7 +246,7 @@ class PropelSqlManager
     protected function getPdoConnection($datasource)
     {
         $buildConnection = $this->getConnection($datasource);
-        $dsn = str_replace("@DB@", $datasource, $buildConnection['dsn']);
+        $dsn = str_replace("@DB@", $datasource, (string) $buildConnection['dsn']);
 
         // Set user + password to null if they are empty strings or missing
         $username = isset($buildConnection['user']) && $buildConnection['user'] ? $buildConnection['user'] : null;
@@ -271,7 +268,7 @@ class PropelSqlManager
      */
     protected function getProperties($file)
     {
-        $properties = array();
+        $properties = [];
 
         if (false === $lines = @file($file)) {
             throw new Exception(sprintf('Unable to parse contents of "%s".', $file));
@@ -280,7 +277,7 @@ class PropelSqlManager
         foreach ($lines as $line) {
             $line = trim($line);
 
-            if ('' == $line || in_array($line[0], array('#', ';'))) {
+            if ('' == $line || in_array($line[0], ['#', ';'])) {
                 continue;
             }
 

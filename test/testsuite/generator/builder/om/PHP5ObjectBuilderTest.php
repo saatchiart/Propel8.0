@@ -8,11 +8,11 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/builder/om/PHP5ObjectBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/platform/MysqlPlatform.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/Table.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/Column.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/ColumnDefaultValue.php';
+require_once __DIR__ . '/../../../../../generator/lib/builder/om/PHP5ObjectBuilder.php';
+require_once __DIR__ . '/../../../../../generator/lib/platform/MysqlPlatform.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/Table.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/Column.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/ColumnDefaultValue.php';
 
 /**
  * Test class for PHP5ObjectBuilder.
@@ -47,11 +47,7 @@ class PHP5ObjectBuilderTest extends \PHPUnit\Framework\TestCase
         $col3->setDefaultValue(new ColumnDefaultValue('0000-00-00', ColumnDefaultValue::TYPE_VALUE));
         $val3 = "NULL";
 
-        return array(
-            array($col1, $val1),
-            array($col2, $val2),
-            array($col3, $val3),
-        );
+        return [[$col1, $val1], [$col2, $val2], [$col3, $val3]];
     }
 
     /**

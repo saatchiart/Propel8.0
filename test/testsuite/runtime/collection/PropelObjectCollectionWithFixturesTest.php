@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelObjectCollection.
@@ -55,7 +55,7 @@ class PropelObjectCollectionWithFixturesTest extends BookstoreEmptyTestBase
         // check that the modifications are persisted
         BookPeer::clearInstancePool();
         $books = PropelQuery::from('Book')->find();
-        $this->assertEquals(0, count($books));
+        $this->assertEquals(0, is_countable($books) ? count($books) : 0);
     }
 
     public function testFromArray()
@@ -64,10 +64,7 @@ class PropelObjectCollectionWithFixturesTest extends BookstoreEmptyTestBase
         $author->setFirstName('Jane');
         $author->setLastName('Austen');
         $author->save();
-        $books = array(
-            array('Title' => 'Mansfield Park', 'ISBN' => '1234', 'AuthorId' => $author->getId()),
-            array('Title' => 'Pride And Prejudice', 'ISBN' => '2342', 'AuthorId' => $author->getId())
-        );
+        $books = [['Title' => 'Mansfield Park', 'ISBN' => '1234', 'AuthorId' => $author->getId()], ['Title' => 'Pride And Prejudice', 'ISBN' => '2342', 'AuthorId' => $author->getId()]];
         $col = new PropelObjectCollection();
         $col->setModel('Book');
         $col->fromArray($books);
@@ -88,26 +85,26 @@ class PropelObjectCollectionWithFixturesTest extends BookstoreEmptyTestBase
         BookPeer::clearInstancePool();
         $books = PropelQuery::from('Book')->find();
         $booksArray = $books->toArray();
-        $this->assertEquals(4, count($booksArray));
+        $this->assertEquals(4, is_countable($booksArray) ? count($booksArray) : 0);
 
         foreach ($booksArray as $key => $book) {
             $this->assertEquals($books[$key]->toArray(), $book);
         }
 
         $booksArray = $books->toArray();
-        $keys = array(0, 1, 2, 3);
+        $keys = [0, 1, 2, 3];
         $this->assertEquals($keys, array_keys($booksArray));
 
         $booksArray = $books->toArray(null, true);
-        $keys = array('Book_0', 'Book_1', 'Book_2', 'Book_3');
+        $keys = ['Book_0', 'Book_1', 'Book_2', 'Book_3'];
         $this->assertEquals($keys, array_keys($booksArray));
 
         $booksArray = $books->toArray('Title');
-        $keys = array('Harry Potter and the Order of the Phoenix', 'Quicksilver', 'Don Juan', 'The Tin Drum');
+        $keys = ['Harry Potter and the Order of the Phoenix', 'Quicksilver', 'Don Juan', 'The Tin Drum'];
         $this->assertEquals($keys, array_keys($booksArray));
 
         $booksArray = $books->toArray('Title', true);
-        $keys = array('Book_Harry Potter and the Order of the Phoenix', 'Book_Quicksilver', 'Book_Don Juan', 'Book_The Tin Drum');
+        $keys = ['Book_Harry Potter and the Order of the Phoenix', 'Book_Quicksilver', 'Book_Don Juan', 'Book_The Tin Drum'];
         $this->assertEquals($keys, array_keys($booksArray));
     }
 
@@ -115,26 +112,26 @@ class PropelObjectCollectionWithFixturesTest extends BookstoreEmptyTestBase
     {
         $books = PropelQuery::from('Book')->find();
         $booksArray = $books->getArrayCopy();
-        $this->assertEquals(4, count($booksArray));
+        $this->assertEquals(4, is_countable($booksArray) ? count($booksArray) : 0);
 
         foreach ($booksArray as $key => $book) {
             $this->assertEquals($books[$key], $book);
         }
 
         $booksArray = $books->getArrayCopy();
-        $keys = array(0, 1, 2, 3);
+        $keys = [0, 1, 2, 3];
         $this->assertEquals($keys, array_keys($booksArray));
 
         $booksArray = $books->getArrayCopy(null, true);
-        $keys = array('Book_0', 'Book_1', 'Book_2', 'Book_3');
+        $keys = ['Book_0', 'Book_1', 'Book_2', 'Book_3'];
         $this->assertEquals($keys, array_keys($booksArray));
 
         $booksArray = $books->getArrayCopy('Title');
-        $keys = array('Harry Potter and the Order of the Phoenix', 'Quicksilver', 'Don Juan', 'The Tin Drum');
+        $keys = ['Harry Potter and the Order of the Phoenix', 'Quicksilver', 'Don Juan', 'The Tin Drum'];
         $this->assertEquals($keys, array_keys($booksArray));
 
         $booksArray = $books->getArrayCopy('Title', true);
-        $keys = array('Book_Harry Potter and the Order of the Phoenix', 'Book_Quicksilver', 'Book_Don Juan', 'Book_The Tin Drum');
+        $keys = ['Book_Harry Potter and the Order of the Phoenix', 'Book_Quicksilver', 'Book_Don Juan', 'Book_The Tin Drum'];
         $this->assertEquals($keys, array_keys($booksArray));
     }
 
@@ -142,22 +139,22 @@ class PropelObjectCollectionWithFixturesTest extends BookstoreEmptyTestBase
     {
         $books = PropelQuery::from('Book')->find();
 
-        $expected = array();
+        $expected = [];
         foreach ($books as $book) {
             $expected[$book->getTitle()] = $book->getISBN();
         }
         $booksArray = $books->toKeyValue('Title', 'ISBN');
-        $this->assertEquals(4, count($booksArray));
+        $this->assertEquals(4, is_countable($booksArray) ? count($booksArray) : 0);
         $this->assertEquals($expected, $booksArray, 'toKeyValue() turns the collection to an associative array');
 
-        $expected = array();
+        $expected = [];
         foreach ($books as $book) {
             $expected[$book->getISBN()] = $book->getTitle();
         }
         $booksArray = $books->toKeyValue('ISBN');
         $this->assertEquals($expected, $booksArray, 'toKeyValue() uses __toString() for the value if no second field name is passed');
 
-        $expected = array();
+        $expected = [];
         foreach ($books as $book) {
             $expected[$book->getId()] = $book->getTitle();
         }
@@ -173,7 +170,7 @@ class PropelObjectCollectionWithFixturesTest extends BookstoreEmptyTestBase
         $books = $authors->populateRelation('Book');
         $this->assertTrue($books instanceof PropelObjectCollection, 'populateRelation() returns a PropelCollection instance');
         $this->assertEquals('Book', $books->getModel(), 'populateRelation() returns a collection of the related objects');
-        $this->assertEquals(4, count($books), 'populateRelation() the list of related objects');
+        $this->assertEquals(4, is_countable($books) ? count($books) : 0, 'populateRelation() the list of related objects');
     }
 
     public function testPopulateRelationCriteria()
@@ -184,7 +181,7 @@ class PropelObjectCollectionWithFixturesTest extends BookstoreEmptyTestBase
         $c = new Criteria();
         $c->setLimit(3);
         $books = $authors->populateRelation('Book', $c);
-        $this->assertEquals(3, count($books), 'populateRelation() accepts an optional criteria object to filter the query');
+        $this->assertEquals(3, is_countable($books) ? count($books) : 0, 'populateRelation() accepts an optional criteria object to filter the query');
     }
 
     public function testPopulateRelationEmpty()
@@ -198,7 +195,7 @@ class PropelObjectCollectionWithFixturesTest extends BookstoreEmptyTestBase
         $books = $authors->populateRelation('Book', null, $this->con);
         $this->assertTrue($books instanceof PropelObjectCollection, 'populateRelation() returns a PropelCollection instance');
         $this->assertEquals('Book', $books->getModel(), 'populateRelation() returns a collection of the related objects');
-        $this->assertEquals(0, count($books), 'populateRelation() the list of related objects');
+        $this->assertEquals(0, is_countable($books) ? count($books) : 0, 'populateRelation() the list of related objects');
         $this->assertEquals($count, $this->con->getQueryCount(), 'populateRelation() doesn\'t issue a new query on empty collections');
     }
 

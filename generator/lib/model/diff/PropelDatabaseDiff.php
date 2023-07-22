@@ -17,12 +17,12 @@
  *
  * @package    propel.generator.model.diff
  */
-class PropelDatabaseDiff
+class PropelDatabaseDiff implements \Stringable
 {
-    protected $addedTables = array();
-    protected $removedTables = array();
-    protected $modifiedTables = array();
-    protected $renamedTables = array();
+    protected $addedTables = [];
+    protected $removedTables = [];
+    protected $modifiedTables = [];
+    protected $renamedTables = [];
 
     /**
      * Setter for the addedTables property
@@ -38,7 +38,6 @@ class PropelDatabaseDiff
      * Add an added table
      *
      * @param string $tableName
-     * @param Table  $addedTable
      */
     public function addAddedTable($tableName, Table $addedTable)
     {
@@ -101,7 +100,6 @@ class PropelDatabaseDiff
      * Add a removed table
      *
      * @param string $tableName
-     * @param Table  $removedTable
      */
     public function addRemovedTable($tableName, Table $removedTable)
     {
@@ -164,7 +162,6 @@ class PropelDatabaseDiff
      * Add a table difference
      *
      * @param string          $tableName
-     * @param PropelTableDiff $modifiedTable
      */
     public function addModifiedTable($tableName, PropelTableDiff $modifiedTable)
     {
@@ -250,7 +247,7 @@ class PropelDatabaseDiff
         }
         $diff->setRemovedTables($this->getAddedTables());
         $diff->setRenamedTables(array_flip($this->getRenamedTables()));
-        $tableDiffs = array();
+        $tableDiffs = [];
         foreach ($this->getModifiedTables() as $name => $tableDiff) {
             $tableDiffs[$name] = $tableDiff->getReverseDiff();
         }
@@ -266,7 +263,7 @@ class PropelDatabaseDiff
      */
     public function getDescription()
     {
-        $changes = array();
+        $changes = [];
         if ($count = $this->countAddedTables()) {
             $changes[] = sprintf('%d added tables', $count);
         }
@@ -283,7 +280,7 @@ class PropelDatabaseDiff
         return implode(', ', $changes);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $ret = '';
         if ($addedTables = $this->getAddedTables()) {

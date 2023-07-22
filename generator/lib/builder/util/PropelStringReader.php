@@ -20,11 +20,6 @@ include_once 'phing/system/io/Reader.php';
 class PropelStringReader extends Reader
 {
     /**
-     * @var string
-     */
-    protected $_string;
-
-    /**
      * @var int
      */
     protected $mark = 0;
@@ -34,9 +29,11 @@ class PropelStringReader extends Reader
      */
     protected $currPos = 0;
 
-    public function __construct($string)
+    /**
+     * @param string $string
+     */
+    public function __construct(protected $_string)
     {
-        $this->_string = $string;
     }
 
     public function skip($n)
@@ -46,7 +43,7 @@ class PropelStringReader extends Reader
 
     public function eof()
     {
-        return $this->currPos == strlen($this->_string);
+        return $this->currPos == strlen((string) $this->_string);
     }
 
     public function read($len = null)
@@ -54,10 +51,10 @@ class PropelStringReader extends Reader
         if ($len === null) {
             return $this->_string;
         } else {
-            if ($this->currPos >= strlen($this->_string)) {
+            if ($this->currPos >= strlen((string) $this->_string)) {
                 return -1;
             }
-            $out = substr($this->_string, $this->currPos, $len);
+            $out = substr((string) $this->_string, $this->currPos, $len);
             $this->currPos += $len;
 
             return $out;

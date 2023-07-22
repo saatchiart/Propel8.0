@@ -33,9 +33,7 @@ class Database extends ScopedElement
     /**
      * @var Table[]
      */
-    private $tableList = array();
-
-    private $name;
+    private array $tableList = [];
 
     private $baseClass;
     private $basePeer;
@@ -43,27 +41,24 @@ class Database extends ScopedElement
     private $defaultPhpNamingMethod;
     private $defaultTranslateMethod;
 
-    /**
-     * @var AppData
-     */
-    private $dbParent;
+    private ?\AppData $dbParent = null;
 
     /**
      * @var Table[]
      */
-    private $tablesByName = array();
+    private array $tablesByName = [];
 
     /**
      * @var Table[]
      */
-    private $tablesByLowercaseName = array();
+    private array $tablesByLowercaseName = [];
 
     /**
      * @var Table[]
      */
-    private $tablesByPhpName = array();
+    private array $tablesByPhpName = [];
 
-    private $heavyIndexing;
+    private ?bool $heavyIndexing = null;
     protected $tablePrefix = '';
 
     /**
@@ -74,23 +69,22 @@ class Database extends ScopedElement
      */
     protected $defaultStringFormat;
 
-    private $domainMap = array();
+    private array $domainMap = [];
 
     /**
      * List of behaviors registered for this table
      *
      * @var Behavior[]
      */
-    protected $behaviors = array();
+    protected $behaviors = [];
 
     /**
      * Constructs a new Database object.
      *
      * @param string $name
      */
-    public function __construct($name = null)
+    public function __construct(private $name = null)
     {
-        $this->name = $name;
     }
 
     /**
@@ -337,7 +331,7 @@ class Database extends ScopedElement
      */
     public function getTablesForSql()
     {
-        $tables = array();
+        $tables = [];
         foreach ($this->tableList as $table) {
             if (!$table->isSkipSql()) {
                 $tables [] = $table;
@@ -406,11 +400,7 @@ class Database extends ScopedElement
      */
     public function getTableByPhpName($phpName)
     {
-        if (isset($this->tablesByPhpName[$phpName])) {
-            return $this->tablesByPhpName[$phpName];
-        }
-
-        return null; // just to be explicit
+        return $this->tablesByPhpName[$phpName] ?? null; // just to be explicit
     }
 
     /**
@@ -429,9 +419,9 @@ class Database extends ScopedElement
             }
             $this->tableList[] = $tbl;
             $this->tablesByName[$tbl->getName()] = $tbl;
-            $this->tablesByLowercaseName[strtolower($tbl->getName())] = $tbl;
+            $this->tablesByLowercaseName[strtolower((string) $tbl->getName())] = $tbl;
             $this->tablesByPhpName[$tbl->getPhpName()] = $tbl;
-            if (strpos($tbl->getNamespace(), '\\') === 0) {
+            if (str_starts_with($tbl->getNamespace(), '\\')) {
                 $tbl->setNamespace(substr($tbl->getNamespace(), 1));
             } elseif ($namespace = $this->getNamespace()) {
                 if ($tbl->getNamespace() === null) {
@@ -504,11 +494,7 @@ class Database extends ScopedElement
      */
     public function getDomain($domainName)
     {
-        if (isset($this->domainMap[$domainName])) {
-            return $this->domainMap[$domainName];
-        }
-
-        return null; // just to be explicit
+        return $this->domainMap[$domainName] ?? null; // just to be explicit
     }
 
     public function getGeneratorConfig()
@@ -604,7 +590,7 @@ class Database extends ScopedElement
     public function getNextTableBehavior()
     {
         // order the behaviors according to Behavior::$tableModificationOrder
-        $behaviors = array();
+        $behaviors = [];
         foreach ($this->getTables() as $table) {
             foreach ($table->getBehaviors() as $behavior) {
                 if (!$behavior->isTableModified()) {
@@ -628,9 +614,9 @@ class Database extends ScopedElement
         // add default behaviors to database
         if ($defaultBehaviors = $this->getBuildProperty('behaviorDefault')) {
             // add generic behaviors from build.properties
-            $defaultBehaviors = explode(',', $defaultBehaviors);
+            $defaultBehaviors = explode(',', (string) $defaultBehaviors);
             foreach ($defaultBehaviors as $behavior) {
-                $this->addBehavior(array('name' => trim($behavior)));
+                $this->addBehavior(['name' => trim($behavior)]);
             }
         }
 

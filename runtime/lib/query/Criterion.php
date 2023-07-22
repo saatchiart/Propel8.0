@@ -20,11 +20,8 @@
 class Criterion
 {
 
-    const UND = " AND ";
-    const ODER = " OR ";
-
-    /** Value of the CO. */
-    protected $value;
+    final public const UND = " AND ";
+    final public const ODER = " OR ";
 
     /** Comparison value.
      *
@@ -41,13 +38,6 @@ class Criterion
     /** Column name. */
     protected $column;
 
-    /**
-     * Binding type to be used for Criteria::RAW comparison
-     *
-     * @var string any of the PDO::PARAM_ constant values
-     */
-    protected $type;
-
     /** flag to ignore case in comparison */
     protected $ignoreStringCase = false;
 
@@ -62,8 +52,8 @@ class Criterion
      *
      * @var Criterion[]
      */
-    protected $clauses = array();
-    protected $conjunctions = array();
+    protected $clauses = [];
+    protected $conjunctions = [];
 
     /** "Parent" Criteria class */
     protected $parent;
@@ -73,13 +63,12 @@ class Criterion
      *
      * @param Criteria $outer      The outer class (this is an "inner" class).
      * @param string   $column     TABLE.COLUMN format.
-     * @param mixed    $value
      * @param string   $comparison
      * @param string   $type
      */
-    public function __construct(Criteria $outer, $column, $value, $comparison = null, $type = null)
+    public function __construct(Criteria $outer, $column, /** Value of the CO. */
+    protected mixed $value, $comparison = null, protected $type = null)
     {
-        $this->value = $value;
         $dotPos = strrpos($column, '.');
         if ($dotPos === false || $comparison == Criteria::RAW) {
             // no dot => aliased column
@@ -89,8 +78,7 @@ class Criterion
             $this->table = substr($column, 0, $dotPos);
             $this->column = substr($column, $dotPos + 1);
         }
-        $this->comparison = ($comparison === null) ? Criteria::EQUAL : $comparison;
-        $this->type = $type;
+        $this->comparison = $comparison ?? Criteria::EQUAL;
         $this->init($outer);
     }
 
@@ -105,7 +93,7 @@ class Criterion
         try {
             $db = Propel::getDB($criteria->getDbName());
             $this->setDB($db);
-        } catch (Exception $e) {
+        } catch (Exception) {
             // we are only doing this to allow easier debugging, so
             // no need to throw up the exception, just make note of it.
             Propel::log("Could not get a DBAdapter, sql may be wrong", Propel::LOG_ERR);
@@ -113,7 +101,7 @@ class Criterion
 
         // init $this->realtable
         $realtable = $criteria->getTableForAlias($this->table);
-        $this->realtable = $realtable ? $realtable : $this->table;
+        $this->realtable = $realtable ?: $this->table;
     }
 
     /**
@@ -254,7 +242,6 @@ class Criterion
     /**
      * Append an OR Criterion onto this Criterion's list.
      *
-     * @param Criterion $criterion
      *
      * @return Criterion
      */
@@ -300,31 +287,13 @@ class Criterion
      */
     protected function dispatchPsHandling(&$sb, array &$params)
     {
-        switch ($this->comparison) {
-            case Criteria::CUSTOM:
-                // custom expression with no parameter binding
-                $this->appendCustomToPs($sb, $params);
-                break;
-            case Criteria::RAW:
-                // custom expression with a typed parameter binding
-                $this->appendRawToPs($sb, $params);
-                break;
-            case Criteria::IN:
-            case Criteria::NOT_IN:
-                // table.column IN (?, ?) or table.column NOT IN (?, ?)
-                $this->appendInToPs($sb, $params);
-                break;
-            case Criteria::LIKE:
-            case Criteria::NOT_LIKE:
-            case Criteria::ILIKE:
-            case Criteria::NOT_ILIKE:
-                // table.column LIKE ? or table.column NOT LIKE ?  (or ILIKE for Postgres)
-                $this->appendLikeToPs($sb, $params);
-                break;
-            default:
-                // table.column = ? or table.column >= ? etc. (traditional expressions, the default)
-                $this->appendBasicToPs($sb, $params);
-        }
+        match ($this->comparison) {
+            Criteria::CUSTOM => $this->appendCustomToPs($sb, $params),
+            Criteria::RAW => $this->appendRawToPs($sb, $params),
+            Criteria::IN, Criteria::NOT_IN => $this->appendInToPs($sb, $params),
+            Criteria::LIKE, Criteria::NOT_LIKE, Criteria::ILIKE, Criteria::NOT_ILIKE => $this->appendLikeToPs($sb, $params),
+            default => $this->appendBasicToPs($sb, $params),
+        };
     }
 
     /**
@@ -352,11 +321,11 @@ class Criterion
      */
     protected function appendRawToPs(&$sb, array &$params)
     {
-        if (substr_count($this->column, '?') != 1) {
+        if (substr_count((string) $this->column, '?') != 1) {
             throw new PropelException(sprintf('Could not build SQL for expression "%s" because Criteria::RAW works only with a clause containing a single question mark placeholder', $this->column));
         }
-        $params[] = array('table' => null, 'type' => $this->type, 'value' => $this->value);
-        $sb .= str_replace('?', ':p' . count($params), $this->column);
+        $params[] = ['table' => null, 'type' => $this->type, 'value' => $this->value];
+        $sb .= str_replace('?', ':p' . count($params), (string) $this->column);
     }
 
     /**
@@ -369,10 +338,10 @@ class Criterion
     protected function appendInToPs(&$sb, array &$params)
     {
         if ($this->value !== "") {
-            $bindParams = array();
+            $bindParams = [];
             $index = count($params); // to avoid counting the number of parameters for each element in the array
             foreach ((array) $this->value as $value) {
-                $params[] = array('table' => $this->realtable, 'column' => $this->column, 'value' => $value);
+                $params[] = ['table' => $this->realtable, 'column' => $this->column, 'value' => $value];
                 $index++; // increment this first to correct for wanting bind params to start with :p1
                 $bindParams[] = ':p' . $index;
             }
@@ -410,7 +379,7 @@ class Criterion
             }
         }
 
-        $params[] = array('table' => $this->realtable, 'column' => $this->column, 'value' => $this->value);
+        $params[] = ['table' => $this->realtable, 'column' => $this->column, 'value' => $this->value];
 
         $sb .= $field . $this->comparison;
 
@@ -444,7 +413,7 @@ class Criterion
                 $sb .= $field . $this->comparison . $this->value;
             } else {
 
-                $params[] = array('table' => $this->realtable, 'column' => $this->column, 'value' => $this->value);
+                $params[] = ['table' => $this->realtable, 'column' => $this->column, 'value' => $this->value];
 
                 // default case, it is a normal col = value expression; value
                 // will be replaced w/ '?' and will be inserted later using PDO bindValue()
@@ -522,11 +491,11 @@ class Criterion
         $h = crc32(serialize($this->value)) ^ crc32($this->comparison);
 
         if ($this->table !== null) {
-            $h ^= crc32($this->table);
+            $h ^= crc32((string) $this->table);
         }
 
         if ($this->column !== null) {
-            $h ^= crc32($this->column);
+            $h ^= crc32((string) $this->column);
         }
 
         foreach ($this->clauses as $clause) {
@@ -535,9 +504,9 @@ class Criterion
             // replace it if it doesn't bother us?
             // $clause->appendPsTo($sb='',$params=array());
             $sb = '';
-            $params = array();
+            $params = [];
             $clause->appendPsTo($sb, $params);
-            $h ^= crc32(serialize(array($sb, $params)));
+            $h ^= crc32(serialize([$sb, $params]));
             unset ($sb, $params);
         }
 
@@ -551,7 +520,7 @@ class Criterion
      */
     public function getAllTables()
     {
-        $tables = array();
+        $tables = [];
         $this->addCriterionTable($this, $tables);
 
         return $tables;
@@ -561,8 +530,6 @@ class Criterion
      * method supporting recursion through all criterions to give
      * us a string array of tables from each criterion
      *
-     * @param Criterion $c
-     * @param array     &$s
      *
      * @return void
      */
@@ -582,7 +549,7 @@ class Criterion
      */
     public function getAttachedCriterion()
     {
-        $criterions = array($this);
+        $criterions = [$this];
         foreach ($this->getClauses() as $criterion) {
             /* @var $criterion Criterion */
             $criterions = array_merge($criterions, $criterion->getAttachedCriterion());

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-require_once dirname(__FILE__).'/sfYaml.php';
+require_once __DIR__.'/sfYaml.php';
 
 /**
  * sfYamlInline implements a YAML parser/dumper for the YAML inline syntax.
@@ -20,7 +20,7 @@ require_once dirname(__FILE__).'/sfYaml.php';
  */
 class sfYamlInline
 {
-  const REGEX_QUOTED_STRING = '(?:"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|\'([^\']*(?:\'\'[^\']*)*)\')';
+  final public const REGEX_QUOTED_STRING = '(?:"([^"\\\\]*(?:\\\\.[^"\\\\]*)*)"|\'([^\']*(?:\'\'[^\']*)*)\')';
 
   /**
    * Convert a YAML string to a PHP array.
@@ -40,16 +40,11 @@ class sfYamlInline
     $mbEncoding = mb_internal_encoding();
     mb_internal_encoding('ASCII');
 
-    switch ($value[0]) {
-      case '[':
-        $result = self::parseSequence($value);
-        break;
-      case '{':
-        $result = self::parseMapping($value);
-        break;
-      default:
-        $result = self::parseScalar($value);
-    }
+    $result = match ($value[0]) {
+        '[' => self::parseSequence($value),
+        '{' => self::parseMapping($value),
+        default => self::parseScalar($value),
+    };
 
     if (isset($mbEncoding)) {
       mb_internal_encoding($mbEncoding);
@@ -65,14 +60,14 @@ class sfYamlInline
    *
    * @return string The YAML string representing the PHP array
    */
-  public static function dump($value)
+  public static function dump(mixed $value)
   {
     if ('1.1' === sfYaml::getSpecVersion()) {
-      $trueValues = array('true', 'on', '+', 'yes', 'y');
-      $falseValues = array('false', 'off', '-', 'no', 'n');
+      $trueValues = ['true', 'on', '+', 'yes', 'y'];
+      $falseValues = ['false', 'off', '-', 'no', 'n'];
     } else {
-      $trueValues = array('true');
-      $falseValues = array('false');
+      $trueValues = ['true'];
+      $falseValues = ['false'];
     }
 
     switch (true) {
@@ -88,23 +83,23 @@ class sfYamlInline
         return 'true';
       case false === $value:
         return 'false';
-      case ctype_digit($value):
+      case ctype_digit((string) $value):
         return is_string($value) ? "'$value'" : (int) $value;
       case is_numeric($value):
         return is_infinite($value) ? str_ireplace('INF', '.Inf', strval($value)) : (is_string($value) ? "'$value'" : $value);
-      case false !== strpos($value, "\n") || false !== strpos($value, "\r"):
-        return sprintf('"%s"', str_replace(array('"', "\n", "\r"), array('\\"', '\n', '\r'), $value));
-      case preg_match('/[ \s \' " \: \{ \} \[ \] , & \* \# \?] | \A[ - ? | < > = ! % @ ` ]/x', $value):
-        return sprintf("'%s'", str_replace('\'', '\'\'', $value));
+      case str_contains((string) $value, "\n") || str_contains((string) $value, "\r"):
+        return sprintf('"%s"', str_replace(['"', "\n", "\r"], ['\\"', '\n', '\r'], (string) $value));
+      case preg_match('/[ \s \' " \: \{ \} \[ \] , & \* \# \?] | \A[ - ? | < > = ! % @ ` ]/x', (string) $value):
+        return sprintf("'%s'", str_replace('\'', '\'\'', (string) $value));
       case '' == $value:
         return "''";
-      case preg_match(self::getTimestampRegex(), $value):
+      case preg_match(self::getTimestampRegex(), (string) $value):
         return "'$value'";
-      case in_array(strtolower($value), $trueValues):
+      case in_array(strtolower((string) $value), $trueValues):
         return "'$value'";
-      case in_array(strtolower($value), $falseValues):
+      case in_array(strtolower((string) $value), $falseValues):
         return "'$value'";
-      case in_array(strtolower($value), array('null', '~')):
+      case in_array(strtolower((string) $value), ['null', '~']):
         return "'$value'";
       default:
         return $value;
@@ -125,7 +120,7 @@ class sfYamlInline
     
     if (count($value) > 0 && array_values($value) === $value)
     {
-      $output = array();
+      $output = [];
       foreach ($value as $val) {
         $output[] = self::dump($val);
       }
@@ -134,7 +129,7 @@ class sfYamlInline
     }
 
     // mapping
-    $output = array();
+    $output = [];
     foreach ($value as $key => $val) {
       $output[] = sprintf('%s: %s', self::dump($key), self::dump($val));
     }
@@ -153,7 +148,7 @@ class sfYamlInline
    *
    * @return string A YAML string
    */
-  public static function parseScalar($scalar, $delimiters = null, $stringDelimiters = array('"', "'"), &$i = 0, $evaluate = true)
+  public static function parseScalar($scalar, $delimiters = null, $stringDelimiters = ['"', "'"], &$i = 0, $evaluate = true)
   {
     if (in_array($scalar[$i], $stringDelimiters)) {
       // quoted scalar
@@ -199,7 +194,7 @@ class sfYamlInline
 
     if ('"' == $scalar[$i]) {
       // evaluate the string
-      $output = str_replace(array('\\"', '\\n', '\\r'), array('"', "\n", "\r"), $output);
+      $output = str_replace(['\\"', '\\n', '\\r'], ['"', "\n", "\r"], $output);
     } else {
       // unescape '
       $output = str_replace('\'\'', '\'', $output);
@@ -220,7 +215,7 @@ class sfYamlInline
    */
   protected static function parseSequence($sequence, &$i = 0)
   {
-    $output = array();
+    $output = [];
     $len = strlen($sequence);
     $i += 1;
 
@@ -241,14 +236,14 @@ class sfYamlInline
         case ' ':
           break;
         default:
-          $isQuoted = in_array($sequence[$i], array('"', "'"));
-          $value = self::parseScalar($sequence, array(',', ']'), array('"', "'"), $i);
+          $isQuoted = in_array($sequence[$i], ['"', "'"]);
+          $value = self::parseScalar($sequence, [',', ']'], ['"', "'"], $i);
 
-          if (!$isQuoted && false !== strpos($value, ': ')) {
+          if (!$isQuoted && str_contains($value, ': ')) {
             // embedded mapping?
             try {
               $value = self::parseMapping('{'.$value.'}');
-            } catch (InvalidArgumentException $e) {
+            } catch (InvalidArgumentException) {
               // no, it's not
             }
           }
@@ -274,7 +269,7 @@ class sfYamlInline
    */
   protected static function parseMapping($mapping, &$i = 0)
   {
-    $output = array();
+    $output = [];
     $len = strlen($mapping);
     $i += 1;
 
@@ -290,7 +285,7 @@ class sfYamlInline
       }
 
       // key
-      $key = self::parseScalar($mapping, array(':', ' '), array('"', "'"), $i, false);
+      $key = self::parseScalar($mapping, [':', ' '], ['"', "'"], $i, false);
 
       // value
       $done = false;
@@ -310,7 +305,7 @@ class sfYamlInline
           case ' ':
             break;
           default:
-            $output[$key] = self::parseScalar($mapping, array(',', '}'), array('"', "'"), $i);
+            $output[$key] = self::parseScalar($mapping, [',', '}'], ['"', "'"], $i);
             $done = true;
             --$i;
         }
@@ -338,11 +333,11 @@ class sfYamlInline
     $scalar = trim($scalar);
 
     if ('1.1' === sfYaml::getSpecVersion()) {
-      $trueValues = array('true', 'on', '+', 'yes', 'y');
-      $falseValues = array('false', 'off', '-', 'no', 'n');
+      $trueValues = ['true', 'on', '+', 'yes', 'y'];
+      $falseValues = ['false', 'off', '-', 'no', 'n'];
     } else {
-      $trueValues = array('true');
-      $falseValues = array('false');
+      $trueValues = ['true'];
+      $falseValues = ['false'];
     }
 
     switch (true) {
@@ -350,11 +345,11 @@ class sfYamlInline
       case '' == $scalar:
       case '~' == $scalar:
         return null;
-      case 0 === strpos($scalar, '!str'):
+      case str_starts_with($scalar, '!str'):
         return (string) substr($scalar, 5);
-      case 0 === strpos($scalar, '! '):
+      case str_starts_with($scalar, '! '):
         return intval(self::parseScalar(substr($scalar, 2)));
-      case 0 === strpos($scalar, '!!php/object:'):
+      case str_starts_with($scalar, '!!php/object:'):
         return unserialize(substr($scalar, 13));
       case ctype_digit($scalar):
         $raw = $scalar;

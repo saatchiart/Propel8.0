@@ -12,9 +12,9 @@
 // Set any INI options for PHP
 // ---------------------------
 
-$dirname = dirname(__FILE__);
+$dirname = __DIR__;
 $autoloaded = false;
-foreach (array($dirname . '/../../', $dirname . '/../../../../../') as $dir) {
+foreach ([$dirname . '/../../', $dirname . '/../../../../../'] as $dir) {
     if (file_exists($file = realpath($dir) . '/vendor/autoload.php')) {
         set_include_path($dir . '/vendor/phing/phing/classes' . PATH_SEPARATOR . get_include_path());
         include_once $file;
@@ -47,7 +47,7 @@ try {
     Phing::setProperty('phing.home', getenv('PHING_HOME'));
 
     // Grab and clean up the CLI arguments
-    $args = isset($argv) ? $argv : $_SERVER['argv']; // $_SERVER['argv'] seems to not work (sometimes?) when argv is registered
+    $args = $argv ?? $_SERVER['argv']; // $_SERVER['argv'] seems to not work (sometimes?) when argv is registered
     array_shift($args); // 1st arg is script name, so drop it
 
     // Invoke the commandline entry point
@@ -58,7 +58,7 @@ try {
 } catch (ConfigurationException $x) {
     Phing::printMessage($x);
     exit(-1); // This was convention previously for configuration errors.
-} catch (Exception $x) {
+} catch (Exception) {
     // Assume the message was already printed as part of the build and
     // exit with non-0 error code.
     exit(1);

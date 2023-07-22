@@ -33,11 +33,11 @@ class FieldnameRelatedTest extends \PHPUnit\Framework\TestCase
     {
         parent::setUp();
 
-        require_once dirname(__FILE__) . '/../../fixtures/bookstore/build/classes/bookstore/map/BookTableMap.php';
-        require_once dirname(__FILE__) . '/../../fixtures/bookstore/build/classes/bookstore/om/BaseBookPeer.php';
-        require_once dirname(__FILE__) . '/../../fixtures/bookstore/build/classes/bookstore/BookPeer.php';
-        require_once dirname(__FILE__) . '/../../fixtures/bookstore/build/classes/bookstore/om/BaseBook.php';
-        require_once dirname(__FILE__) . '/../../fixtures/bookstore/build/classes/bookstore/Book.php';
+        require_once __DIR__ . '/../../fixtures/bookstore/build/classes/bookstore/map/BookTableMap.php';
+        require_once __DIR__ . '/../../fixtures/bookstore/build/classes/bookstore/om/BaseBookPeer.php';
+        require_once __DIR__ . '/../../fixtures/bookstore/build/classes/bookstore/BookPeer.php';
+        require_once __DIR__ . '/../../fixtures/bookstore/build/classes/bookstore/om/BaseBook.php';
+        require_once __DIR__ . '/../../fixtures/bookstore/build/classes/bookstore/Book.php';
     }
 
     /**
@@ -54,54 +54,8 @@ class FieldnameRelatedTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFieldNames()
     {
-        $types = array(
-            BasePeer::TYPE_PHPNAME,
-            BasePeer::TYPE_COLNAME,
-            BasePeer::TYPE_FIELDNAME,
-            BasePeer::TYPE_NUM
-        );
-        $expecteds = array (
-            BasePeer::TYPE_PHPNAME => array(
-                0 => 'Id',
-                1 => 'Title',
-                2 => 'ISBN',
-                3 => 'Price',
-                4 => 'PublisherId',
-                5 => 'AuthorId'
-            ),
-            BasePeer::TYPE_STUDLYPHPNAME => array(
-                0 => 'id',
-                1 => 'title',
-                2 => 'iSBN',
-                3 => 'price',
-                4 => 'publisherId',
-                5 => 'authorId'
-            ),
-            BasePeer::TYPE_COLNAME => array(
-                0 => 'book.id',
-                1 => 'book.title',
-                2 => 'book.isbn',
-                3 => 'book.price',
-                4 => 'book.publisher_id',
-                5 => 'book.author_id'
-            ),
-            BasePeer::TYPE_FIELDNAME => array(
-                0 => 'id',
-                1 => 'title',
-                2 => 'isbn',
-                3 => 'price',
-                4 => 'publisher_id',
-                5 => 'author_id'
-            ),
-            BasePeer::TYPE_NUM => array(
-                0 => 0,
-                1 => 1,
-                2 => 2,
-                3 => 3,
-                4 => 4,
-                5 => 5
-            )
-        );
+        $types = [BasePeer::TYPE_PHPNAME, BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM];
+        $expecteds = [BasePeer::TYPE_PHPNAME => [0 => 'Id', 1 => 'Title', 2 => 'ISBN', 3 => 'Price', 4 => 'PublisherId', 5 => 'AuthorId'], BasePeer::TYPE_STUDLYPHPNAME => [0 => 'id', 1 => 'title', 2 => 'iSBN', 3 => 'price', 4 => 'publisherId', 5 => 'authorId'], BasePeer::TYPE_COLNAME => [0 => 'book.id', 1 => 'book.title', 2 => 'book.isbn', 3 => 'book.price', 4 => 'book.publisher_id', 5 => 'book.author_id'], BasePeer::TYPE_FIELDNAME => [0 => 'id', 1 => 'title', 2 => 'isbn', 3 => 'price', 4 => 'publisher_id', 5 => 'author_id'], BasePeer::TYPE_NUM => [0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5]];
 
         foreach ($types as $type) {
             $results[$type] = BookPeer::getFieldnames($type);
@@ -119,20 +73,8 @@ class FieldnameRelatedTest extends \PHPUnit\Framework\TestCase
      */
     public function testTranslateFieldName()
     {
-        $types = array(
-            BasePeer::TYPE_PHPNAME,
-            BasePeer::TYPE_STUDLYPHPNAME,
-            BasePeer::TYPE_COLNAME,
-            BasePeer::TYPE_FIELDNAME,
-            BasePeer::TYPE_NUM
-        );
-        $expecteds = array (
-            BasePeer::TYPE_PHPNAME => 'AuthorId',
-            BasePeer::TYPE_STUDLYPHPNAME => 'authorId',
-            BasePeer::TYPE_COLNAME => 'book.author_id',
-            BasePeer::TYPE_FIELDNAME => 'author_id',
-            BasePeer::TYPE_NUM => 5,
-        );
+        $types = [BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME, BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM];
+        $expecteds = [BasePeer::TYPE_PHPNAME => 'AuthorId', BasePeer::TYPE_STUDLYPHPNAME => 'authorId', BasePeer::TYPE_COLNAME => 'book.author_id', BasePeer::TYPE_FIELDNAME => 'author_id', BasePeer::TYPE_NUM => 5];
         foreach ($types as $fromType) {
             foreach ($types as $toType) {
                 $name = $expecteds[$fromType];
@@ -148,55 +90,8 @@ class FieldnameRelatedTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFieldNamesStatic()
     {
-        $types = array(
-            BasePeer::TYPE_PHPNAME,
-            BasePeer::TYPE_STUDLYPHPNAME,
-            BasePeer::TYPE_COLNAME,
-            BasePeer::TYPE_FIELDNAME,
-            BasePeer::TYPE_NUM
-        );
-        $expecteds = array (
-            BasePeer::TYPE_PHPNAME => array(
-                0 => 'Id',
-                1 => 'Title',
-                2 => 'ISBN',
-                3 => 'Price',
-                4 => 'PublisherId',
-                5 => 'AuthorId'
-            ),
-            BasePeer::TYPE_STUDLYPHPNAME => array(
-                0 => 'id',
-                1 => 'title',
-                2 => 'iSBN',
-                3 => 'price',
-                4 => 'publisherId',
-                5 => 'authorId'
-            ),
-            BasePeer::TYPE_COLNAME => array(
-                0 => 'book.id',
-                1 => 'book.title',
-                2 => 'book.isbn',
-                3 => 'book.price',
-                4 => 'book.publisher_id',
-                5 => 'book.author_id'
-            ),
-            BasePeer::TYPE_FIELDNAME => array(
-                0 => 'id',
-                1 => 'title',
-                2 => 'isbn',
-                3 => 'price',
-                4 => 'publisher_id',
-                5 => 'author_id'
-            ),
-            BasePeer::TYPE_NUM => array(
-                0 => 0,
-                1 => 1,
-                2 => 2,
-                3 => 3,
-                4 => 4,
-                5 => 5
-            )
-        );
+        $types = [BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME, BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM];
+        $expecteds = [BasePeer::TYPE_PHPNAME => [0 => 'Id', 1 => 'Title', 2 => 'ISBN', 3 => 'Price', 4 => 'PublisherId', 5 => 'AuthorId'], BasePeer::TYPE_STUDLYPHPNAME => [0 => 'id', 1 => 'title', 2 => 'iSBN', 3 => 'price', 4 => 'publisherId', 5 => 'authorId'], BasePeer::TYPE_COLNAME => [0 => 'book.id', 1 => 'book.title', 2 => 'book.isbn', 3 => 'book.price', 4 => 'book.publisher_id', 5 => 'book.author_id'], BasePeer::TYPE_FIELDNAME => [0 => 'id', 1 => 'title', 2 => 'isbn', 3 => 'price', 4 => 'publisher_id', 5 => 'author_id'], BasePeer::TYPE_NUM => [0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5]];
 
         foreach ($types as $type) {
             $results[$type] = BasePeer::getFieldnames('Book', $type);
@@ -214,20 +109,8 @@ class FieldnameRelatedTest extends \PHPUnit\Framework\TestCase
      */
     public function testTranslateFieldNameStatic()
     {
-        $types = array(
-            BasePeer::TYPE_PHPNAME,
-            BasePeer::TYPE_STUDLYPHPNAME,
-            BasePeer::TYPE_COLNAME,
-            BasePeer::TYPE_FIELDNAME,
-            BasePeer::TYPE_NUM
-        );
-        $expecteds = array (
-            BasePeer::TYPE_PHPNAME => 'AuthorId',
-            BasePeer::TYPE_STUDLYPHPNAME => 'authorId',
-            BasePeer::TYPE_COLNAME => 'book.author_id',
-            BasePeer::TYPE_FIELDNAME => 'author_id',
-            BasePeer::TYPE_NUM => 5,
-        );
+        $types = [BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME, BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM];
+        $expecteds = [BasePeer::TYPE_PHPNAME => 'AuthorId', BasePeer::TYPE_STUDLYPHPNAME => 'authorId', BasePeer::TYPE_COLNAME => 'book.author_id', BasePeer::TYPE_FIELDNAME => 'author_id', BasePeer::TYPE_NUM => 5];
         foreach ($types as $fromType) {
             foreach ($types as $toType) {
                 $name = $expecteds[$fromType];
@@ -243,13 +126,7 @@ class FieldnameRelatedTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetByName()
     {
-        $types = array(
-            BasePeer::TYPE_PHPNAME => 'Title',
-            BasePeer::TYPE_STUDLYPHPNAME => 'title',
-            BasePeer::TYPE_COLNAME => 'book.title',
-            BasePeer::TYPE_FIELDNAME => 'title',
-            BasePeer::TYPE_NUM => 1
-        );
+        $types = [BasePeer::TYPE_PHPNAME => 'Title', BasePeer::TYPE_STUDLYPHPNAME => 'title', BasePeer::TYPE_COLNAME => 'book.title', BasePeer::TYPE_FIELDNAME => 'title', BasePeer::TYPE_NUM => 1];
 
         $book = new Book();
         $book->setTitle('Harry Potter and the Order of the Phoenix');
@@ -267,13 +144,7 @@ class FieldnameRelatedTest extends \PHPUnit\Framework\TestCase
     public function testSetByName()
     {
         $book = new Book();
-        $types = array(
-            BasePeer::TYPE_PHPNAME => 'Title',
-            BasePeer::TYPE_STUDLYPHPNAME => 'title',
-            BasePeer::TYPE_COLNAME => 'book.title',
-            BasePeer::TYPE_FIELDNAME => 'title',
-            BasePeer::TYPE_NUM => 1
-        );
+        $types = [BasePeer::TYPE_PHPNAME => 'Title', BasePeer::TYPE_STUDLYPHPNAME => 'title', BasePeer::TYPE_COLNAME => 'book.title', BasePeer::TYPE_FIELDNAME => 'title', BasePeer::TYPE_NUM => 1];
 
         $title = 'Harry Potter and the Order of the Phoenix';
         foreach ($types as $type => $name) {
@@ -290,42 +161,15 @@ class FieldnameRelatedTest extends \PHPUnit\Framework\TestCase
      */
     public function testFromArray()
     {
-        $types = array(
-            BasePeer::TYPE_PHPNAME,
-            BasePeer::TYPE_STUDLYPHPNAME,
-            BasePeer::TYPE_COLNAME,
-            BasePeer::TYPE_FIELDNAME,
-            BasePeer::TYPE_NUM
-        );
-        $expecteds = array (
-            BasePeer::TYPE_PHPNAME => array (
-                'Title' => 'Harry Potter and the Order of the Phoenix',
-                'ISBN' => '043935806X'
-            ),
-            BasePeer::TYPE_STUDLYPHPNAME => array (
-                'title' => 'Harry Potter and the Order of the Phoenix',
-                'iSBN' => '043935806X'
-            ),
-            BasePeer::TYPE_COLNAME => array (
-                'book.title' => 'Harry Potter and the Order of the Phoenix',
-                'book.isbn' => '043935806X'
-            ),
-            BasePeer::TYPE_FIELDNAME => array (
-                'title' => 'Harry Potter and the Order of the Phoenix',
-                'isbn' => '043935806X'
-            ),
-            BasePeer::TYPE_NUM => array (
-                '1' => 'Harry Potter and the Order of the Phoenix',
-                '2' => '043935806X'
-            )
-        );
+        $types = [BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME, BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM];
+        $expecteds = [BasePeer::TYPE_PHPNAME => ['Title' => 'Harry Potter and the Order of the Phoenix', 'ISBN' => '043935806X'], BasePeer::TYPE_STUDLYPHPNAME => ['title' => 'Harry Potter and the Order of the Phoenix', 'iSBN' => '043935806X'], BasePeer::TYPE_COLNAME => ['book.title' => 'Harry Potter and the Order of the Phoenix', 'book.isbn' => '043935806X'], BasePeer::TYPE_FIELDNAME => ['title' => 'Harry Potter and the Order of the Phoenix', 'isbn' => '043935806X'], BasePeer::TYPE_NUM => ['1' => 'Harry Potter and the Order of the Phoenix', '2' => '043935806X']];
 
         $book = new Book();
 
         foreach ($types as $type) {
             $expected = $expecteds[$type];
             $book->fromArray($expected, $type);
-            $result = array();
+            $result = [];
             foreach (array_keys($expected) as $key) {
                 $result[$key] = $book->getByName($key, $type);
             }
@@ -343,42 +187,12 @@ class FieldnameRelatedTest extends \PHPUnit\Framework\TestCase
      */
     public function testToArray()
     {
-        $types = array(
-            BasePeer::TYPE_PHPNAME,
-            BasePeer::TYPE_STUDLYPHPNAME,
-            BasePeer::TYPE_COLNAME,
-            BasePeer::TYPE_FIELDNAME,
-            BasePeer::TYPE_NUM
-        );
+        $types = [BasePeer::TYPE_PHPNAME, BasePeer::TYPE_STUDLYPHPNAME, BasePeer::TYPE_COLNAME, BasePeer::TYPE_FIELDNAME, BasePeer::TYPE_NUM];
 
         $book = new Book();
-        $book->fromArray(array (
-            'Title' => 'Harry Potter and the Order of the Phoenix',
-            'ISBN' => '043935806X'
-        ));
+        $book->fromArray(['Title' => 'Harry Potter and the Order of the Phoenix', 'ISBN' => '043935806X']);
 
-        $expecteds = array (
-            BasePeer::TYPE_PHPNAME => array (
-                'Title' => 'Harry Potter and the Order of the Phoenix',
-                'ISBN' => '043935806X'
-            ),
-            BasePeer::TYPE_STUDLYPHPNAME => array (
-                'title' => 'Harry Potter and the Order of the Phoenix',
-                'iSBN' => '043935806X'
-            ),
-            BasePeer::TYPE_COLNAME => array (
-                'book.title' => 'Harry Potter and the Order of the Phoenix',
-                'book.isbn' => '043935806X'
-            ),
-            BasePeer::TYPE_FIELDNAME => array (
-                'title' => 'Harry Potter and the Order of the Phoenix',
-                'isbn' => '043935806X'
-            ),
-            BasePeer::TYPE_NUM => array (
-                '1' => 'Harry Potter and the Order of the Phoenix',
-                '2' => '043935806X'
-            )
-        );
+        $expecteds = [BasePeer::TYPE_PHPNAME => ['Title' => 'Harry Potter and the Order of the Phoenix', 'ISBN' => '043935806X'], BasePeer::TYPE_STUDLYPHPNAME => ['title' => 'Harry Potter and the Order of the Phoenix', 'iSBN' => '043935806X'], BasePeer::TYPE_COLNAME => ['book.title' => 'Harry Potter and the Order of the Phoenix', 'book.isbn' => '043935806X'], BasePeer::TYPE_FIELDNAME => ['title' => 'Harry Potter and the Order of the Phoenix', 'isbn' => '043935806X'], BasePeer::TYPE_NUM => ['1' => 'Harry Potter and the Order of the Phoenix', '2' => '043935806X']];
 
         foreach ($types as $type) {
             $expected = $expecteds[$type];

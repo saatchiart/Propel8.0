@@ -20,6 +20,7 @@ class PropelMigrationStatusTask extends BasePropelMigrationTask
 {
     public function main()
     {
+        $countValidTimestamps = null;
         $manager = new PropelMigrationManager();
         $manager->setConnections($this->getGeneratorConfig()->getBuildConnections());
         $manager->setMigrationTable($this->getMigrationTable());
@@ -57,7 +58,7 @@ class PropelMigrationStatusTask extends BasePropelMigrationTask
         $this->log('Listing Migration files...');
         $dir = $this->getOutputDirectory();
         $migrationTimestamps = $manager->getMigrationTimestamps();
-        $nbExistingMigrations = count($migrationTimestamps);
+        $nbExistingMigrations = is_countable($migrationTimestamps) ? count($migrationTimestamps) : 0;
         if ($migrationTimestamps) {
             $this->log(sprintf(
                 '%d valid migration classes found in "%s"',
@@ -65,7 +66,7 @@ class PropelMigrationStatusTask extends BasePropelMigrationTask
                 $dir
             ), Project::MSG_VERBOSE);
             if ($validTimestamps = $manager->getValidMigrationTimestamps()) {
-                $countValidTimestamps = count($validTimestamps);
+                $countValidTimestamps = is_countable($validTimestamps) ? count($validTimestamps) : 0;
                 if ($countValidTimestamps == 1) {
                     $this->log('1 migration needs to be executed:');
                 } else {
@@ -87,7 +88,7 @@ class PropelMigrationStatusTask extends BasePropelMigrationTask
             return false;
         }
         $migrationTimestamps = $manager->getValidMigrationTimestamps();
-        $nbNotYetExecutedMigrations = count($migrationTimestamps);
+        $nbNotYetExecutedMigrations = is_countable($migrationTimestamps) ? count($migrationTimestamps) : 0;
         if (!$nbNotYetExecutedMigrations) {
             $this->log('All migration files were already executed - Nothing to migrate.');
 

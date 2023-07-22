@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../runtime/lib/Propel.php';
 
 /**
  * Base functionality to be extended by all Propel test cases.  Test
@@ -24,6 +24,6 @@ abstract class BaseTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Conditional compilation flag.
      */
-    const DEBUG = false;
+    final public const DEBUG = false;
 
 }

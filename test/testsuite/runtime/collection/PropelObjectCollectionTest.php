@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Test class for PropelObjectCollection.
@@ -78,11 +78,11 @@ class PropelObjectCollectionTest extends BookstoreTestBase
         $pks = $books->getPrimaryKeys();
         $this->assertEquals(4, count($pks));
 
-        $keys = array('Book_0', 'Book_1', 'Book_2', 'Book_3');
+        $keys = ['Book_0', 'Book_1', 'Book_2', 'Book_3'];
         $this->assertEquals($keys, array_keys($pks));
 
         $pks = $books->getPrimaryKeys(false);
-        $keys = array(0, 1, 2, 3);
+        $keys = [0, 1, 2, 3];
         $this->assertEquals($keys, array_keys($pks));
 
         foreach ($pks as $key => $value) {
@@ -106,24 +106,7 @@ class PropelObjectCollectionTest extends BookstoreTestBase
         $coll = new PropelObjectCollection();
         $coll->setModel('Book');
         $coll[]= $book;
-        $expected = array(array(
-            'Id' => 9012,
-            'Title' => 'Don Juan',
-            'ISBN' => '0140422161',
-            'Price' => 12.99,
-            'PublisherId' => null,
-            'AuthorId' => 5678,
-            'Author' => array(
-                'Id' => 5678,
-                'FirstName' => 'George',
-                'LastName' => 'Byron',
-                'Email' => null,
-                'Age' => null,
-                'Books' => array(
-                    'Book_0' => '*RECURSION*',
-                )
-            ),
-        ));
+        $expected = [['Id' => 9012, 'Title' => 'Don Juan', 'ISBN' => '0140422161', 'Price' => 12.99, 'PublisherId' => null, 'AuthorId' => 5678, 'Author' => ['Id' => 5678, 'FirstName' => 'George', 'LastName' => 'Byron', 'Email' => null, 'Age' => null, 'Books' => ['Book_0' => '*RECURSION*']]]];
         $this->assertEquals($expected, $coll->toArray());
     }
 
@@ -166,21 +149,17 @@ class PropelObjectCollectionTest extends BookstoreTestBase
         $this->assertCount(1, $coll);
 
         // This will call $book->getId()
-        $this->assertEquals(array(
-            9012 => 'Don Juan',
-        ), $coll->toKeyValue('Id', 'Title'));
+        $this->assertEquals([9012 => 'Don Juan'], $coll->toKeyValue('Id', 'Title'));
 
         // This will call: $book->getAuthor()->getBooks()->getFirst()->getId()
-        $this->assertEquals(array(
-            9012 => 'Don Juan',
-        ), $coll->toKeyValue(array('Author', 'Books', 'First', 'Id'), 'Title'));
+        $this->assertEquals([9012 => 'Don Juan'], $coll->toKeyValue(['Author', 'Books', 'First', 'Id'], 'Title'));
     }
 
     public function testContainsWithNoPersistentElements()
     {
         $col = new PropelObjectCollection();
         $this->assertFalse($col->contains('foo_1'), 'contains() returns false on an empty collection');
-        $data = array('bar1', 'bar2', 'bar3');
+        $data = ['bar1', 'bar2', 'bar3'];
         $col = new PropelObjectCollection($data);
         $this->assertTrue($col->contains('bar1'), 'contains() returns true when the key exists');
         $this->assertFalse($col->contains('bar4'), 'contains() returns false when the key does not exist');
@@ -190,7 +169,7 @@ class PropelObjectCollectionTest extends BookstoreTestBase
     {
         $col = new PropelObjectCollection();
         $this->assertFalse($col->search('bar1'), 'search() returns false on an empty collection');
-        $data = array('bar1', 'bar2', 'bar3');
+        $data = ['bar1', 'bar2', 'bar3'];
         $col = new PropelObjectCollection($data);
         $this->assertEquals(1, $col->search('bar2'), 'search() returns the key when the element exists');
         $this->assertFalse($col->search('bar4'), 'search() returns false when the element does not exist');
@@ -206,7 +185,7 @@ class PropelObjectCollectionTest extends BookstoreTestBase
 
         $this->assertFalse($col->contains($b1), 'contains() returns false on an empty collection');
 
-        $col = new PropelObjectCollection(array($b1));
+        $col = new PropelObjectCollection([$b1]);
 
         $this->assertTrue($col->contains($b1), 'contains() returns true when the key exists');
         $this->assertFalse($col->contains($b2), 'contains() returns false when the key does not exist');
@@ -222,7 +201,7 @@ class PropelObjectCollectionTest extends BookstoreTestBase
 
         $this->assertFalse($col->search($b1), 'search() returns false on an empty collection');
 
-        $col = new PropelObjectCollection(array($b1));
+        $col = new PropelObjectCollection([$b1]);
         $this->assertEquals(0, $col->search($b1), 'search() returns the key when the element exists');
         $this->assertFalse($col->search($b2), 'search() returns false when the element does not exist');
     }
@@ -239,7 +218,7 @@ class PropelObjectCollectionTest extends BookstoreTestBase
 
         $this->assertFalse($col->contains($b1), 'contains() returns false on an empty collection');
 
-        $col = new PropelObjectCollection(array($b1));
+        $col = new PropelObjectCollection([$b1]);
 
         $this->assertTrue($col->contains($b1));
         $this->assertTrue($col->contains($b2));
@@ -257,7 +236,7 @@ class PropelObjectCollectionTest extends BookstoreTestBase
 
         $this->assertFalse($col->search($b1), 'search() returns false on an empty collection');
 
-        $col = new PropelObjectCollection(array($b1));
+        $col = new PropelObjectCollection([$b1]);
         $this->assertTrue(0 === $col->search($b1));
         $this->assertTrue(0 === $col->search($b2));
     }
@@ -271,7 +250,7 @@ class PropelObjectCollectionTest extends BookstoreTestBase
 
         $this->assertFalse($col->contains($b1), 'contains() returns false on an empty collection');
 
-        $col = new PropelObjectCollection(array($b1));
+        $col = new PropelObjectCollection([$b1]);
 
         $this->assertTrue($col->contains($b1));
         $this->assertTrue($col->contains($b2));
@@ -286,7 +265,7 @@ class PropelObjectCollectionTest extends BookstoreTestBase
 
         $this->assertFalse($col->search($b1), 'search() returns false on an empty collection');
 
-        $col = new PropelObjectCollection(array($b1));
+        $col = new PropelObjectCollection([$b1]);
         $this->assertTrue(0 === $col->search($b1));
         $this->assertTrue(0 === $col->search($b2));
     }

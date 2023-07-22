@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelObjectFormatter.
@@ -32,18 +32,14 @@ class PropelFormatterTest extends BookstoreEmptyTestBase
         $method = new ReflectionMethod('PropelFormatter', 'getWorkerObject');
         $method->setAccessible(true);
 
-        $classNames = array(
-            'Bookstore',
-            'BookReader',
-            'BookClubList',
-        );
+        $classNames = ['Bookstore', 'BookReader', 'BookClubList'];
 
         $col = 0;
         foreach ($classNames as $className) {
             // getWorkerObject() should always return an instance of the requested class, regardless of the value of $col
             $result = $method->invoke($formatter, $col, $className);
 
-            $this->assertEquals($className, get_class($result), 'getWorkerObject did not return an instance of the requested class');
+            $this->assertEquals($className, $result::class, 'getWorkerObject did not return an instance of the requested class');
         }
     }
 

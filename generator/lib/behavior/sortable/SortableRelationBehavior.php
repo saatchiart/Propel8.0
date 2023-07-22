@@ -20,11 +20,7 @@ class SortableRelationBehavior extends Behavior
     protected $builder;
     protected $name = 'sortable_relation';
     // default parameters value
-    protected $parameters = array(
-        'foreign_table'        => '',
-        'foreign_scope_column' => '',
-        'foreign_rank_column'  => '',
-    );
+    protected $parameters = ['foreign_table'        => '', 'foreign_scope_column' => '', 'foreign_rank_column'  => ''];
 
     public function objectMethods($builder)
     {

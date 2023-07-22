@@ -32,7 +32,7 @@ class NestedSetBehaviorObjectBuilderModifier
 
     protected function getColumnAttribute($name)
     {
-        return strtolower($this->behavior->getColumnForParameter($name)->getName());
+        return strtolower((string) $this->behavior->getColumnForParameter($name)->getName());
     }
 
     protected function getColumnPhpName($name)

@@ -31,14 +31,12 @@ abstract class BaseSchemaParser implements SchemaParser
      *
      * @var        array string[]
      */
-    protected $warnings = array();
+    protected $warnings = [];
 
     /**
      * GeneratorConfig object holding build properties.
-     *
-     * @var        GeneratorConfig
      */
-    private $generatorConfig;
+    private ?\GeneratorConfigInterface $generatorConfig = null;
 
     /**
      * Map native DB types to Propel types.
@@ -189,11 +187,8 @@ abstract class BaseSchemaParser implements SchemaParser
         if ($this->nativeToPropelTypeMap === null) {
             $this->nativeToPropelTypeMap = $this->getTypeMapping();
         }
-        if (isset($this->nativeToPropelTypeMap[$nativeType])) {
-            return $this->nativeToPropelTypeMap[$nativeType];
-        }
 
-        return null;
+        return $this->nativeToPropelTypeMap[$nativeType] ?? null;
     }
 
     /**
@@ -209,13 +204,12 @@ abstract class BaseSchemaParser implements SchemaParser
             $this->reverseTypeMap = array_flip($this->getTypeMapping());
         }
 
-        return isset($this->reverseTypeMap[$propelType]) ? $this->reverseTypeMap[$propelType] : null;
+        return $this->reverseTypeMap[$propelType] ?? null;
     }
 
     /**
      * Gets a new VendorInfo object for this platform with specified params.
      *
-     * @param array $params
      *
      * @return VendorInfo
      */

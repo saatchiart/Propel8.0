@@ -17,32 +17,30 @@
  *
  * @package    propel.generator.model.diff
  */
-class PropelTableDiff
+class PropelTableDiff implements \Stringable
 {
     protected $fromTable;
     protected $toTable;
 
-    protected $addedColumns = array();
-    protected $removedColumns = array();
-    protected $modifiedColumns = array();
-    protected $renamedColumns = array();
+    protected $addedColumns = [];
+    protected $removedColumns = [];
+    protected $modifiedColumns = [];
+    protected $renamedColumns = [];
 
-    protected $addedPkColumns = array();
-    protected $removedPkColumns = array();
-    protected $renamedPkColumns = array();
+    protected $addedPkColumns = [];
+    protected $removedPkColumns = [];
+    protected $renamedPkColumns = [];
 
-    protected $addedIndices = array();
-    protected $removedIndices = array();
-    protected $modifiedIndices = array();
+    protected $addedIndices = [];
+    protected $removedIndices = [];
+    protected $modifiedIndices = [];
 
-    protected $addedFks = array();
-    protected $removedFks = array();
-    protected $modifiedFks = array();
+    protected $addedFks = [];
+    protected $removedFks = [];
+    protected $modifiedFks = [];
 
     /**
      * Setter for the fromTable property
-     *
-     * @param Table $fromTable
      */
     public function setFromTable(Table $fromTable)
     {
@@ -61,8 +59,6 @@ class PropelTableDiff
 
     /**
      * Setter for the toTable property
-     *
-     * @param Table $toTable
      */
     public function setToTable(Table $toTable)
     {
@@ -93,7 +89,6 @@ class PropelTableDiff
      * Add an added column
      *
      * @param string $columnName
-     * @param Column $addedColumn
      */
     public function addAddedColumn($columnName, Column $addedColumn)
     {
@@ -146,7 +141,6 @@ class PropelTableDiff
      * Add a removed column
      *
      * @param string $columnName
-     * @param Column $removedColumn
      */
     public function addRemovedColumn($columnName, Column $removedColumn)
     {
@@ -199,7 +193,6 @@ class PropelTableDiff
      * Add a column difference
      *
      * @param string           $columnName
-     * @param PropelColumnDiff $modifiedColumn
      */
     public function addModifiedColumn($columnName, PropelColumnDiff $modifiedColumn)
     {
@@ -234,7 +227,7 @@ class PropelTableDiff
      */
     public function addRenamedColumn($fromColumn, $toColumn)
     {
-        $this->renamedColumns[] = array($fromColumn, $toColumn);
+        $this->renamedColumns[] = [$fromColumn, $toColumn];
     }
 
     /**
@@ -261,7 +254,6 @@ class PropelTableDiff
      * Add an added Pk column
      *
      * @param string $columnName
-     * @param Column $addedPkColumn
      */
     public function addAddedPkColumn($columnName, Column $addedPkColumn)
     {
@@ -347,7 +339,7 @@ class PropelTableDiff
      */
     public function addRenamedPkColumn($fromColumn, $toColumn)
     {
-        $this->renamedPkColumns[] = array($fromColumn, $toColumn);
+        $this->renamedPkColumns[] = [$fromColumn, $toColumn];
     }
 
     /**
@@ -384,7 +376,6 @@ class PropelTableDiff
      * Add an added Index
      *
      * @param string $indexName
-     * @param Index  $addedIndex
      */
     public function addAddedIndex($indexName, Index $addedIndex)
     {
@@ -415,7 +406,6 @@ class PropelTableDiff
      * Add a removed Index
      *
      * @param string $indexName
-     * @param Index  $removedIndex
      */
     public function addRemovedIndex($indexName, Index $removedIndex)
     {
@@ -446,12 +436,10 @@ class PropelTableDiff
      * Add a modified Index
      *
      * @param string $indexName
-     * @param Index  $fromIndex
-     * @param Index  $toIndex
      */
     public function addModifiedIndex($indexName, Index $fromIndex, Index $toIndex)
     {
-        $this->modifiedIndices[$indexName] = array($fromIndex, $toIndex);
+        $this->modifiedIndices[$indexName] = [$fromIndex, $toIndex];
     }
 
     /**
@@ -478,7 +466,6 @@ class PropelTableDiff
      * Add an added Fk column
      *
      * @param string     $fkName
-     * @param ForeignKey $addedFk
      */
     public function addAddedFk($fkName, ForeignKey $addedFk)
     {
@@ -560,12 +547,10 @@ class PropelTableDiff
      * Add a modified Fk
      *
      * @param string     $fkName
-     * @param ForeignKey $fromFk
-     * @param ForeignKey $toFk
      */
     public function addModifiedFk($fkName, ForeignKey $fromFk, ForeignKey $toFk)
     {
-        $this->modifiedFks[$fkName] = array($fromFk, $toFk);
+        $this->modifiedFks[$fkName] = [$fromFk, $toFk];
     }
 
     /**
@@ -594,12 +579,12 @@ class PropelTableDiff
         // columns
         $diff->setAddedColumns($this->getRemovedColumns());
         $diff->setRemovedColumns($this->getAddedColumns());
-        $renamedColumns = array();
+        $renamedColumns = [];
         foreach ($this->getRenamedColumns() as $columnRenaming) {
             $renamedColumns[] = array_reverse($columnRenaming);
         }
         $diff->setRenamedColumns($renamedColumns);
-        $columnDiffs = array();
+        $columnDiffs = [];
         foreach ($this->getModifiedColumns() as $name => $columnDiff) {
             $columnDiffs[$name] = $columnDiff->getReverseDiff();
         }
@@ -608,7 +593,7 @@ class PropelTableDiff
         // pks
         $diff->setAddedPkColumns($this->getRemovedPkColumns());
         $diff->setRemovedPkColumns($this->getAddedPkColumns());
-        $renamedPkColumns = array();
+        $renamedPkColumns = [];
         foreach ($this->getRenamedPkColumns() as $columnRenaming) {
             $renamedPkColumns[] = array_reverse($columnRenaming);
         }
@@ -617,7 +602,7 @@ class PropelTableDiff
         // indices
         $diff->setAddedIndices($this->getRemovedIndices());
         $diff->setRemovedIndices($this->getAddedIndices());
-        $indexDiffs = array();
+        $indexDiffs = [];
         foreach ($this->getModifiedIndices() as $name => $indexDiff) {
             $indexDiffs[$name] = array_reverse($indexDiff);
         }
@@ -626,7 +611,7 @@ class PropelTableDiff
         // fks
         $diff->setAddedFks($this->getRemovedFks());
         $diff->setRemovedFks($this->getAddedFks());
-        $fkDiffs = array();
+        $fkDiffs = [];
         foreach ($this->getModifiedFks() as $name => $fkDiff) {
             $fkDiffs[$name] = array_reverse($fkDiff);
         }
@@ -635,7 +620,7 @@ class PropelTableDiff
         return $diff;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $ret = '';
         $ret .= sprintf("  %s:\n", $this->getFromTable()->getName());
@@ -660,7 +645,7 @@ class PropelTableDiff
         if ($renamedColumns = $this->getRenamedColumns()) {
             $ret .= "    renamedColumns:\n";
             foreach ($renamedColumns as $columnRenaming) {
-                list($fromColumn, $toColumn) = $columnRenaming;
+                [$fromColumn, $toColumn] = $columnRenaming;
                 $ret .= sprintf("      %s: %s\n", $fromColumn->getName(), $toColumn->getName());
             }
         }
@@ -698,14 +683,14 @@ class PropelTableDiff
             $ret .= "    modifiedFks:\n";
             foreach ($modifiedFks as $fkName => $fkFromTo) {
                 $ret .= sprintf("      %s:\n", $fkName);
-                list($fromFk, $toFk) = $fkFromTo;
-                $fromLocalColumns = json_encode($fromFk->getLocalColumns());
-                $toLocalColumns = json_encode($toFk->getLocalColumns());
+                [$fromFk, $toFk] = $fkFromTo;
+                $fromLocalColumns = json_encode($fromFk->getLocalColumns(), JSON_THROW_ON_ERROR);
+                $toLocalColumns = json_encode($toFk->getLocalColumns(), JSON_THROW_ON_ERROR);
                 if ($fromLocalColumns != $toLocalColumns) {
                     $ret .= sprintf("          localColumns: from %s to %s\n", $fromLocalColumns, $toLocalColumns);
                 }
-                $fromForeignColumns = json_encode($fromFk->getForeignColumns());
-                $toForeignColumns = json_encode($toFk->getForeignColumns());
+                $fromForeignColumns = json_encode($fromFk->getForeignColumns(), JSON_THROW_ON_ERROR);
+                $toForeignColumns = json_encode($toFk->getForeignColumns(), JSON_THROW_ON_ERROR);
                 if ($fromForeignColumns != $toForeignColumns) {
                     $ret .= sprintf("          foreignColumns: from %s to %s\n", $fromForeignColumns, $toForeignColumns);
                 }

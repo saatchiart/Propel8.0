@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/../../tools/helpers/PlatformDatabaseBuildTimeBase.php';
+require_once __DIR__ . '/../../tools/helpers/PlatformDatabaseBuildTimeBase.php';
 
 /**
  * This test proves the bug described in https://github.com/propelorm/Propel/issues/617.
@@ -14,9 +14,8 @@ class Issue617Test extends PlatformDatabaseBuildTimeBase
 
     /**
      * Contains the builder instance of the updated schema (removed FK)
-     * @var PropelQuickBuilder
      */
-    private $updatedBuilder;
+    private ?\PropelQuickBuilder $updatedBuilder = null;
 
     protected function setUp(): void
     {

@@ -108,7 +108,7 @@ class PropelXMLParser extends PropelParser
                     $element = $this->arrayToDOM($value, $element, $charset);
                 }
             } elseif (is_string($value)) {
-                $charset = $charset ? $charset : 'utf-8';
+                $charset = $charset ?: 'utf-8';
                 if (function_exists('iconv') && strcasecmp($charset, 'utf-8') !== 0 && strcasecmp($charset, 'utf8') !== 0) {
                     $value = iconv($charset, 'UTF-8', $value);
                 }
@@ -154,14 +154,12 @@ class PropelXMLParser extends PropelParser
     }
 
     /**
-     * @param DOMNode $data
-     *
      * @return array
      */
     protected function convertDOMElementToArray(DOMNode $data)
     {
-        $array = array();
-        $elementNames = array();
+        $array = [];
+        $elementNames = [];
         foreach ($data->childNodes as $element) {
             if ($element->nodeType == XML_TEXT_NODE) {
                 continue;
@@ -194,8 +192,6 @@ class PropelXMLParser extends PropelParser
     }
 
     /**
-     * @param DomNode $node
-     *
      * @return boolean
      */
     protected function hasOnlyTextNodes(DomNode $node)

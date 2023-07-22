@@ -3,7 +3,7 @@
 if (!function_exists('lcfirst')) {
     function lcfirst($string)
     {
-        $string[0] = strtolower($string[0]);
+        $string[0] = strtolower((string) $string[0]);
 
         return $string;
     }

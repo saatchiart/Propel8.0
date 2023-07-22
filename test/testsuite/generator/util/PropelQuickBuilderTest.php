@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../runtime/lib/Propel.php';
 
 /**
  *
@@ -19,7 +19,7 @@ class PropelQuickBuilderTest extends \PHPUnit\Framework\TestCase
 {
     public function testGetPlatform()
     {
-        require_once dirname(__FILE__) . '/../../../../generator/lib/platform/MysqlPlatform.php';
+        require_once __DIR__ . '/../../../../generator/lib/platform/MysqlPlatform.php';
         $builder = new PropelQuickBuilder();
         $builder->setPlatform(new MysqlPlatform());
         $this->assertTrue($builder->getPLatform() instanceof MysqlPlatform);
@@ -40,7 +40,7 @@ EOF;
         $builder = new PropelQuickBuilder();
         $builder->setSchema($schema);
 
-        return array(array($builder));
+        return [[$builder]];
     }
 
     /**
@@ -50,8 +50,8 @@ EOF;
     {
         $database = $builder->getDatabase();
         $this->assertEquals('test_quick_build_2', $database->getName());
-        $this->assertEquals(1, count($database->getTables()));
-        $this->assertEquals(2, count($database->getTable('quick_build_foo_1')->getColumns()));
+        $this->assertEquals(1, is_countable($database->getTables()) ? count($database->getTables()) : 0);
+        $this->assertEquals(2, is_countable($database->getTable('quick_build_foo_1')->getColumns()) ? count($database->getTable('quick_build_foo_1')->getColumns()) : 0);
     }
 
     /**
@@ -107,7 +107,7 @@ EOF;
      */
     public function testGetClassesLimitedClassTargets($builder)
     {
-        $script = $builder->getClasses(array('tablemap', 'peer', 'object', 'query'));
+        $script = $builder->getClasses(['tablemap', 'peer', 'object', 'query']);
         $this->assertStringNotContainsString('class QuickBuildFoo1 extends BaseQuickBuildFoo1', $script);
         $this->assertStringNotContainsString('class QuickBuildFoo1Peer extends BaseQuickBuildFoo1Peer', $script);
         $this->assertStringNotContainsString('class QuickBuildFoo1Query extends BaseQuickBuildFoo1Query', $script);

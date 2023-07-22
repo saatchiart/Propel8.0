@@ -1,9 +1,9 @@
 <?php
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/adapter/DBAdapter.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/adapter/DBSQLite.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/connection/PropelPDO.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../runtime/lib/adapter/DBAdapter.php';
+require_once __DIR__ . '/../../../../../runtime/lib/adapter/DBSQLite.php';
+require_once __DIR__ . '/../../../../../runtime/lib/connection/PropelPDO.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 /**
  * This file is part of the Propel package.
  * For the full copyright and license information, please view the LICENSE
@@ -25,7 +25,7 @@ class GeneratedObjectConstantNameTest extends \PHPUnit\Framework\TestCase
      */
     public function testSingleInheritanceKeyNormalString()
     {
-        $schema = <<<XML
+        $schema = <<<XML_WRAP
 <database name="constant_name_test" namespace="ConstantNameTest1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://xsd.propelorm.org/1.6/database.xsd">
   <table name="radcheck" phpName="UserCheck">
     <column name="id" type="INTEGER" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
@@ -34,7 +34,7 @@ class GeneratedObjectConstantNameTest extends \PHPUnit\Framework\TestCase
     </column>
   </table>
 </database>
-XML;
+XML_WRAP;
         $this->assertEmptyBuilderOutput($schema);
     }
 
@@ -44,7 +44,7 @@ XML;
 
     public function testSingleInheritanceKeyStringWithDashes()
     {
-        $schema = <<<XML
+        $schema = <<<XML_WRAP
 <database name="constant_name_test" namespace="ConstantNameTest2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://xsd.propelorm.org/1.6/database.xsd">
   <table name="radcheck" phpName="UserCheck2">
     <column name="id" type="INTEGER" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
@@ -53,7 +53,7 @@ XML;
     </column>
   </table>
 </database>
-XML;
+XML_WRAP;
         $this->assertEmptyBuilderOutput($schema);
     }
 
@@ -63,7 +63,7 @@ XML;
 
     public function testSingleInheritanceKeyStringWithSpecialChars()
     {
-        $schema = <<<XML
+        $schema = <<<XML_WRAP
 <database name="constant_name_test" namespace="ConstantNameTest3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://xsd.propelorm.org/1.6/database.xsd">
   <table name="radcheck" phpName="UserCheck3">
     <column name="id" type="INTEGER" sqlType="int(11) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
@@ -72,7 +72,7 @@ XML;
     </column>
   </table>
 </database>
-XML;
+XML_WRAP;
         $this->assertEmptyBuilderOutput($schema);
     }
 

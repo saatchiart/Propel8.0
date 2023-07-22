@@ -61,7 +61,7 @@ class PropelMigrationUpTask extends BasePropelMigrationTask
                     $stmt = $pdo->prepare($statement);
                     $stmt->execute();
                     $res++;
-                } catch (PDOException $e) {
+                } catch (PDOException) {
                     $this->log(sprintf('Failed to execute SQL "%s". Aborting migration.', $statement), Project::MSG_ERR);
 
                     return false;
@@ -97,7 +97,7 @@ class PropelMigrationUpTask extends BasePropelMigrationTask
         if ($timestamps = $manager->getValidMigrationTimestamps()) {
             $this->log(sprintf(
                 'Migration complete. %d migrations left to execute.',
-                count($timestamps)
+                is_countable($timestamps) ? count($timestamps) : 0
             ));
         } else {
             $this->log('Migration complete. No further migration to execute.');

@@ -125,7 +125,7 @@ class MysqlPlatform extends DefaultPlatform
             $mysqlTableType = $this->getDefaultTableEngine();
         }
 
-        return strtolower($mysqlTableType) == 'innodb';
+        return strtolower((string) $mysqlTableType) == 'innodb';
     }
 
     public function getAddTablesDDL(Database $database)
@@ -187,7 +187,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
     public function getAddTableDDL(Table $table)
     {
-        $lines = array();
+        $lines = [];
 
         foreach ($table->getColumns() as $column) {
             $lines[] = $this->getColumnDDL($column);
@@ -256,29 +256,10 @@ CREATE TABLE %s
         $dbVI = $table->getDatabase()->getVendorInfoForType('mysql');
         $tableVI = $table->getVendorInfoForType('mysql');
         $vi = $dbVI->getMergedVendorInfo($tableVI);
-        $tableOptions = array();
+        $tableOptions = [];
         // List of supported table options
         // see http://dev.mysql.com/doc/refman/5.5/en/create-table.html
-        $supportedOptions = array(
-            'AutoIncrement'   => 'AUTO_INCREMENT',
-            'AvgRowLength'    => 'AVG_ROW_LENGTH',
-            'Charset'         => 'CHARACTER SET',
-            'Checksum'        => 'CHECKSUM',
-            'Collate'         => 'COLLATE',
-            'Connection'      => 'CONNECTION',
-            'DataDirectory'   => 'DATA DIRECTORY',
-            'Delay_key_write' => 'DELAY_KEY_WRITE',
-            'DelayKeyWrite'   => 'DELAY_KEY_WRITE',
-            'IndexDirectory'  => 'INDEX DIRECTORY',
-            'InsertMethod'    => 'INSERT_METHOD',
-            'KeyBlockSize'    => 'KEY_BLOCK_SIZE',
-            'MaxRows'         => 'MAX_ROWS',
-            'MinRows'         => 'MIN_ROWS',
-            'Pack_Keys'       => 'PACK_KEYS',
-            'PackKeys'        => 'PACK_KEYS',
-            'RowFormat'       => 'ROW_FORMAT',
-            'Union'           => 'UNION',
-        );
+        $supportedOptions = ['AutoIncrement'   => 'AUTO_INCREMENT', 'AvgRowLength'    => 'AVG_ROW_LENGTH', 'Charset'         => 'CHARACTER SET', 'Checksum'        => 'CHECKSUM', 'Collate'         => 'COLLATE', 'Connection'      => 'CONNECTION', 'DataDirectory'   => 'DATA DIRECTORY', 'Delay_key_write' => 'DELAY_KEY_WRITE', 'DelayKeyWrite'   => 'DELAY_KEY_WRITE', 'IndexDirectory'  => 'INDEX DIRECTORY', 'InsertMethod'    => 'INSERT_METHOD', 'KeyBlockSize'    => 'KEY_BLOCK_SIZE', 'MaxRows'         => 'MAX_ROWS', 'MinRows'         => 'MIN_ROWS', 'Pack_Keys'       => 'PACK_KEYS', 'PackKeys'        => 'PACK_KEYS', 'RowFormat'       => 'ROW_FORMAT', 'Union'           => 'UNION'];
         foreach ($supportedOptions as $name => $sqlName) {
             $parameterValue = null;
 
@@ -329,7 +310,7 @@ DROP TABLE IF EXISTS " . $this->quoteIdentifier($table->getName()) . ";
             }
         }
 
-        $ddl = array($this->quoteIdentifier($col->getName()));
+        $ddl = [$this->quoteIdentifier($col->getName())];
         if ($this->hasSize($sqlType) && $col->isDefaultSqlType($this)) {
             $ddl[] = $sqlType . $domain->printSize();
         } else {
@@ -380,13 +361,12 @@ DROP TABLE IF EXISTS " . $this->quoteIdentifier($table->getName()) . ";
      * For MySQL unique indexes there is the option of specifying size, so we cannot simply use
      * the getColumnsList() method.
      *
-     * @param Index $index
      *
      * @return string
      */
     protected function getIndexColumnListDDL(Index $index)
     {
-        $list = array();
+        $list = [];
         foreach ($index->getColumns() as $col) {
             $list[] = $this->quoteIdentifier($col) . ($index->hasColumnSize($col) ? '(' . $index->getColumnSize($col) . ')' : '');
         }
@@ -686,7 +666,7 @@ ALTER TABLE %s CHANGE %s %s;
      */
     public function getAddColumnsDDL($columns)
     {
-        $lines = array();
+        $lines = [];
         $tableName = null;
         foreach ($columns as $column) {
             if (null === $tableName) {
@@ -750,7 +730,7 @@ ALTER TABLE %s
      */
     public function quoteIdentifier($text)
     {
-        return $this->isIdentifierQuotingEnabled ? '`' . strtr($text, array('.' => '`.`')) . '`' : $text;
+        return $this->isIdentifierQuotingEnabled ? '`' . strtr($text, ['.' => '`.`']) . '`' : $text;
     }
 
     public function getTimestampFormatter()

@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../BookstoreTestBase.php';
+require_once __DIR__ . '/../BookstoreTestBase.php';
 
 abstract class BookstoreSortableTestBase extends BookstoreTestBase
 {
@@ -154,7 +154,7 @@ abstract class BookstoreSortableTestBase extends BookstoreTestBase
         $c = new Criteria();
         $c->addAscendingOrderByColumn(Table11Peer::RANK_COL);
         $ts = Table11Peer::doSelect($c);
-        $ret = array();
+        $ret = [];
         foreach ($ts as $t) {
             $ret[$t->getRank()] = $t->getTitle();
         }
@@ -168,7 +168,7 @@ abstract class BookstoreSortableTestBase extends BookstoreTestBase
         Table12Peer::sortableApplyScopeCriteria($c, $scope);
         $c->addAscendingOrderByColumn(Table12Peer::RANK_COL);
         $ts = Table12Peer::doSelect($c);
-        $ret = array();
+        $ret = [];
         foreach ($ts as $t) {
             $ret[$t->getRank()] = $t->getTitle();
         }
@@ -182,7 +182,7 @@ abstract class BookstoreSortableTestBase extends BookstoreTestBase
         FkScopeTablePeer::sortableApplyScopeCriteria($c, $scope);
         $c->addAscendingOrderByColumn(FkScopeTablePeer::RANK_COL);
         $ts = FkScopeTablePeer::doSelect($c);
-        $ret = array();
+        $ret = [];
         foreach ($ts as $t) {
             $ret[$t->getRank()] = $t->getTitle();
         }

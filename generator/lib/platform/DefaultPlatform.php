@@ -104,7 +104,7 @@ class DefaultPlatform implements PropelPlatformInterface
      */
     protected function initialize()
     {
-        $this->schemaDomainMap = array();
+        $this->schemaDomainMap = [];
         foreach (PropelTypes::getPropelTypes() as $type) {
             $this->schemaDomainMap[$type] = new Domain($type);
         }
@@ -118,8 +118,6 @@ class DefaultPlatform implements PropelPlatformInterface
 
     /**
      * Adds a mapping entry for specified Domain.
-     *
-     * @param Domain $domain
      */
     protected function setSchemaDomainMapping(Domain $domain)
     {
@@ -134,7 +132,7 @@ class DefaultPlatform implements PropelPlatformInterface
      */
     public function getDatabaseType()
     {
-        $clazz = get_class($this);
+        $clazz = static::class;
         $pos = strpos($clazz, 'Platform');
 
         return strtolower(substr($clazz, 0, $pos));
@@ -211,7 +209,7 @@ class DefaultPlatform implements PropelPlatformInterface
      */
     public function getSequenceName(Table $table)
     {
-        static $longNamesMap = array();
+        static $longNamesMap = [];
         $result = null;
         if ($table->getIdMethod() == IDMethod::NATIVE) {
             $idMethodParams = $table->getIdMethodParameters();
@@ -221,12 +219,12 @@ class DefaultPlatform implements PropelPlatformInterface
                     if (!isset($longNamesMap[$table->getName()])) {
                         $longNamesMap[$table->getName()] = strval(count($longNamesMap) + 1);
                     }
-                    $result = substr($table->getName(), 0, $maxIdentifierLength - strlen("_SEQ_" . $longNamesMap[$table->getName()])) . "_SEQ_" . $longNamesMap[$table->getName()];
+                    $result = substr((string) $table->getName(), 0, $maxIdentifierLength - strlen("_SEQ_" . $longNamesMap[$table->getName()])) . "_SEQ_" . $longNamesMap[$table->getName()];
                 } else {
-                    $result = substr($table->getName(), 0, $maxIdentifierLength - 4) . "_SEQ";
+                    $result = substr((string) $table->getName(), 0, $maxIdentifierLength - 4) . "_SEQ";
                 }
             } else {
-                $result = substr($idMethodParams[0]->getValue(), 0, $maxIdentifierLength);
+                $result = substr((string) $idMethodParams[0]->getValue(), 0, $maxIdentifierLength);
             }
         }
 
@@ -294,7 +292,7 @@ DROP TABLE " . $this->quoteIdentifier($table->getName()) . ";
     {
         $tableDescription = $table->hasDescription() ? $this->getCommentLineDDL($table->getDescription()) : '';
 
-        $lines = array();
+        $lines = [];
 
         foreach ($table->getColumns() as $column) {
             $lines[] = $this->getColumnDDL($column);
@@ -329,7 +327,7 @@ DROP TABLE " . $this->quoteIdentifier($table->getName()) . ";
     public function getColumnDDL(Column $col)
     {
         $domain = $col->getDomain();
-        $ddl = array($this->quoteIdentifier($col->getName()));
+        $ddl = [$this->quoteIdentifier($col->getName())];
         $sqlType = $domain->getSqlType();
 
         if ($this->hasSize($sqlType) && $col->isDefaultSqlType($this)) {
@@ -406,7 +404,7 @@ DROP TABLE " . $this->quoteIdentifier($table->getName()) . ";
      */
     public function getColumnListDDL($columns, $delimiter = ',')
     {
-        $list = array();
+        $list = [];
         foreach ($columns as $column) {
             if ($column instanceof Column) {
                 $column = $column->getName();
@@ -444,7 +442,6 @@ DROP TABLE " . $this->quoteIdentifier($table->getName()) . ";
     /**
      * Builds the DDL SQL to drop the primary key of a table.
      *
-     * @param Table $table
      *
      * @return string
      */
@@ -463,7 +460,6 @@ ALTER TABLE %s DROP CONSTRAINT %s;
     /**
      * Builds the DDL SQL to add the primary key of a table.
      *
-     * @param Table $table
      *
      * @return string
      */
@@ -482,7 +478,6 @@ ALTER TABLE %s ADD %s;
     /**
      * Builds the DDL SQL to add the indices of a table.
      *
-     * @param Table $table
      *
      * @return string
      */
@@ -499,7 +494,6 @@ ALTER TABLE %s ADD %s;
     /**
      * Builds the DDL SQL to add an Index.
      *
-     * @param Index $index
      *
      * @return string
      */
@@ -520,7 +514,6 @@ CREATE %sINDEX %s ON %s (%s);
     /**
      * Builds the DDL SQL to drop an Index.
      *
-     * @param Index $index
      *
      * @return string
      */
@@ -536,7 +529,6 @@ DROP INDEX %s;
     /**
      * Builds the DDL SQL for an Index object.
      *
-     * @param Index $index
      *
      * @return string
      */
@@ -548,7 +540,6 @@ DROP INDEX %s;
     /**
      * Builds the DDL SQL for a Unique constraint object.
      *
-     * @param Unique $unique
      *
      * @return string
      */
@@ -560,7 +551,6 @@ DROP INDEX %s;
     /**
      * Builds the DDL SQL to add the foreign keys of a table.
      *
-     * @param Table $table
      *
      * @return string
      */
@@ -577,7 +567,6 @@ DROP INDEX %s;
     /**
      * Builds the DDL SQL to add a foreign key.
      *
-     * @param ForeignKey $fk
      *
      * @return string
      */
@@ -599,7 +588,6 @@ ALTER TABLE %s ADD %s;
     /**
      * Builds the DDL SQL to drop a foreign key.
      *
-     * @param ForeignKey $fk
      *
      * @return string
      */
@@ -739,14 +727,14 @@ ALTER TABLE %s RENAME TO %s;
             $ret .= $this->getDropForeignKeyDDL($fk);
         }
         foreach ($tableDiff->getModifiedFks() as $fkName => $fkModification) {
-            list($fromFk, $toFk) = $fkModification;
+            [$fromFk, $toFk] = $fkModification;
             $ret .= $this->getDropForeignKeyDDL($fromFk);
         }
         foreach ($tableDiff->getRemovedIndices() as $index) {
             $ret .= $this->getDropIndexDDL($index);
         }
         foreach ($tableDiff->getModifiedIndices() as $indexName => $indexModification) {
-            list($fromIndex, $toIndex) = $indexModification;
+            [$fromIndex, $toIndex] = $indexModification;
             $ret .= $this->getDropIndexDDL($fromIndex);
         }
 
@@ -769,14 +757,14 @@ ALTER TABLE %s RENAME TO %s;
             $ret .= $this->getAddPrimaryKeyDDL($tableDiff->getToTable());
         }
         foreach ($tableDiff->getModifiedIndices() as $indexName => $indexModification) {
-            list($fromIndex, $toIndex) = $indexModification;
+            [$fromIndex, $toIndex] = $indexModification;
             $ret .= $this->getAddIndexDDL($toIndex);
         }
         foreach ($tableDiff->getAddedIndices() as $index) {
             $ret .= $this->getAddIndexDDL($index);
         }
         foreach ($tableDiff->getModifiedFks() as $fkName => $fkModification) {
-            list($fromFk, $toFk) = $fkModification;
+            [$fromFk, $toFk] = $fkModification;
             $ret .= $this->getAddForeignKeyDDL($toFk);
         }
         foreach ($tableDiff->getAddedFks() as $fk) {
@@ -852,7 +840,7 @@ ALTER TABLE %s RENAME TO %s;
         }
 
         foreach ($tableDiff->getModifiedIndices() as $indexName => $indexModification) {
-            list($fromIndex, $toIndex) = $indexModification;
+            [$fromIndex, $toIndex] = $indexModification;
             $ret .= $this->getDropIndexDDL($fromIndex);
             $ret .= $this->getAddIndexDDL($toIndex);
         }
@@ -879,7 +867,7 @@ ALTER TABLE %s RENAME TO %s;
         }
 
         foreach ($tableDiff->getModifiedFks() as $fkName => $fkModification) {
-            list($fromFk, $toFk) = $fkModification;
+            [$fromFk, $toFk] = $fkModification;
             $ret .= $this->getDropForeignKeyDDL($fromFk);
             $ret .= $this->getAddForeignKeyDDL($toFk);
         }
@@ -947,7 +935,7 @@ ALTER TABLE %s MODIFY %s;
      */
     public function getModifyColumnsDDL($columnDiffs)
     {
-        $lines = array();
+        $lines = [];
         $tableName = null;
         foreach ($columnDiffs as $columnDiff) {
             $toColumn = $columnDiff->getToColumn();
@@ -997,7 +985,7 @@ ALTER TABLE %s ADD %s;
      */
     public function getAddColumnsDDL($columns)
     {
-        $lines = array();
+        $lines = [];
         $tableName = null;
         foreach ($columns as $column) {
             if (null === $tableName) {
@@ -1083,7 +1071,7 @@ ALTER TABLE %s ADD
      */
     public function quoteIdentifier($text)
     {
-        return $this->isIdentifierQuotingEnabled ? '"' . strtr($text, array('.' => '"."')) . '"' : $text;
+        return $this->isIdentifierQuotingEnabled ? '"' . strtr($text, ['.' => '"."']) . '"' : $text;
     }
 
     public function setIdentifierQuoting($enabled = true)
@@ -1163,20 +1151,20 @@ ALTER TABLE %s ADD
      */
     public function getBooleanString($b)
     {
-        $b = ($b === true || strtolower($b) === 'true' || $b === 1 || $b === '1' || strtolower($b) === 'y' || strtolower($b) === 'yes');
+        $b = ($b === true || strtolower((string) $b) === 'true' || $b === 1 || $b === '1' || strtolower((string) $b) === 'y' || strtolower((string) $b) === 'yes');
 
         return ($b ? '1' : '0');
     }
 
     public function getPhpArrayString($stringValue)
     {
-        $stringValue = trim($stringValue);
+        $stringValue = trim((string) $stringValue);
 
         if (empty($stringValue)) {
             return null;
         }
 
-        $values = array();
+        $values = [];
         foreach (explode(',', $stringValue) as $v) {
             $values[] = trim($v);
         }

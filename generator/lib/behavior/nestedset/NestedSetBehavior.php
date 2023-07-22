@@ -20,14 +20,7 @@
 class NestedSetBehavior extends Behavior
 {
     // default parameters value
-    protected $parameters = array(
-        'left_column'       => 'tree_left',
-        'right_column'	    => 'tree_right',
-        'level_column'	    => 'tree_level',
-        'use_scope'	        => 'false',
-        'scope_column'	    => 'tree_scope',
-        'method_proxies'    => 'false',
-    );
+    protected $parameters = ['left_column'       => 'tree_left', 'right_column'	    => 'tree_right', 'level_column'	    => 'tree_level', 'use_scope'	        => 'false', 'scope_column'	    => 'tree_scope', 'method_proxies'    => 'false'];
 
     protected $objectBuilderModifier, $queryBuilderModifier, $peerBuilderModifier;
 
@@ -37,29 +30,17 @@ class NestedSetBehavior extends Behavior
     public function modifyTable()
     {
         if (!$this->getTable()->containsColumn($this->getParameter('left_column'))) {
-            $this->getTable()->addColumn(array(
-                'name' => $this->getParameter('left_column'),
-                'type' => 'INTEGER'
-            ));
+            $this->getTable()->addColumn(['name' => $this->getParameter('left_column'), 'type' => 'INTEGER']);
         }
         if (!$this->getTable()->containsColumn($this->getParameter('right_column'))) {
-            $this->getTable()->addColumn(array(
-                'name' => $this->getParameter('right_column'),
-                'type' => 'INTEGER'
-            ));
+            $this->getTable()->addColumn(['name' => $this->getParameter('right_column'), 'type' => 'INTEGER']);
         }
         if (!$this->getTable()->containsColumn($this->getParameter('level_column'))) {
-            $this->getTable()->addColumn(array(
-                'name' => $this->getParameter('level_column'),
-                'type' => 'INTEGER'
-            ));
+            $this->getTable()->addColumn(['name' => $this->getParameter('level_column'), 'type' => 'INTEGER']);
         }
         if ($this->getParameter('use_scope') === 'true' &&
             !$this->getTable()->containsColumn($this->getParameter('scope_column'))) {
-                $this->getTable()->addColumn(array(
-                    'name' => $this->getParameter('scope_column'),
-                    'type' => 'INTEGER'
-                ));
+                $this->getTable()->addColumn(['name' => $this->getParameter('scope_column'), 'type' => 'INTEGER']);
             }
     }
 

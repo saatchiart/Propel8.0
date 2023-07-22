@@ -24,11 +24,7 @@
 class SortableBehavior extends Behavior
 {
     // default parameters value
-    protected $parameters = array(
-        'rank_column'  => 'sortable_rank',
-        'use_scope'    => 'false',
-        'scope_column' => '',
-    );
+    protected $parameters = ['rank_column'  => 'sortable_rank', 'use_scope'    => 'false', 'scope_column' => ''];
 
     protected $objectBuilderModifier, $queryBuilderModifier, $peerBuilderModifier;
 
@@ -40,17 +36,11 @@ class SortableBehavior extends Behavior
         $table = $this->getTable();
 
         if (!$table->containsColumn($this->getParameter('rank_column'))) {
-            $table->addColumn(array(
-                'name' => $this->getParameter('rank_column'),
-                'type' => 'INTEGER'
-            ));
+            $table->addColumn(['name' => $this->getParameter('rank_column'), 'type' => 'INTEGER']);
         }
         if ($this->useScope() && !$this->hasMultipleScopes() &&
              !$table->containsColumn($this->getParameter('scope_column'))) {
-            $table->addColumn(array(
-                'name' => $this->getParameter('scope_column'),
-                'type' => 'INTEGER'
-            ));
+            $table->addColumn(['name' => $this->getParameter('scope_column'), 'type' => 'INTEGER']);
         }
 
         if ($this->useScope()) {
@@ -67,9 +57,9 @@ class SortableBehavior extends Behavior
                     if ($key->isForeignPrimaryKey() && $key->getOnDelete() == ForeignKey::SETNULL) {
                         $foreignTable = $key->getForeignTable();
                         $relationBehavior = new SortableRelationBehavior();
-                        $relationBehavior->addParameter(array('name' => 'foreign_table', 'value' => $table->getName()));
-                        $relationBehavior->addParameter(array('name' => 'foreign_scope_column', 'value' => $scope));
-                        $relationBehavior->addParameter(array('name' => 'foreign_rank_column', 'value' => $this->getParameter('rank_column')));
+                        $relationBehavior->addParameter(['name' => 'foreign_table', 'value' => $table->getName()]);
+                        $relationBehavior->addParameter(['name' => 'foreign_scope_column', 'value' => $scope]);
+                        $relationBehavior->addParameter(['name' => 'foreign_rank_column', 'value' => $this->getParameter('rank_column')]);
                         $foreignTable->addBehavior($relationBehavior);
                     }
                 }
@@ -86,17 +76,17 @@ class SortableBehavior extends Behavior
     public function generateScopePhp()
     {
 
-        $methodSignature = '';
-        $paramsDoc       = '';
-        $buildScope      = '';
-        $buildScopeVars  = '';
+        $methodSignature = [];
+        $paramsDoc       = [];
+        $buildScope      = [];
+        $buildScopeVars  = [];
 
         if ($this->hasMultipleScopes()) {
 
-            $methodSignature = array();
-            $buildScope      = array();
-            $buildScopeVars  = array();
-            $paramsDoc       = array();
+            $methodSignature = [];
+            $buildScope      = [];
+            $buildScopeVars  = [];
+            $paramsDoc       = [];
 
             foreach ($this->getScopes() as $idx => $scope) {
 
@@ -128,7 +118,7 @@ class SortableBehavior extends Behavior
             }
         }
 
-        return array($methodSignature, $paramsDoc, $buildScope, $buildScopeVars);
+        return [$methodSignature, $paramsDoc, $buildScope, $buildScopeVars];
     }
 
     /**
@@ -173,8 +163,8 @@ class SortableBehavior extends Behavior
     public function getScopes()
     {
         return $this->getParameter('scope_column')
-            ? explode(',', str_replace(' ', '', trim($this->getParameter('scope_column'))))
-            : array();
+            ? explode(',', str_replace(' ', '', trim((string) $this->getParameter('scope_column'))))
+            : [];
     }
 
     /**

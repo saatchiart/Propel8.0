@@ -34,26 +34,8 @@ class OracleSchemaParser extends BaseSchemaParser
      * Supported but non existant as a specific type in Oracle:
      *   DECIMAL (NUMBER with scale),
      *   DOUBLE (FLOAT with precision = 126)
-     *
-     * @var        array
      */
-    private static $oracleTypeMap = array(
-        'BLOB'		=> PropelTypes::BLOB,
-        'CHAR'		=> PropelTypes::CHAR,
-        'CLOB'		=> PropelTypes::CLOB,
-        'DATE'		=> PropelTypes::TIMESTAMP,
-        'BIGINT'	=> PropelTypes::BIGINT,
-        'DECIMAL'	=> PropelTypes::DECIMAL,
-        'DOUBLE'	=> PropelTypes::DOUBLE,
-        'FLOAT'		=> PropelTypes::FLOAT,
-        'LONG'		=> PropelTypes::LONGVARCHAR,
-        'NCHAR'		=> PropelTypes::CHAR,
-        'NCLOB'		=> PropelTypes::CLOB,
-        'NUMBER'	=> PropelTypes::INTEGER,
-        'NVARCHAR2'	=> PropelTypes::VARCHAR,
-        'TIMESTAMP'	=> PropelTypes::TIMESTAMP,
-        'VARCHAR2'	=> PropelTypes::VARCHAR,
-    );
+    private static array $oracleTypeMap = ['BLOB'		=> PropelTypes::BLOB, 'CHAR'		=> PropelTypes::CHAR, 'CLOB'		=> PropelTypes::CLOB, 'DATE'		=> PropelTypes::TIMESTAMP, 'BIGINT'	=> PropelTypes::BIGINT, 'DECIMAL'	=> PropelTypes::DECIMAL, 'DOUBLE'	=> PropelTypes::DOUBLE, 'FLOAT'		=> PropelTypes::FLOAT, 'LONG'		=> PropelTypes::LONGVARCHAR, 'NCHAR'		=> PropelTypes::CHAR, 'NCLOB'		=> PropelTypes::CLOB, 'NUMBER'	=> PropelTypes::INTEGER, 'NVARCHAR2'	=> PropelTypes::VARCHAR, 'TIMESTAMP'	=> PropelTypes::TIMESTAMP, 'VARCHAR2'	=> PropelTypes::VARCHAR];
 
     /**
      * Gets a type mapping from native types to Propel types
@@ -75,7 +57,7 @@ class OracleSchemaParser extends BaseSchemaParser
      */
     public function parse(Database $database, Task $task = null)
     {
-        $tables = array();
+        $tables = [];
         $stmt = $this->dbh->query("SELECT OBJECT_NAME FROM USER_OBJECTS WHERE OBJECT_TYPE = 'TABLE'");
 
         $seqPattern = $this->getGeneratorConfig()->getBuildProperty('oracleAutoincrementSequencePattern');
@@ -85,11 +67,11 @@ class OracleSchemaParser extends BaseSchemaParser
         }
         // First load the tables (important that this happen before filling out details of tables)
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if (strpos($row['OBJECT_NAME'], '$') !== false) {
+            if (str_contains((string) $row['OBJECT_NAME'], '$')) {
                 // this is an Oracle internal table or materialized view - prune
                 continue;
             }
-            if (strtoupper($row['OBJECT_NAME']) == strtoupper($this->getMigrationTable())) {
+            if (strtoupper((string) $row['OBJECT_NAME']) == strtoupper($this->getMigrationTable())) {
                 continue;
             }
             $table = new Table($row['OBJECT_NAME']);
@@ -105,7 +87,7 @@ class OracleSchemaParser extends BaseSchemaParser
 
             $pkColumns = $table->getPrimaryKey();
             if (count($pkColumns) == 1 && $seqPattern) {
-                $seqName = str_replace('${table}', $table->getName(), $seqPattern);
+                $seqName = str_replace('${table}', $table->getName(), (string) $seqPattern);
                 $seqName = strtoupper($seqName);
 
                 $stmt2 = $this->dbh->query("SELECT * FROM USER_SEQUENCES WHERE SEQUENCE_NAME = '" . $seqName . "'");
@@ -146,11 +128,11 @@ class OracleSchemaParser extends BaseSchemaParser
         $stmt = $this->dbh->query("SELECT COLUMN_NAME, DATA_TYPE, NULLABLE, DATA_LENGTH, DATA_PRECISION, DATA_SCALE, DATA_DEFAULT FROM USER_TAB_COLS WHERE TABLE_NAME = '" . $table->getName() . "'");
         /* @var stmt PDOStatement */
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            if (strpos($row['COLUMN_NAME'], '$') !== false) {
+            if (str_contains((string) $row['COLUMN_NAME'], '$')) {
                 // this is an Oracle internal column - prune
                 continue;
             }
-            $size = $row["DATA_PRECISION"] ? $row["DATA_PRECISION"] : $row["DATA_LENGTH"];
+            $size = $row["DATA_PRECISION"] ?: $row["DATA_LENGTH"];
             $scale = $row["DATA_SCALE"];
             $default = $row['DATA_DEFAULT'];
             $type = $row["DATA_TYPE"];
@@ -164,8 +146,8 @@ class OracleSchemaParser extends BaseSchemaParser
             if ($type == "FLOAT" && $row["DATA_PRECISION"] == 126) {
                 $type = "DOUBLE";
             }
-            if (strpos($type, 'TIMESTAMP(') !== false) {
-                $type = substr($type, 0, strpos($type, '('));
+            if (str_contains((string) $type, 'TIMESTAMP(')) {
+                $type = substr((string) $type, 0, strpos((string) $type, '('));
                 $default = "0000-00-00 00:00:00";
                 $size = null;
                 $scale = null;
@@ -207,7 +189,7 @@ class OracleSchemaParser extends BaseSchemaParser
         $stmt = $this->dbh->query("SELECT COLUMN_NAME, INDEX_NAME FROM USER_IND_COLUMNS WHERE TABLE_NAME = '" . $table->getName() . "' ORDER BY COLUMN_NAME");
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $indices = array();
+        $indices = [];
         foreach ($rows as $row) {
             $indices[$row['INDEX_NAME']][] = $row['COLUMN_NAME'];
         }
@@ -236,7 +218,7 @@ class OracleSchemaParser extends BaseSchemaParser
     protected function addForeignKeys(Table $table)
     {
         // local store to avoid duplicates
-        $foreignKeys = array();
+        $foreignKeys = [];
 
         $stmt = $this->dbh->query("SELECT CONSTRAINT_NAME, DELETE_RULE, R_CONSTRAINT_NAME FROM USER_CONSTRAINTS WHERE CONSTRAINT_TYPE = 'R' AND TABLE_NAME = '" . $table->getName() . "'");
         /* @var stmt PDOStatement */
@@ -255,7 +237,7 @@ class OracleSchemaParser extends BaseSchemaParser
                 $fk->setForeignTableCommonName($foreignReferenceInfo['TABLE_NAME']);
                 $fk->setOnDelete($row["DELETE_RULE"]);
                 $fk->setOnUpdate($row["DELETE_RULE"]);
-                $fk->addReference(array("local" => $localReferenceInfo['COLUMN_NAME'], "foreign" => $foreignReferenceInfo['COLUMN_NAME']));
+                $fk->addReference(["local" => $localReferenceInfo['COLUMN_NAME'], "foreign" => $foreignReferenceInfo['COLUMN_NAME']]);
                 $table->addForeignKey($fk);
                 $foreignKeys[$row["CONSTRAINT_NAME"]] = $fk;
             }

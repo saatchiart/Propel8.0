@@ -21,7 +21,7 @@ class GeneratedObjectPhpNameTest extends \PHPUnit\Framework\TestCase
         parent::setUp();
 
         if (!class_exists('PhpNameTest\Page')) {
-            $schema = <<<XML
+            $schema = <<<XML_WRAP
 <database name="php_name_test" namespace="PhpNameTest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://xsd.propelorm.org/1.6/database.xsd">
     <table name="php_name_test_page" phpName="Page">
         <column name="id" required="true" primaryKey="true" autoIncrement="true" type="INTEGER" />
@@ -45,7 +45,7 @@ class GeneratedObjectPhpNameTest extends \PHPUnit\Framework\TestCase
         </foreign-key>
     </table>
 </database>
-XML;
+XML_WRAP;
 
             $builder = new PropelQuickBuilder();
             $builder->setSchema($schema);

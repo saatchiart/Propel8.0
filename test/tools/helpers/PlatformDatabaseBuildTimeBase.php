@@ -30,7 +30,7 @@ class PlatformDatabaseBuildTimeBase extends \PHPUnit\Framework\TestCase
         }
 
         $xmlDom = new DOMDocument();
-        $xmlDom->load(dirname(__FILE__) . '/../../fixtures/reverse/mysql/runtime-conf.xml');
+        $xmlDom->load(__DIR__ . '/../../fixtures/reverse/mysql/runtime-conf.xml');
         $xml = simplexml_load_string($xmlDom->saveXML());
         $phpconf = PlatformDatabaseBuildTimeBaseTask::simpleXmlToArray($xml);
 
@@ -73,7 +73,7 @@ class PlatformDatabaseBuildTimeBase extends \PHPUnit\Framework\TestCase
 
         $statements = PropelSQLParser::parseString($sql);
         foreach ($statements as $statement) {
-            if (strpos($statement, 'DROP') === 0) {
+            if (str_starts_with((string) $statement, 'DROP')) {
                 // drop statements cause errors since the table doesn't exist
                 continue;
             }

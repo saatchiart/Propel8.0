@@ -8,9 +8,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/NameFactory.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/platform/MysqlPlatform.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/AppData.php';
+require_once __DIR__ . '/../../../../generator/lib/model/NameFactory.php';
+require_once __DIR__ . '/../../../../generator/lib/platform/MysqlPlatform.php';
+require_once __DIR__ . '/../../../../generator/lib/model/AppData.php';
 
 /**
  * <p>Unit tests for class <code>NameFactory</code> and known
@@ -31,30 +31,30 @@ require_once dirname(__FILE__) . '/../../../../generator/lib/model/AppData.php';
 class NameFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /** The database to mimic in generating the SQL. */
-    const DATABASE_TYPE = "mysql";
+    final public const DATABASE_TYPE = "mysql";
 
     /**
      * The list of known name generation algorithms, specified as the
      * fully qualified class names to <code>NameGenerator</code>
      * implementations.
      */
-    private static $ALGORITHMS = array(NameFactory::CONSTRAINT_GENERATOR, NameFactory::PHP_GENERATOR);
+    private static array $ALGORITHMS = [NameFactory::CONSTRAINT_GENERATOR, NameFactory::PHP_GENERATOR];
 
     /**
      * Two dimensional arrays of inputs for each algorithm.
      */
-    private static $INPUTS = array();
+    private static array $INPUTS = [];
 
 
     /**
      * Given the known inputs, the expected name outputs.
      */
-    private static $OUTPUTS = array();
+    private static array $OUTPUTS = [];
 
     /**
      * Used as an input.
      */
-    private $database;
+    private \Database $database;
 
     /**
      * Creates a string of the specified length consisting entirely of
@@ -76,30 +76,10 @@ class NameFactoryTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp(): void
     {
-        self::$INPUTS = array(
-            array( array(self::makeString(61), "I", 1),
-                   array(self::makeString(61), "I", 2),
-                   array(self::makeString(65), "I", 3),
-                   array(self::makeString(4), "FK", 1),
-                   array(self::makeString(5), "FK", 2)
-            ),
-            array(
-                array("MY_USER", NameGenerator::CONV_METHOD_UNDERSCORE),
-                array("MY_USER", NameGenerator::CONV_METHOD_PHPNAME),
-                array("MY_USER", NameGenerator::CONV_METHOD_NOCHANGE)
-            )
-        );
+        self::$INPUTS = [[[self::makeString(61), "I", 1], [self::makeString(61), "I", 2], [self::makeString(65), "I", 3], [self::makeString(4), "FK", 1], [self::makeString(5), "FK", 2]], [["MY_USER", NameGenerator::CONV_METHOD_UNDERSCORE], ["MY_USER", NameGenerator::CONV_METHOD_PHPNAME], ["MY_USER", NameGenerator::CONV_METHOD_NOCHANGE]]];
 
 
-        self::$OUTPUTS = array(
-            array(
-                self::makeString(60) . "_I_1",
-                self::makeString(60) . "_I_2",
-                self::makeString(60) . "_I_3",
-                self::makeString(4) . "_FK_1",
-                self::makeString(5) . "_FK_2"),
-            array("MyUser", "MYUSER", "MY_USER")
-        );
+        self::$OUTPUTS = [[self::makeString(60) . "_I_1", self::makeString(60) . "_I_2", self::makeString(60) . "_I_3", self::makeString(4) . "_FK_1", self::makeString(5) . "_FK_2"], ["MyUser", "MYUSER", "MY_USER"]];
 
         $appData = new AppData(new MysqlPlatform());
         $this->database = new Database();
@@ -111,7 +91,7 @@ class NameFactoryTest extends \PHPUnit\Framework\TestCase
         for ($algoIndex = 0; $algoIndex < count(self::$ALGORITHMS); $algoIndex++) {
             $algo = self::$ALGORITHMS[$algoIndex];
             $algoInputs = self::$INPUTS[$algoIndex];
-            for ($i = 0; $i < count($algoInputs); $i++) {
+            for ($i = 0; $i < (is_countable($algoInputs) ? count($algoInputs) : 0); $i++) {
                 $inputs = $this->makeInputs($algo, $algoInputs[$i]);
                 $generated = NameFactory::generateName($algo, $inputs);
                 $expected = self::$OUTPUTS[$algoIndex][$i];

@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../runtime/lib/exception/PropelException.php';
+require_once __DIR__ . '/../../../../runtime/lib/exception/PropelException.php';
 
 /**
  * Test for PropelException class
@@ -42,7 +42,7 @@ class PropelExceptionTest extends \PHPUnit\Framework\TestCase
     /**
      * @expectedException PropelException
      */
-    public function testIsThrowable()
+    public function testIsThrowable(): never
     {
         $this->expectException(PropelException::class);
         $e = new PropelException('this is an error');

@@ -18,10 +18,7 @@
 class QueryCacheBehavior extends Behavior
 {
     // default parameters value
-    protected $parameters = array(
-        'backend'     => 'apc',
-        'lifetime'    => 3600,
-    );
+    protected $parameters = ['backend'     => 'apc', 'lifetime'    => 3600];
 
     public function queryAttributes($builder)
     {
@@ -87,23 +84,16 @@ public function getQueryKey()
         $script .= "
 public function cacheContains(\$key)
 {";
-        switch ($this->getParameter('backend')) {
-            case 'apc':
-                $script .= "
+        match ($this->getParameter('backend')) {
+            'apc' => $script .= "
 
-    return apc_fetch(\$key);";
-                break;
-            case 'array':
-                $script .= "
+    return apc_fetch(\$key);",
+            'array' => $script .= "
 
-    return isset(self::\$cacheBackend[\$key]);";
-                break;
-            case 'custom':
-            default:
-                $script .= "
-    throw new PropelException('You must override the cacheContains(), cacheStore(), and cacheFetch() methods to enable query cache');";
-                break;
-        }
+    return isset(self::\$cacheBackend[\$key]);",
+            default => $script .= "
+    throw new PropelException('You must override the cacheContains(), cacheStore(), and cacheFetch() methods to enable query cache');",
+        };
         $script .= "
 }
 ";
@@ -114,21 +104,14 @@ public function cacheContains(\$key)
         $script .= "
 public function cacheStore(\$key, \$value, \$lifetime = " . $this->getParameter('lifetime') . ")
 {";
-        switch ($this->getParameter('backend')) {
-            case 'apc':
-                $script .= "
-    apc_store(\$key, \$value, \$lifetime);";
-                break;
-            case 'array':
-                $script .= "
-    self::\$cacheBackend[\$key] = \$value;";
-                break;
-            case 'custom':
-            default:
-                $script .= "
-    throw new PropelException('You must override the cacheContains(), cacheStore(), and cacheFetch() methods to enable query cache');";
-                break;
-        }
+        match ($this->getParameter('backend')) {
+            'apc' => $script .= "
+    apc_store(\$key, \$value, \$lifetime);",
+            'array' => $script .= "
+    self::\$cacheBackend[\$key] = \$value;",
+            default => $script .= "
+    throw new PropelException('You must override the cacheContains(), cacheStore(), and cacheFetch() methods to enable query cache');",
+        };
         $script .= "
 }
 ";
@@ -139,23 +122,16 @@ public function cacheStore(\$key, \$value, \$lifetime = " . $this->getParameter(
         $script .= "
 public function cacheFetch(\$key)
 {";
-        switch ($this->getParameter('backend')) {
-            case 'apc':
-                $script .= "
+        match ($this->getParameter('backend')) {
+            'apc' => $script .= "
 
-    return apc_fetch(\$key);";
-                break;
-            case 'array':
-                $script .= "
+    return apc_fetch(\$key);",
+            'array' => $script .= "
 
-    return isset(self::\$cacheBackend[\$key]) ? self::\$cacheBackend[\$key] : null;";
-                break;
-            case 'custom':
-            default:
-                $script .= "
-    throw new PropelException('You must override the cacheContains(), cacheStore(), and cacheFetch() methods to enable query cache');";
-                break;
-        }
+    return isset(self::\$cacheBackend[\$key]) ? self::\$cacheBackend[\$key] : null;",
+            default => $script .= "
+    throw new PropelException('You must override the cacheContains(), cacheStore(), and cacheFetch() methods to enable query cache');",
+        };
         $script .= "
 }
 ";

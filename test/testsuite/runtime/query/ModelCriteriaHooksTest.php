@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
 
 /**
  * Test class for ModelCriteria.
@@ -31,7 +31,7 @@ class ModelCriteriaHooksTest extends BookstoreTestBase
     {
         $c = new ModelCriteriaWithPreSelectHook('bookstore', 'Book');
         $books = $c->find();
-        $this->assertEquals(1, count($books), 'preSelect() can modify the Criteria before find() fires the query');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'preSelect() can modify the Criteria before find() fires the query');
 
         $c = new ModelCriteriaWithPreSelectHook('bookstore', 'Book');
         $nbBooks = $c->count();
@@ -42,7 +42,7 @@ class ModelCriteriaHooksTest extends BookstoreTestBase
     {
         $c = new ModelCriteria('bookstore', 'Book');
         $books = $c->find();
-        $count = count($books);
+        $count = is_countable($books) ? count($books) : 0;
         $book = $books->shift();
 
         $c = new ModelCriteriaWithPreDeleteHook('bookstore', 'Book', 'b');
@@ -67,7 +67,7 @@ class ModelCriteriaHooksTest extends BookstoreTestBase
     {
         $c = new ModelCriteria('bookstore', 'Book');
         $books = $c->find();
-        $count = count($books);
+        $count = is_countable($books) ? count($books) : 0;
         $book = $books->shift();
 
         $this->con->lastAffectedRows = 0;
@@ -88,7 +88,7 @@ class ModelCriteriaHooksTest extends BookstoreTestBase
     {
         $c = new ModelCriteria('bookstore', 'Book');
         $books = $c->find();
-        $count = count($books);
+        $count = is_countable($books) ? count($books) : 0;
         $book = $books->shift();
 
         $this->con->lastAffectedRows = 0;
@@ -109,7 +109,7 @@ class ModelCriteriaHooksTest extends BookstoreTestBase
     {
         $c = new ModelCriteriaWithPreUpdateHook('bookstore', 'Book', 'b');
         $c->where('b.Title = ?', 'Don Juan');
-        $nbBooks = $c->update(array('Title' => 'foo'));
+        $nbBooks = $c->update(['Title' => 'foo']);
 
         $c = new ModelCriteriaWithPreUpdateHook('bookstore', 'Book', 'b');
         $c->where('b.Title = ?', 'foo');
@@ -124,7 +124,7 @@ class ModelCriteriaHooksTest extends BookstoreTestBase
 
         $c = new ModelCriteriaWithPostUpdateHook('bookstore', 'Book', 'b');
         $c->where('b.Title = ?', 'Don Juan');
-        $nbBooks = $c->update(array('Title' => 'foo'), $this->con);
+        $nbBooks = $c->update(['Title' => 'foo'], $this->con);
         $this->assertEquals(1, $this->con->lastAffectedRows, 'postUpdate() is called after update()');
     }
 
@@ -134,7 +134,7 @@ class ModelCriteriaHooksTest extends BookstoreTestBase
 
         $c = new ModelCriteriaWithPreAndPostUpdateHook('bookstore', 'Book', 'b');
         $c->where('b.Title = ?', 'Don Juan');
-        $nbBooks = $c->update(array('Title' => 'foo'), $this->con);
+        $nbBooks = $c->update(['Title' => 'foo'], $this->con);
         $this->assertEquals(52, $this->con->lastAffectedRows, 'postUpdate() is called after update() even if preUpdate() returns not null');
     }
 }

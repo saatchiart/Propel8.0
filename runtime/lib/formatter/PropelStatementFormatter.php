@@ -32,7 +32,7 @@ class PropelStatementFormatter extends PropelFormatter
         }
     }
 
-    public function formatRecord($record = null)
+    public function formatRecord($record = null): never
     {
         throw new PropelException('The Statement formatter cannot transform a record into a statement');
     }

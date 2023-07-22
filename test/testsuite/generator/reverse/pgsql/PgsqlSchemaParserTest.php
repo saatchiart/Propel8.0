@@ -8,16 +8,16 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/reverse/pgsql/PgsqlSchemaParser.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/config/QuickGeneratorConfig.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/PropelTypes.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/Database.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/platform/DefaultPlatform.php';
+require_once __DIR__ . '/../../../../../generator/lib/reverse/pgsql/PgsqlSchemaParser.php';
+require_once __DIR__ . '/../../../../../generator/lib/config/QuickGeneratorConfig.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/PropelTypes.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/Database.php';
+require_once __DIR__ . '/../../../../../generator/lib/platform/DefaultPlatform.php';
 
-set_include_path(get_include_path().PATH_SEPARATOR.dirname(__FILE__).'/../../../../../generator/lib');
-require_once dirname(__FILE__) . '/../../../../../generator/lib/task/PropelConvertConfTask.php';
+set_include_path(get_include_path().PATH_SEPARATOR.__DIR__.'/../../../../../generator/lib');
+require_once __DIR__ . '/../../../../../generator/lib/task/PropelConvertConfTask.php';
 
 /**
  * Tests for Pgsql database schema parser.
@@ -35,8 +35,8 @@ class PgsqlSchemaParserTest extends \PHPUnit\Framework\TestCase
         parent::setUp();
 
         $xmlDom = new DOMDocument();
-        $xmlDom->load(dirname(__FILE__) . '/../../../../fixtures/reverse/pgsql/runtime-conf.xml');
-        $xml = simplexml_load_string($xmlDom->saveXML());
+        $xmlDom->load(__DIR__ . '/../../../../fixtures/reverse/pgsql/runtime-conf.xml');
+        $xml = simplexml_load_string((string) $xmlDom->saveXML());
         $phpconf = TestablePropelConvertConfTask::simpleXmlToArray($xml);
 
         Propel::setConfiguration($phpconf);
@@ -53,18 +53,18 @@ class PgsqlSchemaParserTest extends \PHPUnit\Framework\TestCase
         }
 
         parent::tearDown();
-        Propel::init(dirname(__FILE__) . '/../../../../fixtures/bookstore/build/conf/bookstore-conf.php');
+        Propel::init(__DIR__ . '/../../../../fixtures/bookstore/build/conf/bookstore-conf.php');
     }
 
     public function parseDataProvider()
     {
-        return array(
+        return [
             // columnDDL, expectedColumnPhpName, expectedColumnDefaultType, expectedColumnDefaultValue, expectedSize, expectedScale
-            array("my_column varchar(20) default null", "MyColumn", ColumnDefaultValue::TYPE_VALUE, "NULL", 20, null),
-            array("my_column varchar(20) default ''", "MyColumn", ColumnDefaultValue::TYPE_VALUE, "", 20, null),
-            array("my_column numeric(11,0) default 0", "MyColumn", ColumnDefaultValue::TYPE_VALUE, 0, 11, 0),
-            array("my_column numeric(55,8) default 0", "MyColumn", ColumnDefaultValue::TYPE_VALUE, 0, 55, 8),
-        );
+            ["my_column varchar(20) default null", "MyColumn", ColumnDefaultValue::TYPE_VALUE, "NULL", 20, null],
+            ["my_column varchar(20) default ''", "MyColumn", ColumnDefaultValue::TYPE_VALUE, "", 20, null],
+            ["my_column numeric(11,0) default 0", "MyColumn", ColumnDefaultValue::TYPE_VALUE, 0, 11, 0],
+            ["my_column numeric(55,8) default 0", "MyColumn", ColumnDefaultValue::TYPE_VALUE, 0, 55, 8],
+        ];
     }
 
     /**

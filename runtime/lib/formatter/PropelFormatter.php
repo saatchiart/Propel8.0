@@ -21,10 +21,10 @@ abstract class PropelFormatter
         $dbName,
         $class,
         $peer,
-        $with = array(),
-        $asColumns = array(),
+        $with = [],
+        $asColumns = [],
         $hasLimit = false,
-        $currentObjects = array();
+        $currentObjects = [];
 
     public function __construct(ModelCriteria $criteria = null)
     {
@@ -37,7 +37,6 @@ abstract class PropelFormatter
      * Define the hydration schema based on a query object.
      * Fills the Formatter's properties using a Criteria as source
      *
-     * @param ModelCriteria $criteria
      *
      * @return PropelFormatter The current formatter object
      */
@@ -85,7 +84,7 @@ abstract class PropelFormatter
         return $this->peer;
     }
 
-    public function setWith($withs = array())
+    public function setWith($withs = [])
     {
         $this->with = $withs;
     }
@@ -95,7 +94,7 @@ abstract class PropelFormatter
         return $this->with;
     }
 
-    public function setAsColumns($asColumns = array())
+    public function setAsColumns($asColumns = [])
     {
         $this->asColumns = $asColumns;
     }

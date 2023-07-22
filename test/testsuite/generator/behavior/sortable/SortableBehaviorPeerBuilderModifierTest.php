@@ -9,7 +9,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/behavior/BookstoreSortableTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/behavior/BookstoreSortableTestBase.php';
 
 /**
  * Tests for SortableBehavior class
@@ -52,14 +52,14 @@ class SortableBehaviorPeerBuilderModifierTest extends BookstoreSortableTestBase
     public function testReorder()
     {
         $objects = Table11Peer::doSelect(new Criteria());
-        $ids = array();
+        $ids = [];
         foreach ($objects as $object) {
             $ids[]= $object->getPrimaryKey();
         }
-        $ranks = array(4, 3, 2, 1);
+        $ranks = [4, 3, 2, 1];
         $order = array_combine($ids, $ranks);
         Table11Peer::reorder($order);
-        $expected = array(1 => 'row3', 2 => 'row2', 3 => 'row4', 4 => 'row1');
+        $expected = [1 => 'row3', 2 => 'row2', 3 => 'row4', 4 => 'row1'];
         $this->assertEquals($expected, $this->getFixturesArray(), 'reorder() reorders the suite');
     }
 

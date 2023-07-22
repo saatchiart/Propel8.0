@@ -21,7 +21,7 @@ class NamespacedBehaviorTest extends \PHPUnit\Framework\TestCase
 SCHEMA;
 
         $generatorConfig = new \QuickGeneratorConfig();
-        $generatorConfig->setBuildProperty('behaviorFoobarClass','Foobar\\Behavior\\Foobar');
+        $generatorConfig->setBuildProperty('behaviorFoobarClass',\Foobar\Behavior\Foobar::class);
         $builder = new \PropelQuickBuilder();
         $builder->setConfig($generatorConfig);
         $builder->setSchema($schema);

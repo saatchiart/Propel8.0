@@ -16,7 +16,7 @@
  * @version    $Revision$
  * @package    propel.generator.model
  */
-abstract class XMLElement
+abstract class XMLElement implements \Stringable
 {
 
     /**
@@ -24,14 +24,14 @@ abstract class XMLElement
      *
      * @var array
      */
-    protected $attributes = array();
+    protected $attributes = [];
 
     /**
      * Any associated vendor-specific information objects.
      *
      * @var VendorInfo[]
      */
-    protected $vendorInfos = array();
+    protected $vendorInfos = [];
 
     /**
      * Replaces the old loadFromXML() so that we can use loadFromXML() to load the attribs into the class.
@@ -70,7 +70,7 @@ abstract class XMLElement
      *
      * @return mixed The value of the attribute or $defaultValue if not set.
      */
-    public function getAttribute($name, $defaultValue = null)
+    public function getAttribute($name, mixed $defaultValue = null)
     {
         $name = strtolower($name);
         if (isset($this->attributes[$name])) {
@@ -91,19 +91,19 @@ abstract class XMLElement
         if (is_numeric($val)) {
             return (bool) $val;
         } else {
-            return (in_array(strtolower($val), array('true', 't', 'y', 'yes'), true) ? true : false);
+            return (in_array(strtolower((string) $val), ['true', 't', 'y', 'yes'], true) ? true : false);
         }
     }
 
     protected function getDefaultValueForArray($stringValue)
     {
-        $stringValue = trim($stringValue);
+        $stringValue = trim((string) $stringValue);
 
         if (empty($stringValue)) {
             return null;
         }
 
-        $values = array();
+        $values = [];
         foreach (explode(',', $stringValue) as $v) {
             $values[] = trim($v);
         }
@@ -130,7 +130,7 @@ abstract class XMLElement
      *
      * @return VendorInfo
      */
-    public function addVendorInfo($data)
+    public function addVendorInfo(mixed $data)
     {
         if ($data instanceof VendorInfo) {
             $vi = $data;
@@ -181,7 +181,7 @@ abstract class XMLElement
         }
         // fallback: maybe the behavior is loaded or autoloaded
         $gen = new PhpNameGenerator();
-        if (class_exists($class = $gen->generateName(array($bname, PhpNameGenerator::CONV_METHOD_PHPNAME)) . 'Behavior')) {
+        if (class_exists($class = $gen->generateName([$bname, PhpNameGenerator::CONV_METHOD_PHPNAME]) . 'Behavior')) {
             return $class;
         }
 
@@ -210,8 +210,8 @@ abstract class XMLElement
      *
      * @see toString()
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return $this->toString();
+        return (string) $this->toString();
     }
 }

@@ -24,40 +24,8 @@ class SqliteSchemaParser extends BaseSchemaParser
      *
      * There really aren't any SQLite native types, so we're just
      * using the MySQL ones here.
-     *
-     * @var        array
      */
-    private static $sqliteTypeMap = array(
-        'tinyint' => PropelTypes::TINYINT,
-        'smallint' => PropelTypes::SMALLINT,
-        'mediumint' => PropelTypes::SMALLINT,
-        'int' => PropelTypes::INTEGER,
-        'integer' => PropelTypes::INTEGER,
-        'bigint' => PropelTypes::BIGINT,
-        'int24' => PropelTypes::BIGINT,
-        'real' => PropelTypes::REAL,
-        'float' => PropelTypes::FLOAT,
-        'decimal' => PropelTypes::DECIMAL,
-        'numeric' => PropelTypes::NUMERIC,
-        'double' => PropelTypes::DOUBLE,
-        'char' => PropelTypes::CHAR,
-        'varchar' => PropelTypes::VARCHAR,
-        'date' => PropelTypes::DATE,
-        'time' => PropelTypes::TIME,
-        'year' => PropelTypes::INTEGER,
-        'datetime' => PropelTypes::TIMESTAMP,
-        'timestamp' => PropelTypes::TIMESTAMP,
-        'tinyblob' => PropelTypes::BINARY,
-        'blob' => PropelTypes::BLOB,
-        'mediumblob' => PropelTypes::BLOB,
-        'longblob' => PropelTypes::BLOB,
-        'longtext' => PropelTypes::CLOB,
-        'tinytext' => PropelTypes::VARCHAR,
-        'mediumtext' => PropelTypes::LONGVARCHAR,
-        'text' => PropelTypes::LONGVARCHAR,
-        'enum' => PropelTypes::CHAR,
-        'set' => PropelTypes::CHAR,
-    );
+    private static array $sqliteTypeMap = ['tinyint' => PropelTypes::TINYINT, 'smallint' => PropelTypes::SMALLINT, 'mediumint' => PropelTypes::SMALLINT, 'int' => PropelTypes::INTEGER, 'integer' => PropelTypes::INTEGER, 'bigint' => PropelTypes::BIGINT, 'int24' => PropelTypes::BIGINT, 'real' => PropelTypes::REAL, 'float' => PropelTypes::FLOAT, 'decimal' => PropelTypes::DECIMAL, 'numeric' => PropelTypes::NUMERIC, 'double' => PropelTypes::DOUBLE, 'char' => PropelTypes::CHAR, 'varchar' => PropelTypes::VARCHAR, 'date' => PropelTypes::DATE, 'time' => PropelTypes::TIME, 'year' => PropelTypes::INTEGER, 'datetime' => PropelTypes::TIMESTAMP, 'timestamp' => PropelTypes::TIMESTAMP, 'tinyblob' => PropelTypes::BINARY, 'blob' => PropelTypes::BLOB, 'mediumblob' => PropelTypes::BLOB, 'longblob' => PropelTypes::BLOB, 'longtext' => PropelTypes::CLOB, 'tinytext' => PropelTypes::VARCHAR, 'mediumtext' => PropelTypes::LONGVARCHAR, 'text' => PropelTypes::LONGVARCHAR, 'enum' => PropelTypes::CHAR, 'set' => PropelTypes::CHAR];
 
     /**
      * Gets a type mapping from native types to Propel types
@@ -77,7 +45,7 @@ class SqliteSchemaParser extends BaseSchemaParser
         $stmt = $this->dbh->query("SELECT name FROM sqlite_master WHERE type='table' UNION ALL SELECT name FROM sqlite_temp_master WHERE type='table' ORDER BY name;");
 
         // First load the tables (important that this happen before filling out details of tables)
-        $tables = array();
+        $tables = [];
         while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
             $name = $row[0];
             if ($name == $this->getMigrationTable()) {
@@ -121,11 +89,11 @@ class SqliteSchemaParser extends BaseSchemaParser
             $precision = null;
             $scale = null;
 
-            if (preg_match('/^([^\(]+)\(\s*(\d+)\s*,\s*(\d+)\s*\)$/', $fulltype, $matches)) {
+            if (preg_match('/^([^\(]+)\(\s*(\d+)\s*,\s*(\d+)\s*\)$/', (string) $fulltype, $matches)) {
                 $type = $matches[1];
                 $precision = $matches[2];
                 $scale = $matches[3]; // aka precision
-            } elseif (preg_match('/^([^\(]+)\(\s*(\d+)\s*\)$/', $fulltype, $matches)) {
+            } elseif (preg_match('/^([^\(]+)\(\s*(\d+)\s*\)$/', (string) $fulltype, $matches)) {
                 $type = $matches[1];
                 $size = $matches[2];
             } else {
@@ -133,11 +101,11 @@ class SqliteSchemaParser extends BaseSchemaParser
             }
             // If column is primary key and of type INTEGER, it is auto increment
             // See: http://sqlite.org/faq.html#q1
-            $autoincrement = ($row['pk'] == 1 && strtolower($type) == 'integer');
+            $autoincrement = ($row['pk'] == 1 && strtolower((string) $type) == 'integer');
             $not_null = $row['notnull'];
             $default = $row['dflt_value'];
 
-            $propelType = $this->getMappedPropelType(strtolower($type));
+            $propelType = $this->getMappedPropelType(strtolower((string) $type));
             if (!$propelType) {
                 $propelType = Column::DEFAULT_TYPE;
                 $this->warn("Column [" . $table->getName() . "." . $name . "] has a column type (" . $type . ") that Propel does not support.");
@@ -156,7 +124,7 @@ class SqliteSchemaParser extends BaseSchemaParser
             $column->setAutoIncrement($autoincrement);
             $column->setNotNull($not_null);
 
-            if (($row['pk'] == 1) || (strtolower($type) == 'integer')) {
+            if (($row['pk'] == 1) || (strtolower((string) $type) == 'integer')) {
                 $column->setPrimaryKey(true);
             }
 

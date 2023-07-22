@@ -17,14 +17,11 @@
  */
 class NestedSetRecursiveIterator implements RecursiveIterator
 {
-    protected $topNode = null;
-
     protected $curNode = null;
 
-    public function __construct($node)
+    public function __construct(protected $topNode)
     {
-        $this->topNode = $node;
-        $this->curNode = $node;
+        $this->curNode = $topNode;
     }
 
     public function rewind()
@@ -45,7 +42,7 @@ class NestedSetRecursiveIterator implements RecursiveIterator
     public function key()
     {
         $method = method_exists($this->curNode, 'getPath') ? 'getPath' : 'getAncestors';
-        $key = array();
+        $key = [];
         foreach ($this->curNode->$method() as $node) {
             $key[] = $node->getPrimaryKey();
         }

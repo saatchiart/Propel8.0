@@ -33,15 +33,15 @@ class PropelPDO extends PDO
     /**
      * Attribute to use to set whether to cache prepared statements.
      */
-    const PROPEL_ATTR_CACHE_PREPARES = -1;
+    final public const PROPEL_ATTR_CACHE_PREPARES = -1;
 
     /**
      * Attribute to use to set the connection name useful for explains
      */
-    const PROPEL_ATTR_CONNECTION_NAME = -2;
+    final public const PROPEL_ATTR_CONNECTION_NAME = -2;
 
-    const DEFAULT_SLOW_THRESHOLD = 0.1;
-    const DEFAULT_ONLYSLOW_ENABLED = false;
+    final public const DEFAULT_SLOW_THRESHOLD = 0.1;
+    final public const DEFAULT_ONLYSLOW_ENABLED = false;
 
     /**
      * The current transaction depth.
@@ -55,7 +55,7 @@ class PropelPDO extends PDO
      *
      * @var       array  [md5(sql) => PDOStatement]
      */
-    protected $preparedStatements = array();
+    protected $preparedStatements = [];
 
     /**
      * Whether to cache prepared statements.
@@ -100,10 +100,8 @@ class PropelPDO extends PDO
 
     /**
      * The log level to use for logging.
-     *
-     * @var       integer
      */
-    private $logLevel = Propel::LOG_DEBUG;
+    private int $logLevel = Propel::LOG_DEBUG;
 
     /**
      * The runtime configuration
@@ -124,11 +122,7 @@ class PropelPDO extends PDO
      *
      * @var       array
      */
-    protected static $defaultLogMethods = array(
-        'PropelPDO::exec',
-        'PropelPDO::query',
-        'DebugPDOStatement::execute',
-    );
+    protected static $defaultLogMethods = ['PropelPDO::exec', 'PropelPDO::query', 'DebugPDOStatement::execute'];
 
     /**
      * Creates a PropelPDO instance representing a connection to a database.
@@ -144,8 +138,9 @@ class PropelPDO extends PDO
      *
      * @throws PDOException if there is an error during connection initialization.
      */
-    public function __construct($dsn, $username = null, $password = null, $driver_options = array())
+    public function __construct($dsn, $username = null, $password = null, $driver_options = [])
     {
+        $debug = null;
         if ($this->useDebug) {
             $debug = $this->getDebugSnapshot();
         }
@@ -339,7 +334,7 @@ class PropelPDO extends PDO
      *
      * @return void
      */
-    public function setAttribute($attribute, $value)
+    public function setAttribute($attribute, mixed $value)
     {
         switch ($attribute) {
             case self::PROPEL_ATTR_CACHE_PREPARES:
@@ -364,16 +359,11 @@ class PropelPDO extends PDO
      */
     public function getAttribute($attribute)
     {
-        switch ($attribute) {
-            case self::PROPEL_ATTR_CACHE_PREPARES:
-                return $this->cachePreparedStatements;
-                break;
-            case self::PROPEL_ATTR_CONNECTION_NAME:
-                return $this->connectionName;
-                break;
-            default:
-                return parent::getAttribute($attribute);
-        }
+        return match ($attribute) {
+            self::PROPEL_ATTR_CACHE_PREPARES => $this->cachePreparedStatements,
+            self::PROPEL_ATTR_CONNECTION_NAME => $this->connectionName,
+            default => parent::getAttribute($attribute),
+        };
     }
 
     /**
@@ -389,7 +379,7 @@ class PropelPDO extends PDO
      *
      * @return PDOStatement
      */
-    public function prepare($sql, $driver_options = array())
+    #[ReturnTypeWillChange] public function prepare($sql, $driver_options = [])
     {
         if ($this->useDebug) {
             $debug = $this->getDebugSnapshot();
@@ -421,7 +411,7 @@ class PropelPDO extends PDO
      *
      * @return integer
      */
-    public function exec($sql)
+    #[ReturnTypeWillChange] public function exec($sql)
     {
         if ($this->useDebug) {
             $debug = $this->getDebugSnapshot();
@@ -448,7 +438,7 @@ class PropelPDO extends PDO
      *
      * @return PDOStatement
      */
-    public function query(string $statement, ?int $fetchMode = null, ...$fetchModeArgs)
+    public function query(string $statement, ?int $fetchMode = null, ...$fetchModeArgs): PDOStatement
     {
         $debug = null;
 
@@ -474,7 +464,7 @@ class PropelPDO extends PDO
      */
     public function clearStatementCache()
     {
-        $this->preparedStatements = array();
+        $this->preparedStatements = [];
     }
 
     /**
@@ -489,7 +479,7 @@ class PropelPDO extends PDO
     {
         // extending PDOStatement is only supported with non-persistent connections
         if (!$this->getAttribute(PDO::ATTR_PERSISTENT)) {
-            $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array($class, array($this)));
+            $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, [$class, [$this]]);
         } elseif (!$suppressError) {
             throw new PropelException('Extending PDOStatement is not supported with persistent connections.');
         }
@@ -521,7 +511,7 @@ class PropelPDO extends PDO
      *
      * @return integer
      */
-    public function incrementQueryCount()
+    public function incrementQueryCount(): int
     {
         $this->queryCount++;
     }
@@ -557,7 +547,7 @@ class PropelPDO extends PDO
             $this->configureStatementClass('DebugPDOStatement', true);
         } else {
             // reset query logging
-            $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, array('PDOStatement'));
+            $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, ['PDOStatement']);
             $this->setLastExecutedQuery('');
             $this->queryCount = 0;
         }
@@ -661,11 +651,7 @@ class PropelPDO extends PDO
     public function getDebugSnapshot()
     {
         if ($this->useDebug) {
-            return array(
-                'microtime'             => microtime(true),
-                'memory_get_usage'      => memory_get_usage($this->getLoggingConfig('realmemoryusage', false)),
-                'memory_get_peak_usage' => memory_get_peak_usage($this->getLoggingConfig('realmemoryusage', false)),
-                );
+            return ['microtime'             => microtime(true), 'memory_get_usage'      => memory_get_usage($this->getLoggingConfig('realmemoryusage', false)), 'memory_get_peak_usage' => memory_get_peak_usage($this->getLoggingConfig('realmemoryusage', false))];
         } else {
             throw new PropelException('Should not get debug snapshot when not debugging');
         }
@@ -681,7 +667,7 @@ class PropelPDO extends PDO
      *
      * @return mixed
      */
-    protected function getLoggingConfig($key, $defaultValue)
+    protected function getLoggingConfig($key, mixed $defaultValue)
     {
         return $this->getConfiguration()->getParameter("debugpdo.logging.$key", $defaultValue);
     }
@@ -779,7 +765,7 @@ class PropelPDO extends PDO
      */
     protected function getReadableBytes($bytes, $precision)
     {
-        $suffix = array('B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB');
+        $suffix = ['B', 'kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         $total = count($suffix);
 
         for ($i = 0; $bytes > 1024 && $i < $total; $i++) {

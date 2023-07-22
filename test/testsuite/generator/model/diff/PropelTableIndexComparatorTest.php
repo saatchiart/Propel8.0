@@ -9,9 +9,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/diff/PropelTableComparator.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/diff/PropelTableDiff.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/platform/MysqlPlatform.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/diff/PropelTableComparator.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/diff/PropelTableDiff.php';
+require_once __DIR__ . '/../../../../../generator/lib/platform/MysqlPlatform.php';
 
 /**
  * Tests for the Column methods of the PropelTableComparator service class.
@@ -131,8 +131,8 @@ class PropelTableIndexComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $tc->compareIndices();
         $tableDiff = $tc->getTableDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($tableDiff->getAddedIndices()));
-        $this->assertEquals(array('Foo_Index' => $i2), $tableDiff->getAddedIndices());
+        $this->assertEquals(1, is_countable($tableDiff->getAddedIndices()) ? count($tableDiff->getAddedIndices()) : 0);
+        $this->assertEquals(['Foo_Index' => $i2], $tableDiff->getAddedIndices());
     }
 
     public function testCompareRemovedIndices()
@@ -156,8 +156,8 @@ class PropelTableIndexComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $tc->compareIndices();
         $tableDiff = $tc->getTableDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($tableDiff->getRemovedIndices()));
-        $this->assertEquals(array('Bar_Index' => $i1), $tableDiff->getRemovedIndices());
+        $this->assertEquals(1, is_countable($tableDiff->getRemovedIndices()) ? count($tableDiff->getRemovedIndices()) : 0);
+        $this->assertEquals(['Bar_Index' => $i1], $tableDiff->getRemovedIndices());
     }
 
     public function testCompareModifiedIndices()
@@ -189,8 +189,8 @@ class PropelTableIndexComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $tc->compareIndices();
         $tableDiff = $tc->getTableDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($tableDiff->getModifiedIndices()));
-        $this->assertEquals(array('Foo_Index' => array($i1, $i2)), $tableDiff->getModifiedIndices());
+        $this->assertEquals(1, is_countable($tableDiff->getModifiedIndices()) ? count($tableDiff->getModifiedIndices()) : 0);
+        $this->assertEquals(['Foo_Index' => [$i1, $i2]], $tableDiff->getModifiedIndices());
     }
 
 }

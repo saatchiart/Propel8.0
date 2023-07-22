@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/builder/util/PropelTemplate.php';
+require_once __DIR__ . '/../../../../../generator/lib/builder/util/PropelTemplate.php';
 
 /**
  * Tests for PropelTemplate class
@@ -30,7 +30,7 @@ class PropelTemplateTest extends \PHPUnit\Framework\TestCase
     {
         $t = new PropelTemplate();
         $t->setTemplate('Hello, <?php echo $name ?>');
-        $res = $t->render(array('name' => 'John'));
+        $res = $t->render(['name' => 'John']);
         $this->assertEquals('Hello, John', $res);
     }
 
@@ -39,15 +39,15 @@ class PropelTemplateTest extends \PHPUnit\Framework\TestCase
         $time = time();
         $t = new PropelTemplate();
         $t->setTemplate('Hello, <?php echo $name ?>, it is <?php echo $time ?> to go!');
-        $res = $t->render(array('name' => 'John', 'time' => $time));
+        $res = $t->render(['name' => 'John', 'time' => $time]);
         $this->assertEquals('Hello, John, it is ' . $time . ' to go!', $res);
     }
 
     public function testRenderFile()
     {
         $t = new PropelTemplate();
-        $t->setTemplateFile(dirname(__FILE__).'/template.php');
-        $res = $t->render(array('name' => 'John'));
+        $t->setTemplateFile(__DIR__.'/template.php');
+        $res = $t->render(['name' => 'John']);
         $this->assertEquals('Hello, John', $res);
     }
 }

@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Tests the generated Peer classes.
@@ -39,14 +39,7 @@ class GeneratedPeerTest extends BookstoreTestBase
     {
         $c = new Criteria();
         BookPeer::addSelectColumns($c);
-        $expected = array(
-            BookPeer::ID,
-            BookPeer::TITLE,
-            BookPeer::ISBN,
-            BookPeer::PRICE,
-            BookPeer::PUBLISHER_ID,
-            BookPeer::AUTHOR_ID
-        );
+        $expected = [BookPeer::ID, BookPeer::TITLE, BookPeer::ISBN, BookPeer::PRICE, BookPeer::PUBLISHER_ID, BookPeer::AUTHOR_ID];
         $this->assertEquals($expected, $c->getSelectColumns(), 'addSelectColumns() adds the columns of the model to the criteria');
     }
 
@@ -54,10 +47,7 @@ class GeneratedPeerTest extends BookstoreTestBase
     {
         $c = new Criteria();
         MediaPeer::addSelectColumns($c);
-        $expected = array(
-            MediaPeer::ID,
-            MediaPeer::BOOK_ID
-        );
+        $expected = [MediaPeer::ID, MediaPeer::BOOK_ID];
         $this->assertEquals($expected, $c->getSelectColumns(), 'addSelectColumns() does not add lazy loaded columns');
     }
 
@@ -65,14 +55,7 @@ class GeneratedPeerTest extends BookstoreTestBase
     {
         $c = new Criteria();
         BookPeer::addSelectColumns($c, 'foo');
-        $expected = array(
-            'foo.id',
-            'foo.title',
-            'foo.isbn',
-            'foo.price',
-            'foo.publisher_id',
-            'foo.author_id'
-        );
+        $expected = ['foo.id', 'foo.title', 'foo.isbn', 'foo.price', 'foo.publisher_id', 'foo.author_id'];
         $this->assertEquals($expected, $c->getSelectColumns(), 'addSelectColumns() uses the second parameter as a table alias');
     }
 
@@ -80,10 +63,7 @@ class GeneratedPeerTest extends BookstoreTestBase
     {
         $c = new Criteria();
         MediaPeer::addSelectColumns($c, 'bar');
-        $expected = array(
-            'bar.id',
-            'bar.book_id'
-        );
+        $expected = ['bar.id', 'bar.book_id'];
         $this->assertEquals($expected, $c->getSelectColumns(), 'addSelectColumns() does not add lazy loaded columns but uses the second parameter as an alias');
     }
 

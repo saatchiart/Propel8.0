@@ -25,17 +25,13 @@ class PropelDateTime extends DateTime
 
     /**
      * A string representation of the date, for serialization.
-     *
-     * @var        string
      */
-    private $dateString;
+    private ?string $dateString = null;
 
     /**
      * A string representation of the time zone, for serialization.
-     *
-     * @var        string
      */
-    private $tzString;
+    private ?string $tzString = null;
 
     /**
      * Factory method to get a DateTime object from a temporal input
@@ -48,7 +44,7 @@ class PropelDateTime extends DateTime
      *
      * @throws PropelException
      */
-    public static function newInstance($value, DateTimeZone $timeZone = null, $dateTimeClass = 'DateTime')
+    public static function newInstance(mixed $value, DateTimeZone $timeZone = null, $dateTimeClass = 'DateTime')
     {
         if ($value instanceof DateTime) {
             return $value;
@@ -112,7 +108,7 @@ class PropelDateTime extends DateTime
         $this->dateString = $this->format('Y-m-d H:i:s');
         $this->tzString = $this->getTimeZone()->getName();
 
-        return array('dateString', 'tzString');
+        return ['dateString', 'tzString'];
     }
 
     /**

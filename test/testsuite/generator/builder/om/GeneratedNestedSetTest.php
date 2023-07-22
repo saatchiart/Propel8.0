@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/cms/CmsTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/cms/CmsTestBase.php';
 
 /**
  * Tests the generated nested-set Object classes.
@@ -71,12 +71,12 @@ class GeneratedNestedSetTest extends CmsTestBase
     {
         $db = Propel::getConnection(PagePeer::DATABASE_NAME);
 
-        $values = array();
+        $values = [];
         $log = '';
 
         foreach ($db->query('SELECT Id, LeftChild, RightChild, Title FROM Page', PDO::FETCH_NUM) as $row) {
 
-            list($id, $leftChild, $rightChild, $title) = $row;
+            [$id, $leftChild, $rightChild, $title] = $row;
 
             if (!in_array($leftChild, $values)) {
                 $values[] = (int) $leftChild;

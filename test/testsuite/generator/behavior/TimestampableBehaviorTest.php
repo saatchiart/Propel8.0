@@ -8,11 +8,11 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/config/GeneratorConfig.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/Behavior.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/behavior/TimestampableBehavior.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../../generator/lib/config/GeneratorConfig.php';
+require_once __DIR__ . '/../../../../generator/lib/model/Behavior.php';
+require_once __DIR__ . '/../../../../generator/lib/behavior/TimestampableBehavior.php';
+require_once __DIR__ . '/../../../../generator/lib/util/PropelQuickBuilder.php';
 
 /**
  * Tests for TimestampableBehavior class
@@ -26,11 +26,11 @@ class TimestampableBehaviorTest extends BookstoreTestBase
     public function testParameters()
     {
         $table2 = Table2Peer::getTableMap();
-        $this->assertEquals(count($table2->getColumns()), 4, 'Timestampable adds two columns by default');
+        $this->assertEquals(is_countable($table2->getColumns()) ? count($table2->getColumns()) : 0, 4, 'Timestampable adds two columns by default');
         $this->assertTrue(method_exists('Table2', 'getCreatedAt'), 'Timestamplable adds a created_at column by default');
         $this->assertTrue(method_exists('Table2', 'getUpdatedAt'), 'Timestamplable adds an updated_at column by default');
         $table1 = Table1Peer::getTableMap();
-        $this->assertEquals(count($table1->getColumns()), 4, 'Timestampable does not add two columns when they already exist');
+        $this->assertEquals(is_countable($table1->getColumns()) ? count($table1->getColumns()) : 0, 4, 'Timestampable does not add two columns when they already exist');
         $this->assertTrue(method_exists('Table1', 'getCreatedOn'), 'Timestamplable allows customization of create_column name');
         $this->assertTrue(method_exists('Table1', 'getUpdatedOn'), 'Timestamplable allows customization of update_column name');
     }

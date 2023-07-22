@@ -176,7 +176,7 @@ END
 
     public function quoteIdentifier($text)
     {
-        return $this->isIdentifierQuotingEnabled ? '[' . strtr($text, array('.' => '].[')) . ']' : $text;
+        return $this->isIdentifierQuotingEnabled ? '[' . strtr($text, ['.' => '].[']) . ']' : $text;
     }
 
     public function getTimestampFormatter()

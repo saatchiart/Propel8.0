@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/namespaces/NamespacesTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/namespaces/NamespacesTestBase.php';
 
 /**
  * Test class for ModelCriteria with namespaces.
@@ -20,18 +20,24 @@ class ModelCriteriaWithNamespaceTest extends NamespacesTestBase
 {
     public static function conditionsForTestReplaceNamesWithNamespaces()
     {
-        return array(
-            array('Foo\\Bar\\NamespacedBook.Title = ?', 'Title', 'book.title = ?'), // basic case
-            array('Foo\\Bar\\NamespacedBook.Title=?', 'Title', 'book.title=?'), // without spaces
-            array('Foo\\Bar\\NamespacedBook.Id<= ?', 'Id', 'book.id<= ?'), // with non-equal comparator
-            array('Foo\\Bar\\NamespacedBook.AuthorId LIKE ?', 'AuthorId', 'book.author_id LIKE ?'), // with SQL keyword separator
-            array('(Foo\\Bar\\NamespacedBook.AuthorId) LIKE ?', 'AuthorId', '(book.author_id) LIKE ?'), // with parenthesis
-            array('(Foo\\Bar\\NamespacedBook.Id*1.5)=1', 'Id', '(book.id*1.5)=1'), // ignore numbers
+        return [
+            ['Foo\\Bar\\NamespacedBook.Title = ?', 'Title', 'book.title = ?'],
+            // basic case
+            ['Foo\\Bar\\NamespacedBook.Title=?', 'Title', 'book.title=?'],
+            // without spaces
+            ['Foo\\Bar\\NamespacedBook.Id<= ?', 'Id', 'book.id<= ?'],
+            // with non-equal comparator
+            ['Foo\\Bar\\NamespacedBook.AuthorId LIKE ?', 'AuthorId', 'book.author_id LIKE ?'],
+            // with SQL keyword separator
+            ['(Foo\\Bar\\NamespacedBook.AuthorId) LIKE ?', 'AuthorId', '(book.author_id) LIKE ?'],
+            // with parenthesis
+            ['(Foo\\Bar\\NamespacedBook.Id*1.5)=1', 'Id', '(book.id*1.5)=1'],
+            // ignore numbers
             // dealing with quotes
-            array("Foo\\Bar\\NamespacedBook.Id + ' ' + Foo\\Bar\\NamespacedBook.AuthorId", null, "book.id + ' ' + book.author_id"),
-            array("'Foo\\Bar\\NamespacedBook.Id' + Foo\\Bar\\NamespacedBook.AuthorId", null, "'Foo\\Bar\\NamespacedBook.Id' + book.author_id"),
-            array("Foo\\Bar\\NamespacedBook.Id + 'Foo\\Bar\\NamespacedBook.AuthorId'", null, "book.id + 'Foo\\Bar\\NamespacedBook.AuthorId'"),
-        );
+            ["Foo\\Bar\\NamespacedBook.Id + ' ' + Foo\\Bar\\NamespacedBook.AuthorId", null, "book.id + ' ' + book.author_id"],
+            ["'Foo\\Bar\\NamespacedBook.Id' + Foo\\Bar\\NamespacedBook.AuthorId", null, "'Foo\\Bar\\NamespacedBook.Id' + book.author_id"],
+            ["Foo\\Bar\\NamespacedBook.Id + 'Foo\\Bar\\NamespacedBook.AuthorId'", null, "book.id + 'Foo\\Bar\\NamespacedBook.AuthorId'"],
+        ];
     }
 
     /**
@@ -48,7 +54,7 @@ class ModelCriteriaWithNamespaceTest extends NamespacesTestBase
         $c->replaceNames($origClause);
         $columns = $c->replacedColumns;
         if ($columnPhpName) {
-            $this->assertEquals(array($tableMap->getColumnByPhpName($columnPhpName)), $columns);
+            $this->assertEquals([$tableMap->getColumnByPhpName($columnPhpName)], $columns);
         }
         $this->assertEquals($modifiedClause, $origClause);
     }
@@ -57,7 +63,7 @@ class ModelCriteriaWithNamespaceTest extends NamespacesTestBase
 
 class TestableModelCriteriaWithNamespace extends ModelCriteria
 {
-    public $joins = array();
+    public $joins = [];
 
     public function replaceNames(&$clause)
     {

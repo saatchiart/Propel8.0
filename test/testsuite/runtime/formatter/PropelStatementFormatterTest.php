@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelStatementFormatter.
@@ -34,7 +34,7 @@ class PropelStatementFormatterTest extends BookstoreEmptyTestBase
         try {
             $books = $formatter->format($stmt);
             $this->assertTrue(true, 'PropelStatementFormatter::format() does not trow an exception when called with no valid criteria');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->fail('PropelStatementFormatter::format() does not trow an exception when called with no valid criteria');
         }
     }
@@ -92,7 +92,7 @@ class PropelStatementFormatterTest extends BookstoreEmptyTestBase
         try {
             $books = $formatter->formatOne($stmt);
             $this->assertTrue(true, 'PropelStatementFormatter::formatOne() does not trow an exception when called with no valid criteria');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->fail('PropelStatementFormatter::formatOne() does not trow an exception when called with no valid criteria');
         }
     }

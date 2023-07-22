@@ -170,7 +170,7 @@ protected \$enforceVersion = false;
     {
         $this->setBuilder($builder);
         $script = '';
-        if (strcasecmp($this->getParameter('version_column'), 'version') != 0) {
+        if (strcasecmp((string) $this->getParameter('version_column'), 'version') != 0) {
             $this->addVersionSetter($script);
             $this->addVersionGetter($script);
         }

@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Test class for TableMap.
@@ -91,13 +91,13 @@ class ColumnMapTest extends BookstoreTestBase
         try {
             $this->cmap->getRelatedTable();
             $this->fail('getRelatedTable throws an exception when called on a column with no foreign key');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'getRelatedTable throws an exception when called on a column with no foreign key');
         }
         try {
             $this->cmap->getRelatedColumn();
             $this->fail('getRelatedColumn throws an exception when called on a column with no foreign key');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'getRelatedColumn throws an exception when called on a column with no foreign key');
         }
         $relatedTmap = $this->dmap->addTable('foo2');

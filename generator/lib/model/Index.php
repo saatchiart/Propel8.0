@@ -22,35 +22,29 @@ class Index extends XMLElement
 {
 
     /** enables debug output */
-    const DEBUG = false;
+    final public const DEBUG = false;
 
-    private $indexName;
-
-    /**
-     * @var Table
-     */
-    private $parentTable;
+    private ?\Table $parentTable = null;
 
     /** @var string[] */
-    private $indexColumns;
+    private ?array $indexColumns = null;
 
     /** @var int[] */
-    private $indexColumnSizes = array();
+    private array $indexColumnSizes = [];
 
     /**
      * Creates a new Index instance.
      *
-     * @param string $name
+     * @param string $indexName
      */
-    public function __construct($name = null)
+    public function __construct(private $indexName = null)
     {
-        $this->indexName = $name;
     }
 
     private function createName()
     {
         $table = $this->getTable();
-        $inputs = array();
+        $inputs = [];
         $inputs[] = $table->getDatabase();
         $inputs[] = $table->getCommonName();
         if ($this->isUnique()) {
@@ -60,9 +54,9 @@ class Index extends XMLElement
         }
         // ASSUMPTION: This Index not yet added to the list.
         if ($this->isUnique()) {
-            $inputs[] = count($table->getUnices()) + 1;
+            $inputs[] = (is_countable($table->getUnices()) ? count($table->getUnices()) : 0) + 1;
         } else {
-            $inputs[] = count($table->getIndices()) + 1;
+            $inputs[] = (is_countable($table->getIndices()) ? count($table->getIndices()) : 0) + 1;
         }
 
         $this->indexName = NameFactory::generateName(NameFactory::CONSTRAINT_GENERATOR, $inputs);
@@ -113,7 +107,7 @@ class Index extends XMLElement
             try {
                 // generate an index name if we don't have a supplied one
                 $this->createName();
-            } catch (EngineException $e) {
+            } catch (EngineException) {
                 // still no name
             }
         }
@@ -170,7 +164,7 @@ class Index extends XMLElement
      *
      * @param mixed $data Column or attributes from XML.
      */
-    public function addColumn($data)
+    public function addColumn(mixed $data)
     {
         if ($data instanceof Column) {
             $column = $data;
@@ -195,8 +189,8 @@ class Index extends XMLElement
      */
     public function setColumns(array $indexColumns)
     {
-        $this->indexColumns = array();
-        $this->indexColumnSizes = array();
+        $this->indexColumns = [];
+        $this->indexColumnSizes = [];
         foreach ($indexColumns as $col) {
             $this->addColumn($col);
         }
@@ -223,11 +217,7 @@ class Index extends XMLElement
      */
     public function getColumnSize($name)
     {
-        if (isset($this->indexColumnSizes[$name])) {
-            return $this->indexColumnSizes[$name];
-        }
-
-        return null; // just to be explicit
+        return $this->indexColumnSizes[$name] ?? null; // just to be explicit
     }
 
     /**
@@ -235,7 +225,7 @@ class Index extends XMLElement
      */
     public function resetColumnSize()
     {
-        $this->indexColumnSizes = array();
+        $this->indexColumnSizes = [];
     }
 
     /**
@@ -302,7 +292,7 @@ class Index extends XMLElement
      */
     public function hasColumns()
     {
-        return count($this->indexColumns) > 0;
+        return count((array) $this->indexColumns) > 0;
     }
 
     /**

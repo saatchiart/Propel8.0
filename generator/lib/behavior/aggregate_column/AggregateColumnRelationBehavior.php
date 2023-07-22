@@ -19,10 +19,7 @@ class AggregateColumnRelationBehavior extends Behavior
 {
 
     // default parameters value
-    protected $parameters = array(
-        'foreign_table' => '',
-        'update_method' => '',
-    );
+    protected $parameters = ['foreign_table' => '', 'update_method' => ''];
 
     public function postSave($builder)
     {
@@ -52,11 +49,7 @@ class AggregateColumnRelationBehavior extends Behavior
         $relationName = $this->getRelationName($builder);
         $updateMethodName = $this->getParameter('update_method');
 
-        return $this->renderTemplate('objectUpdateRelated', array(
-            'relationName'     => $relationName,
-            'variableName'     => lcfirst($relationName),
-            'updateMethodName' => $this->getParameter('update_method'),
-        ));
+        return $this->renderTemplate('objectUpdateRelated', ['relationName'     => $relationName, 'variableName'     => lcfirst((string) $relationName), 'updateMethodName' => $this->getParameter('update_method')]);
     }
 
     public function objectFilter(&$script, $builder)
@@ -70,7 +63,7 @@ class AggregateColumnRelationBehavior extends Behavior
         if (null !== \$this->a{$relationName} && \$v !== \$this->a{$relationName}) {
             \$this->old{$relationName} = \$this->a{$relationName};
         }";
-        $script = str_replace($search, $replace, $script);
+        $script = str_replace($search, $replace, (string) $script);
     }
 
     public function preUpdateQuery($builder)
@@ -123,24 +116,14 @@ class AggregateColumnRelationBehavior extends Behavior
         $builder->declareClass($foreignQueryBuilder->getFullyQualifiedClassname());
         $relationName = $this->getRelationName($builder);
 
-        return $this->renderTemplate('queryFindRelated', array(
-            'foreignTable'     => $this->getForeignTable(),
-            'relationName'     => $relationName,
-            'variableName'     => lcfirst($relationName),
-            'foreignQueryName' => $foreignQueryBuilder->getClassname(),
-            'refRelationName'  => $builder->getRefFKPhpNameAffix($foreignKey),
-        ));
+        return $this->renderTemplate('queryFindRelated', ['foreignTable'     => $this->getForeignTable(), 'relationName'     => $relationName, 'variableName'     => lcfirst((string) $relationName), 'foreignQueryName' => $foreignQueryBuilder->getClassname(), 'refRelationName'  => $builder->getRefFKPhpNameAffix($foreignKey)]);
     }
 
     protected function addQueryUpdateRelated($builder)
     {
         $relationName = $this->getRelationName($builder);
 
-        return $this->renderTemplate('queryUpdateRelated', array(
-            'relationName'     => $relationName,
-            'variableName'     => lcfirst($relationName),
-            'updateMethodName' => $this->getParameter('update_method'),
-        ));
+        return $this->renderTemplate('queryUpdateRelated', ['relationName'     => $relationName, 'variableName'     => lcfirst((string) $relationName), 'updateMethodName' => $this->getParameter('update_method')]);
     }
 
     protected function getForeignTable()

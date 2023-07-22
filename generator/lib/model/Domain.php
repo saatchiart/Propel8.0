@@ -30,51 +30,24 @@ class Domain extends XMLElement
      */
     private $description;
 
-    /**
-     * @var        int Size
-     */
-    private $size;
+    private ?string $sqlType = null;
 
-    /**
-     * @var        int Scale
-     */
-    private $scale;
+    private ?\ColumnDefaultValue $defaultValue = null;
 
-    /**
-     * @var        int Propel type from schema
-     */
-    private $propelType;
-
-    /**
-     * @var        string The SQL type to use for this column
-     */
-    private $sqlType;
-
-    /**
-     * @var        ColumnDefaultValue A default value
-     */
-    private $defaultValue;
-
-    /**
-     * @var        Database
-     */
-    private $database;
+    private ?\Database $database = null;
 
     /**
      * Creates a new Domain object.
      * If this domain needs a name, it must be specified manually.
      *
-     * @param string $type    Propel type.
+     * @param string $propelType Propel type.
      * @param string $sqlType SQL type.
      * @param string $size
      * @param string $scale
      */
-    public function __construct($type = null, $sqlType = null, $size = null, $scale = null)
+    public function __construct(private $propelType = null, $sqlType = null, private $size = null, private $scale = null)
     {
-        $this->propelType = $type;
-        $this->sqlType = ($sqlType !== null) ? $sqlType : $type;
-        $this->size = $size;
-        $this->scale = $scale;
+        $this->sqlType = $sqlType ?? $propelType;
     }
 
     /**
@@ -100,7 +73,7 @@ class Domain extends XMLElement
      */
     protected function setupObject()
     {
-        $schemaType = strtoupper($this->getAttribute("type"));
+        $schemaType = strtoupper((string) $this->getAttribute("type"));
         $this->copy($this->getDatabase()->getPlatform()->getDomainForType($schemaType));
 
         //Name
@@ -121,8 +94,6 @@ class Domain extends XMLElement
 
     /**
      * Sets the owning database object (if this domain is being setup via XML).
-     *
-     * @param Database $database
      */
     public function setDatabase(Database $database)
     {

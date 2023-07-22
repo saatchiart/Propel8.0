@@ -26,7 +26,7 @@ class PropelDatabaseComparator
 
     public function __construct($databaseDiff = null)
     {
-        $this->databaseDiff = (null === $databaseDiff) ? new PropelDatabaseDiff() : $databaseDiff;
+        $this->databaseDiff = $databaseDiff ?? new PropelDatabaseDiff();
     }
 
     public function getDatabaseDiff()
@@ -36,8 +36,6 @@ class PropelDatabaseComparator
 
     /**
      * Setter for the fromDatabase property
-     *
-     * @param Database $fromDatabase
      */
     public function setFromDatabase(Database $fromDatabase)
     {
@@ -56,8 +54,6 @@ class PropelDatabaseComparator
 
     /**
      * Setter for the toDatabase property
-     *
-     * @param Database $toDatabase
      */
     public function setToDatabase(Database $toDatabase)
     {
@@ -77,8 +73,6 @@ class PropelDatabaseComparator
     /**
      * Compute and return the difference between two database objects
      *
-     * @param Database $fromDatabase
-     * @param Database $toDatabase
      * @param boolean  $caseInsensitive Whether the comparison is case insensitive.
      *                                  False by default.
      *

@@ -37,42 +37,18 @@ class TypeValidator implements BasicValidator
      */
     public function isValid(ValidatorMap $map, $value)
     {
-        switch ($map->getValue()) {
-            case 'array':
-                return is_array($value);
-                break;
-            case 'bool':
-            case 'boolean':
-                return is_bool($value);
-                break;
-            case 'float':
-                return is_float($value);
-                break;
-            case 'int':
-            case 'integer':
-                return is_int($value);
-                break;
-            case 'numeric':
-                return is_numeric($value);
-                break;
-            case 'object':
-                return is_object($value);
-                break;
-            case 'resource':
-                return is_resource($value);
-                break;
-            case 'scalar':
-                return is_scalar($value);
-                break;
-            case 'string':
-                return is_string($value);
-                break;
-            case 'function':
-                return function_exists($value);
-                break;
-            default:
-                throw new PropelException('Unknown type ' . $map->getValue());
-                break;
-        }
+        return match ($map->getValue()) {
+            'array' => is_array($value),
+            'bool', 'boolean' => is_bool($value),
+            'float' => is_float($value),
+            'int', 'integer' => is_int($value),
+            'numeric' => is_numeric($value),
+            'object' => is_object($value),
+            'resource' => is_resource($value),
+            'scalar' => is_scalar($value),
+            'string' => is_string($value),
+            'function' => function_exists($value),
+            default => throw new PropelException('Unknown type ' . $map->getValue()),
+        };
     }
 }

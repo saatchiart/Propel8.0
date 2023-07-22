@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/builder/util/DefaultEnglishPluralizer.php';
+require_once __DIR__ . '/../../../../../generator/lib/builder/util/DefaultEnglishPluralizer.php';
 
 /**
  * Tests for the StandardEnglishPluralizer class
@@ -20,18 +20,7 @@ class DefaultEnglishPluralizerTest extends \PHPUnit\Framework\TestCase
 {
     public function getPluralFormDataProvider()
     {
-        return array(
-            array('', 's'),
-            array('user', 'users'),
-            array('users', 'userss'),
-            array('User', 'Users'),
-            array('sheep', 'sheeps'),
-            array('Sheep', 'Sheeps'),
-            array('wife', 'wifes'),
-            array('Wife', 'Wifes'),
-            array('country', 'countrys'),
-            array('Country', 'Countrys'),
-        );
+        return [['', 's'], ['user', 'users'], ['users', 'userss'], ['User', 'Users'], ['sheep', 'sheeps'], ['Sheep', 'Sheeps'], ['wife', 'wifes'], ['Wife', 'Wifes'], ['country', 'countrys'], ['Country', 'Countrys']];
     }
 
     /**

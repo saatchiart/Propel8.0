@@ -25,20 +25,20 @@
  * @author     Sam Joseph <sam@neurogrid.com> (Torque)
  * @package    propel.runtime.query
  */
-class Join
+class Join implements \Stringable
 {
     // default comparison type
-    const EQUAL = "=";
-    const INNER_JOIN = 'INNER JOIN';
+    final public const EQUAL = "=";
+    final public const INNER_JOIN = 'INNER JOIN';
 
     // the left parts of the join condition
-    protected $left = array();
+    protected $left = [];
 
     // the right parts of the join condition
-    protected $right = array();
+    protected $right = [];
 
     // the comparison operators for each pair of columns in the join condition
-    protected $operator = array();
+    protected $operator = [];
 
     // the type of the join (LEFT JOIN, ...)
     protected $joinType;
@@ -97,12 +97,12 @@ class Join
     public function addCondition($left, $right, $operator = self::EQUAL)
     {
         if ($pos = strrpos($left, '.')) {
-            list($this->leftTableName, $this->left[]) = explode('.', $left);
+            [$this->leftTableName, $this->left[]] = explode('.', $left);
         } else {
             $this->left[] = $left;
         }
         if ($pos = strrpos($right, '.')) {
-            list($this->rightTableName, $this->right[]) = explode('.', $right);
+            [$this->rightTableName, $this->right[]] = explode('.', $right);
         } else {
             $this->right[] = $right;
         }
@@ -119,13 +119,13 @@ class Join
      *
      * @throws PropelException
      */
-    public function addConditions($lefts, $rights, $operators = array())
+    public function addConditions($lefts, $rights, $operators = [])
     {
         if (count($lefts) != count($rights)) {
             throw new PropelException("Unable to create join because the left column count isn't equal to the right column count");
         }
         foreach ($lefts as $key => $left) {
-            $this->addCondition($left, $rights[$key], isset($operators[$key]) ? $operators[$key] : self::EQUAL);
+            $this->addCondition($left, $rights[$key], $operators[$key] ?? self::EQUAL);
         }
     }
 
@@ -178,13 +178,9 @@ class Join
      */
     public function getConditions()
     {
-        $conditions = array();
+        $conditions = [];
         for ($i = 0; $i < $this->count; $i++) {
-            $conditions[] = array(
-                'left'     => $this->getLeftColumn($i),
-                'operator' => $this->getOperator($i),
-                'right'    => $this->getRightColumn($i)
-            );
+            $conditions[] = ['left'     => $this->getLeftColumn($i), 'operator' => $this->getOperator($i), 'right'    => $this->getRightColumn($i)];
         }
 
         return $conditions;
@@ -232,7 +228,7 @@ class Join
      */
     public function getJoinType()
     {
-        return null === $this->joinType ? self::INNER_JOIN : $this->joinType;
+        return $this->joinType ?? self::INNER_JOIN;
     }
 
     /**
@@ -296,7 +292,7 @@ class Join
      */
     public function getLeftColumns()
     {
-        $columns = array();
+        $columns = [];
         foreach ($this->left as $index => $column) {
             $columns[] = $this->getLeftColumn($index);
         }
@@ -335,7 +331,7 @@ class Join
 
     public function getLeftTableAliasOrName()
     {
-        return $this->leftTableAlias ? $this->leftTableAlias : $this->leftTableName;
+        return $this->leftTableAlias ?: $this->leftTableName;
     }
 
     public function getLeftTableWithAlias()
@@ -402,7 +398,7 @@ class Join
      */
     public function getRightColumns()
     {
-        $columns = array();
+        $columns = [];
         foreach ($this->right as $index => $column) {
             $columns[] = $this->getRightColumn($index);
         }
@@ -441,7 +437,7 @@ class Join
 
     public function getRightTableAliasOrName()
     {
-        return $this->rightTableAlias ? $this->rightTableAlias : $this->rightTableName;
+        return $this->rightTableAlias ?: $this->rightTableName;
     }
 
     public function getRightTableWithAlias()
@@ -533,7 +529,7 @@ class Join
     public function getClause(&$params)
     {
         if (null === $this->joinCondition) {
-            $conditions = array();
+            $conditions = [];
             for ($i = 0; $i < $this->count; $i++) {
                 $conditions [] = $this->getLeftColumn($i) . $this->getOperator($i) . $this->getRightColumn($i);
             }
@@ -563,8 +559,8 @@ class Join
      */
     public function equals($join)
     {
-        $parametersOfThisClauses = array();
-        $parametersOfJoinClauses = array();
+        $parametersOfThisClauses = [];
+        $parametersOfJoinClauses = [];
 
         return $join !== null
                 && $join instanceof Join
@@ -580,12 +576,12 @@ class Join
      */
     public function toString()
     {
-        $params = array();
+        $params = [];
 
         return $this->getClause($params);
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toString();
     }

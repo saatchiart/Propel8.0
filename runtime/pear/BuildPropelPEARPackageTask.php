@@ -22,16 +22,16 @@ class BuildPropelPEARPackageTask extends MatchingTask
 {
 
     /** Base directory for reading files. */
-    private $dir;
+    private ?\PhingFile $dir = null;
 
     private $version;
-    private $state = 'stable';
+    private string $state = 'stable';
     private $notes;
 
-    private $filesets = array();
+    private array $filesets = [];
 
     /** Package file */
-    private $packageFile;
+    private ?\PhingFile $packageFile = null;
 
     public function init()
     {
@@ -43,6 +43,7 @@ class BuildPropelPEARPackageTask extends MatchingTask
 
     private function setOptions($pkg)
     {
+        $options = [];
         $options['baseinstalldir'] = 'propel';
         $options['packagedirectory'] = $this->dir->getAbsolutePath();
 
@@ -198,7 +199,6 @@ class BuildPropelPEARPackageTask extends MatchingTask
     /**
      * Sets "dir" property from XML.
      *
-     * @param PhingFile $f
      *
      * @return void
      */

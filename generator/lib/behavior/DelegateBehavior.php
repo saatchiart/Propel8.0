@@ -16,15 +16,13 @@
  */
 class DelegateBehavior extends Behavior
 {
-    const ONE_TO_ONE = 1;
-    const MANY_TO_ONE = 2;
+    final public const ONE_TO_ONE = 1;
+    final public const MANY_TO_ONE = 2;
 
     // default parameters value
-    protected $parameters = array(
-        'to' => ''
-    );
+    protected $parameters = ['to' => ''];
 
-    protected $delegates = array();
+    protected $delegates = [];
 
     /**
      * Lists the delegates and checks that the behavior can use them,
@@ -34,7 +32,7 @@ class DelegateBehavior extends Behavior
     {
         $table = $this->getTable();
         $database = $table->getDatabase();
-        $delegates = explode(',', $this->parameters['to']);
+        $delegates = explode(',', (string) $this->parameters['to']);
         foreach ($delegates as $delegate) {
             $delegate = $database->getTablePrefix() . trim($delegate);
             if (!$database->hasTable($delegate)) {

@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 
 /**
  * Tests the generated objects for object column types accessor & mutator
@@ -55,22 +55,16 @@ EOF;
     {
         ComplexColumnTypeEntity1Query::create()->deleteAll();
         $e = new ComplexColumnTypeEntity1();
-        $e->setBar(array(
-            'a' => 1,
-            'b' => 2
-        ));
+        $e->setBar(['a' => 1, 'b' => 2]);
         $e->save();
         $e = new ComplexColumnTypeEntity1();
-        $e->setBar(array(
-            'a' => 3,
-            'b' => 4
-        ));
+        $e->setBar(['a' => 3, 'b' => 4]);
         $e->save();
         $q = ComplexColumnTypeEntity1Query::create()
             ->setFormatter(ModelCriteria::FORMAT_ON_DEMAND)
             ->find();
 
-        $objects = array();
+        $objects = [];
         foreach ($q as $e) {
           $objects[] = $e->getBar();
         }

@@ -31,21 +31,21 @@ class TableMap
      *
      * @var ColumnMap[]
      */
-    protected $columns = array();
+    protected $columns = [];
 
     /**
      * Columns in the table, using table phpName as key
      *
      * @var ColumnMap[]
      */
-    protected $columnsByPhpName = array();
+    protected $columnsByPhpName = [];
 
     /**
      * Columns in the table, using  as key
      *
      * @var ColumnMap[]
      */
-    protected $columnsByInsensitiveCase = array();
+    protected $columnsByInsensitiveCase = [];
 
     /**
      * The database this table belongs to
@@ -76,17 +76,17 @@ class TableMap
     protected $isCrossRef = false;
 
     // The primary key columns in the table
-    protected $primaryKeys = array();
+    protected $primaryKeys = [];
 
     // The foreign key columns in the table
-    protected $foreignKeys = array();
+    protected $foreignKeys = [];
 
     /**
      * The relationships in the table
      *
      * @var RelationMap[]
      */
-    protected $relations = array();
+    protected $relations = [];
 
     // Relations are lazy loaded. This property tells if the relations are loaded or not
     protected $relationsBuilt = false;
@@ -352,7 +352,7 @@ class TableMap
      *
      * @return boolean True if the table contains the column.
      */
-    public function hasColumn($name, $normalize = true)
+    public function hasColumn(mixed $name, $normalize = true)
     {
         if ($name instanceof ColumnMap) {
             $name = $name->getColumnName();
@@ -391,7 +391,7 @@ class TableMap
      *
      * @return boolean True if the table contains the column.
      */
-    public function hasColumnByPhpName($phpName)
+    public function hasColumnByPhpName(mixed $phpName)
     {
         return isset($this->columnsByPhpName[$phpName]);
     }
@@ -415,12 +415,12 @@ class TableMap
 
     public function hasColumnByInsensitiveCase($colName)
     {
-        return isset($this->columnsByInsensitiveCase[strtolower($colName)]);
+        return isset($this->columnsByInsensitiveCase[strtolower((string) $colName)]);
     }
 
     public function getColumnByInsensitiveCase($colName)
     {
-        $colName = strtolower($colName);
+        $colName = strtolower((string) $colName);
         if (!isset($this->columnsByInsensitiveCase[$colName])) {
             throw new PropelException("Cannot fetch ColumnMap for undefined column name: " . $colName);
         }
@@ -581,7 +581,7 @@ class TableMap
      *
      * @return RelationMap the built RelationMap object
      */
-    public function addRelation($name, $tablePhpName, $type, $columnMapping = array(), $onDelete = null, $onUpdate = null, $pluralName = null)
+    public function addRelation($name, $tablePhpName, $type, $columnMapping = [], $onDelete = null, $onUpdate = null, $pluralName = null)
     {
         // note: using phpName for the second table allows the use of DatabaseMap::getTableByPhpName()
         // and this method autoloads the TableMap if the table isn't loaded yet
@@ -668,7 +668,7 @@ class TableMap
      */
     public function getBehaviors()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -709,7 +709,7 @@ class TableMap
      *
      * @return boolean True if the table contains the column.
      */
-    public function containsColumn($name, $normalize = true)
+    public function containsColumn(mixed $name, $normalize = true)
     {
         return $this->hasColumn($name, $normalize);
     }
@@ -790,7 +790,7 @@ class TableMap
             return false;
         }
 
-        return (strpos($data, $this->prefix) === 0);
+        return (str_starts_with($data, (string) $this->prefix));
     }
 
     /**
@@ -804,7 +804,7 @@ class TableMap
      */
     protected function removePrefix($data)
     {
-        return $this->hasPrefix($data) ? substr($data, strlen($this->prefix)) : $data;
+        return $this->hasPrefix($data) ? substr($data, strlen((string) $this->prefix)) : $data;
     }
 
     /**

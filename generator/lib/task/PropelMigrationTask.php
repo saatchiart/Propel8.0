@@ -35,8 +35,8 @@ class PropelMigrationTask extends BasePropelMigrationTask
         }
 
         $timestamps = $manager->getValidMigrationTimestamps();
-        if (count($timestamps) > 1) {
-            $this->log(sprintf('%d migrations to execute', count($timestamps)));
+        if ((is_countable($timestamps) ? count($timestamps) : 0) > 1) {
+            $this->log(sprintf('%d migrations to execute', is_countable($timestamps) ? count($timestamps) : 0));
         }
         foreach ($timestamps as $timestamp) {
             $this->log(sprintf(
@@ -65,7 +65,7 @@ class PropelMigrationTask extends BasePropelMigrationTask
                         $stmt = $pdo->prepare($statement);
                         $stmt->execute();
                         $res++;
-                    } catch (PDOException $e) {
+                    } catch (PDOException) {
                         $this->log(sprintf('Failed to execute SQL "%s"', $statement), Project::MSG_ERR);
                         // continue
                     }

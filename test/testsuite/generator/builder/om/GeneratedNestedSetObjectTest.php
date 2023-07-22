@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/cms/CmsTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/cms/CmsTestBase.php';
 
 /**
  * Tests the generated nested-set Object classes.
@@ -150,14 +150,14 @@ class GeneratedNestedSetObjectTest extends CmsTestBase
      */
     public function testPeerGetDescendants()
     {
-        $nodesWithoutPool = array();
+        $nodesWithoutPool = [];
         CategoryPeer::clearInstancePool();
         $cat = CategoryPeer::retrieveRoot(1);
         $children = $cat->getDescendants();
         foreach ($children as $child) {
             $nodesWithoutPool[] = $child->getTitle();
         }
-        $this->assertEquals($nodesWithoutPool, array('Cat_1_1', 'Cat_1_1_1', 'Cat_1_1_1_1'));
+        $this->assertEquals($nodesWithoutPool, ['Cat_1_1', 'Cat_1_1_1', 'Cat_1_1_1_1']);
     }
 
     /**
@@ -165,8 +165,8 @@ class GeneratedNestedSetObjectTest extends CmsTestBase
      */
     public function testPeerGetDescendantsTwice()
     {
-        $nodesWithoutPool = array();
-        $nodesWithPool = array();
+        $nodesWithoutPool = [];
+        $nodesWithPool = [];
 
         CategoryPeer::clearInstancePool();
         $cat = CategoryPeer::retrieveRoot(1);

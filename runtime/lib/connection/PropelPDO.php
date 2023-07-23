@@ -220,11 +220,13 @@ class PropelPDO extends PDO
     }
 
     /**
+     * @inheritDoc
+     *
      * Overrides PDO::beginTransaction() to prevent errors due to already-in-progress transaction.
      *
      * @return boolean
      */
-    public function beginTransaction()
+    public function beginTransaction(): bool
     {
         $return = true;
         if (!$this->nestedTransactionCount) {
@@ -240,6 +242,8 @@ class PropelPDO extends PDO
     }
 
     /**
+     * @inheritDoc
+     *
      * Overrides PDO::commit() to only commit the transaction if we are in the outermost
      * transaction nesting level.
      *
@@ -247,7 +251,7 @@ class PropelPDO extends PDO
      *
      * @throws PropelException
      */
-    public function commit()
+    public function commit(): bool
     {
         $return = true;
         $opcount = $this->nestedTransactionCount;
@@ -271,12 +275,14 @@ class PropelPDO extends PDO
     }
 
     /**
+     * @inheritDoc
+     *
      * Overrides PDO::rollBack() to only rollback the transaction if we are in the outermost
      * transaction nesting level
      *
      * @return boolean Whether operation was successful.
      */
-    public function rollBack()
+    public function rollBack(): bool
     {
         $return = true;
         $opcount = $this->nestedTransactionCount;
@@ -334,21 +340,23 @@ class PropelPDO extends PDO
      *
      * @return void
      */
-    public function setAttribute($attribute, mixed $value)
+    public function setAttribute($attribute, mixed $value): bool
     {
         switch ($attribute) {
             case self::PROPEL_ATTR_CACHE_PREPARES:
                 $this->cachePreparedStatements = $value;
-                break;
+                return true;
             case self::PROPEL_ATTR_CONNECTION_NAME:
                 $this->connectionName = $value;
-                break;
+                return true;
             default:
-                parent::setAttribute($attribute, $value);
+                return parent::setAttribute($attribute, $value);
         }
     }
 
     /**
+     * @inheritDoc
+     *
      * Gets a connection attribute.
      *
      * This is overridden here to provide support for setting Propel-specific attributes too.
@@ -357,7 +365,7 @@ class PropelPDO extends PDO
      *
      * @return mixed
      */
-    public function getAttribute($attribute)
+    public function getAttribute($attribute): mixed
     {
         return match ($attribute) {
             self::PROPEL_ATTR_CACHE_PREPARES => $this->cachePreparedStatements,

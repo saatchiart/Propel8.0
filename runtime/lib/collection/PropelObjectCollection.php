@@ -111,6 +111,8 @@ class PropelObjectCollection extends PropelCollection
     }
 
     /**
+     * @inheritDoc
+     *
      * Get an array representation of the collection
      *
      * @param string $keyColumn If null, the returned array uses an incremental index.
@@ -138,7 +140,7 @@ class PropelObjectCollection extends PropelCollection
      *
      * @return array
      */
-    public function getArrayCopy($keyColumn = null, $usePrefix = false)
+    public function getArrayCopy($keyColumn = null, $usePrefix = false): array
     {
         if (null === $keyColumn && false === $usePrefix) {
             return parent::getArrayCopy();

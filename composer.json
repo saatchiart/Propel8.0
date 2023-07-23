@@ -15,7 +15,7 @@
   "include-path": ["runtime/lib", "generator/lib"],
   "require": {
     "php": "^8.2",
-    "phing/phing": "^2.17",
+    "phing/phing": "^2.0",
     "ext-pdo": "*"
   },
   "require-dev": {

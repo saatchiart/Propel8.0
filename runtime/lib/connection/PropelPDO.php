@@ -29,7 +29,6 @@
  */
 class PropelPDO extends PDO
 {
-
     /**
      * Attribute to use to set whether to cache prepared statements.
      */
@@ -41,6 +40,7 @@ class PropelPDO extends PDO
     final public const PROPEL_ATTR_CONNECTION_NAME = -2;
 
     final public const DEFAULT_SLOW_THRESHOLD = 0.1;
+
     final public const DEFAULT_ONLYSLOW_ENABLED = false;
 
     /**
@@ -375,17 +375,7 @@ class PropelPDO extends PDO
     }
 
     /**
-     * Prepares a statement for execution and returns a statement object.
-     *
-     * Overrides PDO::prepare() in order to:
-     *  - Add logging and query counting if logging is true.
-     *  - Add query caching support if the PropelPDO::PROPEL_ATTR_CACHE_PREPARES was set to true.
-     *
-     * @param string $sql            This must be a valid SQL statement for the target database server.
-     * @param array  $driver_options One $array or more key => value pairs to set attribute values
-     *                                      for the PDOStatement object that this method returns.
-     *
-     * @return PDOStatement
+     * @inheritDoc
      */
     #[ReturnTypeWillChange] public function prepare($sql, $driver_options = [])
     {

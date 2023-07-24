@@ -14,7 +14,7 @@
  * @author     Francois Zaninotto (Propel)
  * @package    propel.runtime.query
  */
-class ModelJoin extends Join
+class ModelJoin extends Join implements \Stringable
 {
     /**
      * @var RelationMap
@@ -81,8 +81,6 @@ class ModelJoin extends Join
     }
 
     /**
-     * @param ModelJoin $join
-     *
      * @return ModelJoin
      */
     public function setPreviousJoin(ModelJoin $join)
@@ -161,10 +159,10 @@ class ModelJoin extends Join
             && $this->rightTableAlias == $join->getRightTableAlias();
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return parent::toString()
-            . ' tableMap: ' . ($this->tableMap ? get_class($this->tableMap) : 'null')
+            . ' tableMap: ' . ($this->tableMap ? $this->tableMap::class : 'null')
             . ' relationMap: ' . $this->relationMap->getName()
             . ' previousJoin: ' . ($this->previousJoin ? '(' . $this->previousJoin . ')' : 'null')
             . ' relationAlias: ' . $this->rightTableAlias;

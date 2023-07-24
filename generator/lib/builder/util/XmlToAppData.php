@@ -25,10 +25,10 @@
 class XmlToAppData
 {
     /** enables debug output */
-    const DEBUG = false;
+    final public const DEBUG = false;
 
-    private $app;
-    private $currDB;
+    private readonly \AppData $app;
+    private ?\Database $currDB = null;
     private $currTable;
     private $currColumn;
     private $currFK;
@@ -38,21 +38,16 @@ class XmlToAppData
     private $currBehavior;
     private $currVendorObject;
 
-    private $isForReferenceOnly;
+    private ?bool $isForReferenceOnly = null;
     private $currentPackage;
     private $currentXmlFile;
-    private $defaultPackage;
-
-    private $encoding;
 
     /**
      * two-dimensional array,
      * first dimension is for schemas(key is the path to the schema file),
      * second is for tags within the schema
-     *
-     * @var array
      */
-    private $schemasTagsStack = array();
+    private array $schemasTagsStack = [];
 
     /**
      * Creates a new instance for the specified database type.
@@ -61,18 +56,14 @@ class XmlToAppData
      * @param string                  $defaultPackage  the default PHP package used for the om
      * @param string                  $encoding        The database encoding.
      */
-    public function __construct(PropelPlatformInterface $defaultPlatform = null, $defaultPackage = null, $encoding = 'iso-8859-1')
+    public function __construct(PropelPlatformInterface $defaultPlatform = null, private $defaultPackage = null, private $encoding = 'iso-8859-1')
     {
         $this->app = new AppData($defaultPlatform);
-        $this->defaultPackage = $defaultPackage;
         $this->firstPass = true;
-        $this->encoding = $encoding;
     }
 
     /**
      * Set the AppData generator configuration
-     *
-     * @param GeneratorConfigInterface $generatorConfig
      */
     public function setGeneratorConfig(GeneratorConfigInterface $generatorConfig)
     {
@@ -114,7 +105,7 @@ class XmlToAppData
             return;
         }
         // store current schema file path
-        $this->schemasTagsStack[$xmlFile] = array();
+        $this->schemasTagsStack[$xmlFile] = [];
         $this->currentXmlFile = $xmlFile;
 
         $parser = xml_parser_create();
@@ -178,11 +169,11 @@ class XmlToAppData
                     // and it's ignored in the nested external-schemas
                     if (!$this->isExternalSchema()) {
                         $isForRefOnly = @$attributes["referenceOnly"];
-                        $this->isForReferenceOnly = ($isForRefOnly !== null ? (strtolower($isForRefOnly) === "true") : true); // defaults to TRUE
+                        $this->isForReferenceOnly = ($isForRefOnly !== null ? (strtolower((string) $isForRefOnly) === "true") : true); // defaults to TRUE
                     }
 
                     if (!$this->isAbsolutePath($xmlFile)) {
-                        $xmlFile = realpath(dirname($this->currentXmlFile) . DIRECTORY_SEPARATOR . $xmlFile);
+                        $xmlFile = realpath(dirname((string) $this->currentXmlFile) . DIRECTORY_SEPARATOR . $xmlFile);
                         if (!file_exists($xmlFile)) {
                             throw new SchemaException(sprintf('Unknown include external "%s"', $xmlFile));
                         }
@@ -310,31 +301,21 @@ class XmlToAppData
             }
         } elseif ($parentTag == "behavior") {
 
-            switch ($name) {
-                case "parameter":
-                    $this->currBehavior->addParameter($attributes);
-                    break;
-
-                default:
-                    $this->_throwInvalidTagException($parser, $name);
-            }
+            match ($name) {
+                "parameter" => $this->currBehavior->addParameter($attributes),
+                default => $this->_throwInvalidTagException($parser, $name),
+            };
         } elseif ($parentTag == "validator") {
-            switch ($name) {
-                case "rule":
-                    $this->currValidator->addRule($attributes);
-                    break;
-                default:
-                    $this->_throwInvalidTagException($parser, $name);
-            }
+            match ($name) {
+                "rule" => $this->currValidator->addRule($attributes),
+                default => $this->_throwInvalidTagException($parser, $name),
+            };
         } elseif ($parentTag == "vendor") {
 
-            switch ($name) {
-                case "parameter":
-                    $this->currVendorObject->addParameter($attributes);
-                    break;
-                default:
-                    $this->_throwInvalidTagException($parser, $name);
-            }
+            match ($name) {
+                "parameter" => $this->currVendorObject->addParameter($attributes),
+                default => $this->_throwInvalidTagException($parser, $name),
+            };
         } else {
             // it must be an invalid tag
             $this->_throwInvalidTagException($parser, $name);
@@ -408,12 +389,12 @@ class XmlToAppData
      */
     protected function isAbsolutePath($file)
     {
-        if (strspn($file, '/\\', 0, 1)
-            || (strlen($file) > 3 && ctype_alpha($file[0])
-            && substr($file, 1, 1) === ':'
-            && (strspn($file, '/\\', 2, 1))
+        if (strspn((string) $file, '/\\', 0, 1)
+            || (strlen((string) $file) > 3 && ctype_alpha((string) $file[0])
+            && substr((string) $file, 1, 1) === ':'
+            && (strspn((string) $file, '/\\', 2, 1))
         )
-        || null !== parse_url($file, PHP_URL_SCHEME)
+        || null !== parse_url((string) $file, PHP_URL_SCHEME)
         ) {
             return true;
         }

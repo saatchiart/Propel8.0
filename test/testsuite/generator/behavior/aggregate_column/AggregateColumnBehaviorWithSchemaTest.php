@@ -9,7 +9,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/schemas/SchemasTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/schemas/SchemasTestBase.php';
 
 /**
  * Tests for AggregateColumnBehavior class
@@ -36,7 +36,7 @@ class AggregateColumnBehaviorWithSchemaTest extends SchemasTestBase
     public function testParametersWithSchema()
     {
         $storeTable = BookstoreSchemasBookstorePeer::getTableMap();
-        $this->assertEquals(count($storeTable->getColumns()), 8, 'AggregateColumn adds one column by default');
+        $this->assertEquals(is_countable($storeTable->getColumns()) ? count($storeTable->getColumns()) : 0, 8, 'AggregateColumn adds one column by default');
         $this->assertTrue(method_exists('BookstoreSchemasBookstore', 'getTotalContestEntries'));
     }
 

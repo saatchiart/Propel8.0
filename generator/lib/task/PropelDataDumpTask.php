@@ -63,10 +63,8 @@ class PropelDataDumpTask extends AbstractPropelDataModelTask
 
     /**
      * Properties file that maps a data XML file to a particular database.
-     *
-     * @var        PhingFile
      */
-    private $datadbmap;
+    private ?\PhingFile $datadbmap = null;
 
     /**
      * The database connection used to retrieve the data to dump.
@@ -258,7 +256,7 @@ class PropelDataDumpTask extends AbstractPropelDataModelTask
         $this->validate();
 
         $buf = "Database settings:\n"
-            . " driver: " . ($this->databaseDriver ? $this->databaseDriver : "(default)" ). "\n"
+            . " driver: " . ($this->databaseDriver ?: "(default)" ). "\n"
             . " URL: " . $this->databaseUrl . "\n"
             . ($this->databaseUser ? " user: " . $this->databaseUser . "\n" : "")
             . ($this->databasePassword ? " password: " . $this->databasePassword . "\n" : "");
@@ -298,7 +296,6 @@ class PropelDataDumpTask extends AbstractPropelDataModelTask
      * Gets PDOStatement of query to fetch all data from a table.
      *
      * @param string                  $tableName
-     * @param PropelPlatformInterface $platform
      *
      * @return PDOStatement
      */
@@ -310,7 +307,6 @@ class PropelDataDumpTask extends AbstractPropelDataModelTask
     /**
      * Creates a DOM document containing data for specified database.
      *
-     * @param Database $database
      *
      * @return DOMDocument
      */
@@ -336,7 +332,7 @@ class PropelDataDumpTask extends AbstractPropelDataModelTask
                 foreach ($tbl->getColumns() as $col) {
                     $cval = $row[$col->getName()];
                     if ($cval !== null) {
-                        $rowNode->setAttribute($col->getPhpName(), iconv($this->dbEncoding, 'utf-8', $cval));
+                        $rowNode->setAttribute($col->getPhpName(), iconv((string) $this->dbEncoding, 'utf-8', (string) $cval));
                     }
                 }
                 $dsNode->appendChild($rowNode);

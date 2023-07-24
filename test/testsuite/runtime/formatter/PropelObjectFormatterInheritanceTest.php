@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelObjectFormatter.
@@ -42,13 +42,9 @@ class PropelObjectFormatterInheritanceTest extends BookstoreEmptyTestBase
         $formatter = new PropelObjectFormatter();
         $formatter->init(new ModelCriteria('bookstore', 'BookstoreEmployee'));
         $emps = $formatter->format($stmt);
-        $expectedClass = array(
-            'b1' =>'BookstoreEmployee',
-            'b2' =>'BookstoreManager',
-            'b3' =>'BookstoreCashier'
-        );
+        $expectedClass = ['b1' =>'BookstoreEmployee', 'b2' =>'BookstoreManager', 'b3' =>'BookstoreCashier'];
         foreach ($emps as $emp) {
-            $this->assertEquals($expectedClass[$emp->getName()], get_class($emp), 'format() creates objects of the correct class when using inheritance');
+            $this->assertEquals($expectedClass[$emp->getName()], $emp::class, 'format() creates objects of the correct class when using inheritance');
         }
     }
 

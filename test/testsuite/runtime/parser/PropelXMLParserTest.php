@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../runtime/lib/parser/PropelParser.php';
-require_once dirname(__FILE__) . '/../../../../runtime/lib/parser/PropelXMLParser.php';
+require_once __DIR__ . '/../../../../runtime/lib/parser/PropelParser.php';
+require_once __DIR__ . '/../../../../runtime/lib/parser/PropelXMLParser.php';
 
 /**
  * Test for PropelXMLParser class
@@ -21,43 +21,36 @@ class PropelXMLParserTest extends \PHPUnit\Framework\TestCase
 {
     public static function arrayXmlConversionDataProvider()
     {
-        return array(
-            array(array(), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+        return [[[], "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <data/>
-", 'empty array'),
-            array(array('a' => 1, 'b' => 2), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+", 'empty array'], [['a' => 1, 'b' => 2], "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <data>
   <a>1</a>
   <b>2</b>
 </data>
-", 'associative array'),
-            array(array('a' => 0, 'b' => null, 'c' => ''), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+", 'associative array'], [['a' => 0, 'b' => null, 'c' => ''], "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <data>
   <a>0</a>
   <b></b>
   <c><![CDATA[]]></c>
 </data>
-", 'associative array with empty values'),
-            array(array('a' => 1, 'b' => 'bar'), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+", 'associative array with empty values'], [['a' => 1, 'b' => 'bar'], "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <data>
   <a>1</a>
   <b><![CDATA[bar]]></b>
 </data>
-", 'associative array with strings'),
-            array(array('a' => '<html><body><p style="width:30px;">Hello, World!</p></body></html>'), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+", 'associative array with strings'], [['a' => '<html><body><p style="width:30px;">Hello, World!</p></body></html>'], "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <data>
   <a><![CDATA[&lt;html&gt;&lt;body&gt;&lt;p style=&quot;width:30px;&quot;&gt;Hello, World!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;]]></a>
 </data>
-", 'associative array with code'),
-            array(array('a' => 1, 'b' => array('foo' => 2)), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+", 'associative array with code'], [['a' => 1, 'b' => ['foo' => 2]], "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <data>
   <a>1</a>
   <b>
     <foo>2</foo>
   </b>
 </data>
-", 'nested associative arrays'),
-            array(array('Id' => 123, 'Title' => 'Pride and Prejudice', 'AuthorId' => 456, 'ISBN' => '0553213105', 'Author' => array('Id' => 456, 'FirstName' => 'Jane', 'LastName' => 'Austen')), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+", 'nested associative arrays'], [['Id' => 123, 'Title' => 'Pride and Prejudice', 'AuthorId' => 456, 'ISBN' => '0553213105', 'Author' => ['Id' => 456, 'FirstName' => 'Jane', 'LastName' => 'Austen']], "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <data>
   <Id>123</Id>
   <Title><![CDATA[Pride and Prejudice]]></Title>
@@ -69,14 +62,12 @@ class PropelXMLParserTest extends \PHPUnit\Framework\TestCase
     <LastName><![CDATA[Austen]]></LastName>
   </Author>
 </data>
-", 'array resulting from an object conversion'),
-            array(array('a1' => 1, 'b2' => 2), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+", 'array resulting from an object conversion'], [['a1' => 1, 'b2' => 2], "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <data>
   <a1>1</a1>
   <b2>2</b2>
 </data>
-", 'keys with numbers'),
-        );
+", 'keys with numbers']];
     }
 
     /**
@@ -130,11 +121,7 @@ class PropelXMLParserTest extends \PHPUnit\Framework\TestCase
 
     public static function listToXMLDataProvider()
     {
-        $list = array(
-            'book0' => array('Id' => 123, 'Title' => 'Pride and Prejudice', 'AuthorId' => 456, 'ISBN' => '0553213105', 'Author' => array('Id' => 456, 'FirstName' => 'Jane', 'LastName' => 'Austen')),
-            'book1' => array('Id' => 82, 'Title' => 'Anna Karenina', 'AuthorId' => 543, 'ISBN' => '0143035002', 'Author' => array('Id' => 543, 'FirstName' => 'Leo', 'LastName' => 'Tolstoi')),
-            'book2' => array('Id' => 567, 'Title' => 'War and Peace', 'AuthorId' => 543, 'ISBN' => '067003469X', 'Author' => array('Id' => 543, 'FirstName' => 'Leo', 'LastName' => 'Tolstoi')),
-        );
+        $list = ['book0' => ['Id' => 123, 'Title' => 'Pride and Prejudice', 'AuthorId' => 456, 'ISBN' => '0553213105', 'Author' => ['Id' => 456, 'FirstName' => 'Jane', 'LastName' => 'Austen']], 'book1' => ['Id' => 82, 'Title' => 'Anna Karenina', 'AuthorId' => 543, 'ISBN' => '0143035002', 'Author' => ['Id' => 543, 'FirstName' => 'Leo', 'LastName' => 'Tolstoi']], 'book2' => ['Id' => 567, 'Title' => 'War and Peace', 'AuthorId' => 543, 'ISBN' => '067003469X', 'Author' => ['Id' => 543, 'FirstName' => 'Leo', 'LastName' => 'Tolstoi']]];
         $xml = <<<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <data>
@@ -175,7 +162,7 @@ class PropelXMLParserTest extends \PHPUnit\Framework\TestCase
 
 EOF;
 
-        return array(array($list, $xml));
+        return [[$list, $xml]];
     }
 
     /**

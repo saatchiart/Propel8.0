@@ -24,19 +24,17 @@
 class Column extends XMLElement
 {
 
-    const DEFAULT_TYPE = "VARCHAR";
-    const DEFAULT_VISIBILITY = 'public';
-    public static $valid_visibilities = array('public', 'protected', 'private');
-
-    private $name;
+    final public const DEFAULT_TYPE = "VARCHAR";
+    final public const DEFAULT_VISIBILITY = 'public';
+    public static $valid_visibilities = ['public', 'protected', 'private'];
     private $description;
     private $phpName = null;
     private $phpNamingMethod;
-    private $isNotNull = false;
+    private bool $isNotNull = false;
     private $size;
     private $namePrefix;
-    private $accessorVisibility;
-    private $mutatorVisibility;
+    private ?string $accessorVisibility = null;
+    private ?string $mutatorVisibility = null;
 
     /**
      * The name to use for the Peer constant that identifies this column.
@@ -53,57 +51,51 @@ class Column extends XMLElement
      */
     private $phpType;
 
-    /**
-     * @var Table
-     */
-    private $parentTable;
+    private ?\Table $parentTable = null;
 
     private $position;
-    private $isPrimaryKey = false;
-    private $isNodeKey = false;
+    private bool $isPrimaryKey = false;
+    private bool $isNodeKey = false;
     private $nodeKeySep;
-    private $isNestedSetLeftKey = false;
-    private $isNestedSetRightKey = false;
-    private $isTreeScopeKey = false;
-    private $isUnique = false;
-    private $isAutoIncrement = false;
-    private $isLazyLoad = false;
+    private bool $isNestedSetLeftKey = false;
+    private bool $isNestedSetRightKey = false;
+    private bool $isTreeScopeKey = false;
+    private false $isUnique = false;
+    private bool $isAutoIncrement = false;
+    private bool $isLazyLoad = false;
     private $defaultValue;
-    private $referrers;
-    private $isPrimaryString = false;
+    private ?array $referrers = null;
+    private bool $isPrimaryString = false;
 
     // only one type is supported currently, which assumes the
     // column either contains the classnames or a key to
     // classnames specified in the schema.  Others may be
     // supported later.
     private $inheritanceType;
-    private $isInheritance;
-    private $isEnumeratedClasses;
-    private $inheritanceList;
-    private $needsTransactionInPostgres; //maybe this can be retrieved from vendorSpecificInfo
+    private ?bool $isInheritance = null;
+    private ?bool $isEnumeratedClasses = null;
+    private ?array $inheritanceList = null;
+    private ?bool $needsTransactionInPostgres = null; //maybe this can be retrieved from vendorSpecificInfo
 
     /**
      * Stores the possible values of an ENUM column.
      *
      * @var array
      */
-    protected $valueSet = array();
+    protected $valueSet = [];
 
     /**
      * The domain object associated with this Column.
-     *
-     * @var Domain
      */
-    private $domain;
+    private ?\Domain $domain = null;
 
     /**
      * Creates a new column and set the name
      *
      * @param string $name
      */
-    public function __construct($name = null)
+    public function __construct(private $name = null)
     {
-        $this->name = $name;
     }
 
     /**
@@ -117,7 +109,7 @@ class Column extends XMLElement
      */
     public static function makeList($columns, PropelPlatformInterface $platform)
     {
-        $list = array();
+        $list = [];
         foreach ($columns as $col) {
             if ($col instanceof Column) {
                 $col = $col->getName();
@@ -140,7 +132,7 @@ class Column extends XMLElement
             if ($dom) {
                 $this->getDomain()->copy($this->getTable()->getDatabase()->getDomain($dom));
             } else {
-                $type = strtoupper($this->getAttribute("type"));
+                $type = strtoupper((string) $this->getAttribute("type"));
                 if ($type) {
                     if ($platform = $this->getPlatform()) {
                         $this->getDomain()->copy($this->getPlatform()->getDomainForType($type));
@@ -225,7 +217,7 @@ class Column extends XMLElement
             $this->getDomain()->replaceScale($this->getAttribute("scale"));
 
             $defval = $this->getAttribute("defaultValue", $this->getAttribute("default"));
-            if ($defval !== null && strtolower($defval) !== 'null') {
+            if ($defval !== null && strtolower((string) $defval) !== 'null') {
                 $this->getDomain()->setDefaultValue(new ColumnDefaultValue($defval, ColumnDefaultValue::TYPE_VALUE));
             } elseif ($this->getAttribute("defaultExpr") !== null) {
                 $this->getDomain()->setDefaultValue(new ColumnDefaultValue($this->getAttribute("defaultExpr"), ColumnDefaultValue::TYPE_EXPR));
@@ -233,19 +225,19 @@ class Column extends XMLElement
 
             if ($this->getAttribute('valueSet', null) !== null) {
                 if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
-                    $valueSet = str_getcsv($this->getAttribute("valueSet"));
+                    $valueSet = str_getcsv((string) $this->getAttribute("valueSet"));
                 } else {
                     // unfortunately, no good fallback for PHP 5.2
-                    $valueSet = explode(',', $this->getAttribute("valueSet"));
+                    $valueSet = explode(',', (string) $this->getAttribute("valueSet"));
                 }
                 $valueSet = array_map('trim', $valueSet);
                 $this->valueSet = $valueSet;
-            } elseif (preg_match('/enum\((.*?)\)/i', $this->getAttribute('sqlType', ''), $matches)) {
+            } elseif (preg_match('/enum\((.*?)\)/i', (string) $this->getAttribute('sqlType', ''), $matches)) {
                 if (version_compare(PHP_VERSION, '5.3.0', '>=')) {
                     $valueSet = str_getcsv($matches['1'], ',', '\'');
                 } else {
                     // unfortunately, no good fallback for PHP 5.2
-                    $valueSet = array();
+                    $valueSet = [];
                     foreach (explode(',', $matches['1']) as $value) {
                         $valueSet[] = trim($value, " '");
                     }
@@ -279,8 +271,6 @@ class Column extends XMLElement
 
     /**
      * Sets domain for this column
-     *
-     * @param Domain $domain
      */
     public function setDomain(Domain $domain)
     {
@@ -472,7 +462,7 @@ class Column extends XMLElement
             return strtoupper($this->getPeerName());
         }
 
-        return strtoupper($this->getName());
+        return strtoupper((string) $this->getName());
     }
 
     /**
@@ -570,7 +560,7 @@ class Column extends XMLElement
             $inh = $inhdata;
             $inh->setColumn($this);
             if ($this->inheritanceList === null) {
-                $this->inheritanceList = array();
+                $this->inheritanceList = [];
                 $this->isEnumeratedClasses = true;
             }
             $this->inheritanceList[] = $inh;
@@ -821,7 +811,7 @@ class Column extends XMLElement
     public function addReferrer(ForeignKey $fk)
     {
         if ($this->referrers === null) {
-            $this->referrers = array();
+            $this->referrers = [];
         }
         $this->referrers[] = $fk;
     }
@@ -832,7 +822,7 @@ class Column extends XMLElement
     public function getReferrers()
     {
         if ($this->referrers === null) {
-            $this->referrers = array();
+            $this->referrers = [];
         }
 
         return $this->referrers;
@@ -855,7 +845,7 @@ class Column extends XMLElement
 
     public function clearInheritanceList()
     {
-        $this->inheritanceList = array();
+        $this->inheritanceList = [];
     }
 
     /**
@@ -1272,24 +1262,24 @@ class Column extends XMLElement
      */
     public function setTypeFromString($typeName, $size)
     {
-        $tn = strtoupper($typeName);
+        $tn = strtoupper((string) $typeName);
         $this->setType($tn);
 
         if ($size !== null) {
             $this->size = $size;
         }
 
-        if (strpos($tn, "CHAR") !== false) {
+        if (str_contains($tn, "CHAR")) {
             $this->domain->setType(PropelTypes::VARCHAR);
-        } elseif (strpos($tn, "INT") !== false) {
+        } elseif (str_contains($tn, "INT")) {
             $this->domain->setType(PropelTypes::INTEGER);
-        } elseif (strpos($tn, "FLOAT") !== false) {
+        } elseif (str_contains($tn, "FLOAT")) {
             $this->domain->setType(PropelTypes::FLOAT);
-        } elseif (strpos($tn, "DATE") !== false) {
+        } elseif (str_contains($tn, "DATE")) {
             $this->domain->setType(PropelTypes::DATE);
-        } elseif (strpos($tn, "TIME") !== false) {
+        } elseif (str_contains($tn, "TIME")) {
             $this->domain->setType(PropelTypes::TIMESTAMP);
-        } elseif (strpos($tn, "BINARY") !== false) {
+        } elseif (str_contains($tn, "BINARY")) {
             $this->domain->setType(PropelTypes::LONGVARBINARY);
         } else {
             $this->domain->setType(PropelTypes::VARCHAR);
@@ -1371,6 +1361,6 @@ class Column extends XMLElement
 
     public static function generatePhpName($name, $phpNamingMethod = PhpNameGenerator::CONV_METHOD_CLEAN, $namePrefix = null)
     {
-        return NameFactory::generateName(NameFactory::PHP_GENERATOR, array($name, $phpNamingMethod, $namePrefix));
+        return NameFactory::generateName(NameFactory::PHP_GENERATOR, [$name, $phpNamingMethod, $namePrefix]);
     }
 }

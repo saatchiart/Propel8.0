@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /* It's only fair to admit that these tests were carefully crafted
 after studying the current implementation to make it look as bad as
@@ -36,7 +36,7 @@ class Ticket520Test extends BookstoreTestBase
         // Passing no Criteria means "use the internal collection or query the database"
         // in that case two objects are added, so it should return 2
         $books = $a->getBooks();
-        $this->assertEquals(2, count($books));
+        $this->assertEquals(2, is_countable($books) ? count($books) : 0);
     }
 
     public function testNewObjectsNotAvailableWithCriteria()
@@ -57,7 +57,7 @@ class Ticket520Test extends BookstoreTestBase
         $c->add(BookPeer::TITLE, "%Hitchhiker%", Criteria::LIKE);
 
         $guides = $a->getBooks($c);
-        $this->assertEquals(0, count($guides), 'Passing a Criteria means "force a database query"');
+        $this->assertEquals(0, is_countable($guides) ? count($guides) : 0, 'Passing a Criteria means "force a database query"');
     }
 
     public function testNewObjectsAvailableAfterCriteria()
@@ -80,7 +80,7 @@ class Ticket520Test extends BookstoreTestBase
         $guides = $a->getBooks($c);
 
         $books = $a->getBooks();
-        $this->assertEquals(2, count($books), 'A previous query with a Criteria does not erase the internal collection');
+        $this->assertEquals(2, is_countable($books) ? count($books) : 0, 'A previous query with a Criteria does not erase the internal collection');
     }
 
     public function testSavedObjectsWithCriteria()
@@ -106,7 +106,7 @@ class Ticket520Test extends BookstoreTestBase
 
         $a->save();
         $booksAfterSave = $a->getBooks($c);
-        $this->assertEquals(1, count($booksAfterSave), 'A previous query with a Criteria is not cached');
+        $this->assertEquals(1, is_countable($booksAfterSave) ? count($booksAfterSave) : 0, 'A previous query with a Criteria is not cached');
     }
 
     public function testAddNewObjectAfterSave()
@@ -123,7 +123,7 @@ class Ticket520Test extends BookstoreTestBase
         $a->addBook($b1);
 
         $books = $a->getBooks();
-        $this->assertEquals(1, count($books));
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0);
         $this->assertTrue($books->contains($b1));
 
         /* Now this is the initial ticket 520: If we have a saved author,
@@ -151,7 +151,7 @@ class Ticket520Test extends BookstoreTestBase
         $a->addBook($b1);
 
         $books = $a->getBooks();
-        $this->assertEquals(1, count($books));
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0);
         $this->assertTrue($books->contains($b1), 'new related objects not deleted after fetching them');
     }
 
@@ -169,7 +169,7 @@ class Ticket520Test extends BookstoreTestBase
         $c = new Criteria();
         $c->add(BookPeer::TITLE, "%Restaurant%", Criteria::LIKE);
 
-        $this->assertEquals(0, count($a->getBooks($c)));
+        $this->assertEquals(0, is_countable($a->getBooks($c)) ? count($a->getBooks($c)) : 0);
 
         $b1 = new Book();
         $b1->setTitle("The Hitchhikers Guide To The Galaxy");
@@ -178,14 +178,14 @@ class Ticket520Test extends BookstoreTestBase
 
         /* Like testAddNewObjectAfterSaveWithPoisonedCache, but this time
         with a real criteria.  */
-        $this->assertEquals(0, count($a->getBooks($c)));
+        $this->assertEquals(0, is_countable($a->getBooks($c)) ? count($a->getBooks($c)) : 0);
 
         $a->save();
         $this->assertFalse($b1->isNew());
-        $this->assertEquals(0, count($a->getBooks($c)));
+        $this->assertEquals(0, is_countable($a->getBooks($c)) ? count($a->getBooks($c)) : 0);
     }
 
-    public function testDeletedBookDisappears()
+    public function testDeletedBookDisappears(): never
     {
         $this->markTestSkipped();
 
@@ -207,16 +207,16 @@ class Ticket520Test extends BookstoreTestBase
         /* All objects unsaved. As of revision 851, this circumvents the
         $colBooks cache. Anyway, fails because getBooks() never checks if
         a colBooks entry has been deleted. */
-        $this->assertEquals(2, count($a->getBooks()));
+        $this->assertEquals(2, is_countable($a->getBooks()) ? count($a->getBooks()) : 0);
         $b2->delete();
-        $this->assertEquals(1, count($a->getBooks()));
+        $this->assertEquals(1, is_countable($a->getBooks()) ? count($a->getBooks()) : 0);
 
         /* Even if we had saved everything before and the delete() had
         actually updated the DB, the $b2 would still be a "zombie" in
         $a's $colBooks field. */
     }
 
-    public function testNewObjectsGetLostOnJoin()
+    public function testNewObjectsGetLostOnJoin(): never
     {
         /* While testNewObjectsAvailableWhenSaveNotCalled passed as of
         revision 851, in this case we call getBooksJoinPublisher() instead
@@ -243,7 +243,7 @@ class Ticket520Test extends BookstoreTestBase
         $a->addBook($b2);
 
         $books = $a->getBooksJoinPublisher();
-        $this->assertEquals(2, count($books));
+        $this->assertEquals(2, is_countable($books) ? count($books) : 0);
         $this->assertContains($b1, $books);
         $this->assertContains($b2, $books);
 

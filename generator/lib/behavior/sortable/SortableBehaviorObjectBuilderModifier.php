@@ -19,11 +19,6 @@
 class SortableBehaviorObjectBuilderModifier
 {
     /**
-     * @var SortableBehavior
-     */
-    protected $behavior;
-
-    /**
      * @var Table
      */
     protected $table;
@@ -43,9 +38,11 @@ class SortableBehaviorObjectBuilderModifier
      */
     protected $peerClassname;
 
-    public function __construct($behavior)
+    /**
+     * @param \SortableBehavior $behavior
+     */
+    public function __construct(protected $behavior)
     {
-        $this->behavior = $behavior;
         $this->table = $behavior->getTable();
     }
 
@@ -113,7 +110,7 @@ class SortableBehaviorObjectBuilderModifier
         if ($this->behavior->useScope()) {
             $this->setBuilder($builder);
 
-            $condition = array();
+            $condition = [];
 
             foreach ($this->behavior->getScopes() as $scope) {
                 $condition[] = "\$this->isColumnModified({$this->peerClassname}::".strtoupper($scope).")";
@@ -201,26 +198,26 @@ protected \$oldScope;
             if ($this->behavior->hasMultipleScopes()) {
 
                 foreach ($this->behavior->getScopes() as $idx => $scope) {
-                    $name = strtolower($this->behavior->getTable()->getColumn($scope)->getName());
+                    $name = strtolower((string) $this->behavior->getTable()->getColumn($scope)->getName());
 
                     $search = "if (\$this->$name !== \$v) {";
                     $replace = $search . "
             // sortable behavior
             \$this->oldScope[$idx] = \$this->$name;
 ";
-                    $script = str_replace($search, $replace, $script);
+                    $script = str_replace($search, $replace, (string) $script);
                 }
 
             } else {
                 $scope = current($this->behavior->getScopes());
-                $name = strtolower($this->behavior->getTable()->getColumn($scope)->getName());
+                $name = strtolower((string) $this->behavior->getTable()->getColumn($scope)->getName());
 
                 $search = "if (\$this->$name !== \$v) {";
                 $replace = $search . "
             // sortable behavior
             \$this->oldScope = \$this->$name;
 ";
-                $script = str_replace($search, $replace, $script);
+                $script = str_replace($search, $replace, (string) $script);
             }
         }
     }
@@ -369,7 +366,7 @@ public function isLast(PropelPDO \$con = null)
     protected function addGetNext(&$script)
     {
         $useScope = $this->behavior->useScope();
-        list($methodSignature, $paramsDoc, $buildScope, $buildScopeVars) = $this->behavior->generateScopePhp();
+        [$methodSignature, $paramsDoc, $buildScope, $buildScopeVars] = $this->behavior->generateScopePhp();
 
         $script .= "
 /**
@@ -387,7 +384,7 @@ public function getNext(PropelPDO \$con = null)
 ";
 
         if ($useScope) {
-            $methodSignature = str_replace(' = null', '', $methodSignature);
+            $methodSignature = str_replace(' = null', '', (string) $methodSignature);
 
             $script .= "
     \$scope = \$this->getScopeValue();
@@ -412,7 +409,7 @@ public function getNext(PropelPDO \$con = null)
     {
         $useScope = $this->behavior->useScope();
 
-        list($methodSignature, $paramsDoc, $buildScope, $buildScopeVars) = $this->behavior->generateScopePhp();
+        [$methodSignature, $paramsDoc, $buildScope, $buildScopeVars] = $this->behavior->generateScopePhp();
 
         $script .= "
 /**
@@ -430,7 +427,7 @@ public function getPrevious(PropelPDO \$con = null)
 ";
 
         if ($useScope) {
-            $methodSignature = str_replace(' = null', '', $methodSignature);
+            $methodSignature = str_replace(' = null', '', (string) $methodSignature);
 
             $script .= "
     \$scope = \$this->getScopeValue();

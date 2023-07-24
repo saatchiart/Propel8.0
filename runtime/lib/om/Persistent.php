@@ -35,7 +35,7 @@ interface Persistent
      * @return void
      * @throws Exception, This method might throw an exceptions
      */
-    public function setPrimaryKey($primaryKey);
+    public function setPrimaryKey(mixed $primaryKey);
 
     /**
      * Returns whether the object has been modified, since it was
@@ -97,7 +97,6 @@ interface Persistent
     /**
      * Deletes the object.
      *
-     * @param PropelPDO $con
      *
      * @return void
      * @throws Exception
@@ -107,7 +106,6 @@ interface Persistent
     /**
      * Saves the object.
      *
-     * @param PropelPDO $con
      *
      * @return void
      * @throws Exception

@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelOnDemandFormatter when Criteria uses with().
@@ -21,6 +21,7 @@ class PropelOnDemandFormatterWithTest extends BookstoreEmptyTestBase
 {
     protected function assertCorrectHydration1($c, $msg)
     {
+        $book = null;
         $con = Propel::getConnection(BookPeer::DATABASE_NAME);
         $c->limit(1);
         $books = $c->find($con);
@@ -99,6 +100,7 @@ class PropelOnDemandFormatterWithTest extends BookstoreEmptyTestBase
 
     public function testFindOneWithEmptyLeftJoin()
     {
+        $book = null;
         // save a book with no author
         $b = new Book();
         $b->setTitle('Foo');
@@ -122,6 +124,7 @@ class PropelOnDemandFormatterWithTest extends BookstoreEmptyTestBase
 
     public function testFindOneWithRelationName()
     {
+        $emp = null;
         BookstoreDataPopulator::populate();
         BookstoreEmployeePeer::clearInstancePool();
         $c = new ModelCriteria('bookstore', 'BookstoreEmployee');
@@ -182,6 +185,7 @@ class PropelOnDemandFormatterWithTest extends BookstoreEmptyTestBase
 
     public function testFindOneWithDistantClass()
     {
+        $review = null;
         BookstoreDataPopulator::populate();
         BookPeer::clearInstancePool();
         AuthorPeer::clearInstancePool();
@@ -270,6 +274,7 @@ class PropelOnDemandFormatterWithTest extends BookstoreEmptyTestBase
 
     public function testFindOneWithColumn()
     {
+        $book = null;
         BookstoreDataPopulator::populate();
         BookPeer::clearInstancePool();
         AuthorPeer::clearInstancePool();
@@ -295,6 +300,7 @@ class PropelOnDemandFormatterWithTest extends BookstoreEmptyTestBase
 
     public function testFindOneWithClassAndColumn()
     {
+        $book = null;
         BookstoreDataPopulator::populate();
         BookPeer::clearInstancePool();
         AuthorPeer::clearInstancePool();

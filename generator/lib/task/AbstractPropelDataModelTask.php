@@ -34,19 +34,17 @@ abstract class AbstractPropelDataModelTask extends AbstractPropelTask
      *
      * @var        array Fileset[]
      */
-    protected $schemaFilesets = array();
+    protected $schemaFilesets = [];
 
     /**
      * Data models that we collect. One from each XML schema file.
      */
-    protected $dataModels = array();
+    protected $dataModels = [];
 
     /**
      * Have datamodels been initialized?
-     *
-     * @var        boolean
      */
-    private $dataModelsLoaded = false;
+    private bool $dataModelsLoaded = false;
 
     /**
      * Map of data model name to database name.
@@ -144,10 +142,8 @@ abstract class AbstractPropelDataModelTask extends AbstractPropelTask
 
     /**
      * An initialized GeneratorConfig object containing the converted Phing props.
-     *
-     * @var        GeneratorConfig
      */
-    private $generatorConfig;
+    private ?\GeneratorConfig $generatorConfig = null;
 
     /**
      * Return the data models that have been
@@ -273,7 +269,6 @@ abstract class AbstractPropelDataModelTask extends AbstractPropelTask
      * [REQUIRED] Set the output directory. It will be
      * created if it doesn't exist.
      *
-     * @param PhingFile $outputDirectory
      *
      * @return void
      * @throws BuildException
@@ -431,7 +426,7 @@ abstract class AbstractPropelDataModelTask extends AbstractPropelTask
      */
     protected function loadDataModels()
     {
-        $ads = array();
+        $ads = [];
         $totalNbTables = 0;
         $this->log('Loading XML schema files...');
         // Get all matched files from schemaFilesets
@@ -489,7 +484,7 @@ abstract class AbstractPropelDataModelTask extends AbstractPropelTask
                 $ad->setName($dmFilename);
                 $ads[] = $ad;
             }
-            $this->log(sprintf('%d tables found in %d schema files.', $totalNbTables, count($dataModelFiles)));
+            $this->log(sprintf('%d tables found in %d schema files.', $totalNbTables, is_countable($dataModelFiles) ? count($dataModelFiles) : 0));
         }
 
         if (empty($ads)) {
@@ -503,7 +498,7 @@ abstract class AbstractPropelDataModelTask extends AbstractPropelTask
 
         if (count($ads) > 1 && $this->packageObjectModel) {
             $ad = $this->joinDataModels($ads);
-            $this->dataModels = array($ad);
+            $this->dataModels = [$ad];
         } else {
             $this->dataModels = $ads;
         }

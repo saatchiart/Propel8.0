@@ -19,11 +19,6 @@
 class SortableBehaviorPeerBuilderModifier
 {
     /**
-     * @var SortableBehavior
-     */
-    protected $behavior;
-
-    /**
      * @var Table
      */
     protected $table;
@@ -43,9 +38,11 @@ class SortableBehaviorPeerBuilderModifier
      */
     protected $peerClassname;
 
-    public function __construct($behavior)
+    /**
+     * @param \SortableBehavior $behavior
+     */
+    public function __construct(protected $behavior)
     {
-        $this->behavior = $behavior;
         $this->table = $behavior->getTable();
     }
 
@@ -82,6 +79,7 @@ class SortableBehaviorPeerBuilderModifier
 
     public function staticAttributes($builder)
     {
+        $col = [];
         $tableName = $this->table->getName();
         $script = "
 /**
@@ -96,7 +94,7 @@ const RANK_COL = '" . $tableName . '.' . $this->getColumnConstant('rank_column')
                 foreach ($this->behavior->getScopes() as $scope) {
                     $col[] = "$tableName.".strtoupper($scope);
                 }
-                $col = json_encode($col);
+                $col = json_encode($col, JSON_THROW_ON_ERROR);
                 $col = "'$col'";
 
                 $script .=   "

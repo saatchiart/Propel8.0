@@ -61,10 +61,7 @@ class TestAllHooksTableModifier
 
   public function modifyTable()
   {
-    $this->table->addColumn(array(
-      'name' => 'test',
-      'type' => 'TIMESTAMP'
-    ));
+    $this->table->addColumn(['name' => 'test', 'type' => 'TIMESTAMP']);
   }
 }
 
@@ -77,52 +74,52 @@ class TestAllHooksObjectBuilderModifier
 
   public function preSave($builder)
   {
-    return '$this->preSave = 1;$this->preSaveIsAfterSave = isset($affectedRows);$this->preSaveBuilder="' . get_class($builder) . '";';
+    return '$this->preSave = 1;$this->preSaveIsAfterSave = isset($affectedRows);$this->preSaveBuilder="' . $builder::class . '";';
   }
 
   public function postSave($builder)
   {
-    return '$this->postSave = 1;$this->postSaveIsAfterSave = isset($affectedRows);$this->postSaveBuilder="' . get_class($builder) . '";';
+    return '$this->postSave = 1;$this->postSaveIsAfterSave = isset($affectedRows);$this->postSaveBuilder="' . $builder::class . '";';
   }
 
   public function preInsert($builder)
   {
-    return '$this->preInsert = 1;$this->preInsertIsAfterSave = isset($affectedRows);$this->preInsertBuilder="' . get_class($builder) . '";';
+    return '$this->preInsert = 1;$this->preInsertIsAfterSave = isset($affectedRows);$this->preInsertBuilder="' . $builder::class . '";';
   }
 
   public function postInsert($builder)
   {
-    return '$this->postInsert = 1;$this->postInsertIsAfterSave = isset($affectedRows);$this->postInsertBuilder="' . get_class($builder) . '";';
+    return '$this->postInsert = 1;$this->postInsertIsAfterSave = isset($affectedRows);$this->postInsertBuilder="' . $builder::class . '";';
   }
 
   public function preUpdate($builder)
   {
-    return '$this->preUpdate = 1;$this->preUpdateIsAfterSave = isset($affectedRows);$this->preUpdateBuilder="' . get_class($builder) . '";';
+    return '$this->preUpdate = 1;$this->preUpdateIsAfterSave = isset($affectedRows);$this->preUpdateBuilder="' . $builder::class . '";';
   }
 
   public function postUpdate($builder)
   {
-    return '$this->postUpdate = 1;$this->postUpdateIsAfterSave = isset($affectedRows);$this->postUpdateBuilder="' . get_class($builder) . '";';
+    return '$this->postUpdate = 1;$this->postUpdateIsAfterSave = isset($affectedRows);$this->postUpdateBuilder="' . $builder::class . '";';
   }
 
   public function preDelete($builder)
   {
-    return '$this->preDelete = 1;$this->preDeleteIsBeforeDelete = isset(Table3Peer::$instances[$this->id]);$this->preDeleteBuilder="' . get_class($builder) . '";';
+    return '$this->preDelete = 1;$this->preDeleteIsBeforeDelete = isset(Table3Peer::$instances[$this->id]);$this->preDeleteBuilder="' . $builder::class . '";';
   }
 
   public function postDelete($builder)
   {
-    return '$this->postDelete = 1;$this->postDeleteIsBeforeDelete = isset(Table3Peer::$instances[$this->id]);$this->postDeleteBuilder="' . get_class($builder) . '";';
+    return '$this->postDelete = 1;$this->postDeleteIsBeforeDelete = isset(Table3Peer::$instances[$this->id]);$this->postDeleteBuilder="' . $builder::class . '";';
   }
 
   public function postHydrate($builder)
   {
-    return '$this->postHydrate = 1;$this->postHydrateIsAfterHydrate = isset($this->id);$this->postHydrateBuilder="' . get_class($builder) . '";';
+    return '$this->postHydrate = 1;$this->postHydrateIsAfterHydrate = isset($this->id);$this->postHydrateBuilder="' . $builder::class . '";';
   }
 
   public function objectMethods($builder)
   {
-    return 'public function hello() { return "' . get_class($builder) .'"; }';
+    return 'public function hello() { return "' . $builder::class .'"; }';
   }
 
   public function objectCall($builder)
@@ -132,7 +129,7 @@ class TestAllHooksObjectBuilderModifier
 
   public function objectFilter(&$string, $builder)
   {
-    $string .= 'class testObjectFilter { const FOO = "' . get_class($builder) . '"; }';
+    $string .= 'class testObjectFilter { const FOO = "' . $builder::class . '"; }';
   }
 }
 
@@ -140,22 +137,22 @@ class TestAllHooksPeerBuilderModifier
 {
   public function staticAttributes($builder)
   {
-    return 'public static $customStaticAttribute = 1;public static $staticAttributeBuilder = "' . get_class($builder) . '";';
+    return 'public static $customStaticAttribute = 1;public static $staticAttributeBuilder = "' . $builder::class . '";';
   }
 
   public function staticMethods($builder)
   {
-    return 'public static function hello() { return "' . get_class($builder) . '"; }';
+    return 'public static function hello() { return "' . $builder::class . '"; }';
   }
 
   public function preSelect($builder)
   {
-    return '$con->preSelect = "' . get_class($builder) . '";';
+    return '$con->preSelect = "' . $builder::class . '";';
   }
 
   public function peerFilter(&$string, $builder)
   {
-    $string .= 'class testPeerFilter { const FOO = "' . get_class($builder) . '"; }';
+    $string .= 'class testPeerFilter { const FOO = "' . $builder::class . '"; }';
   }
 }
 

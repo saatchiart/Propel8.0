@@ -232,7 +232,7 @@ class DBOracle extends DBAdapter
         if ($cMap->isTemporal()) {
             $value = $this->formatTemporalValue($value, $cMap);
         } elseif ($cMap->getType() == PropelColumnTypes::CLOB_EMU) {
-            return $stmt->bindParam(':p' . $position, $value, $cMap->getPdoType(), strlen($value));
+            return $stmt->bindParam(':p' . $position, $value, $cMap->getPdoType(), strlen((string) $value));
         } elseif (is_resource($value) && $cMap->isLob()) {
             // we always need to make sure that the stream is rewound, otherwise nothing will
             // get written to database.
@@ -255,7 +255,7 @@ class DBOracle extends DBAdapter
     {
         $con->beginTransaction();
         if ($query instanceof ModelCriteria) {
-            $params = array();
+            $params = [];
             $dbMap = Propel::getDatabaseMap($query->getDbName());
             $sql = BasePeer::createSelectSql($query, $params);
         } else {

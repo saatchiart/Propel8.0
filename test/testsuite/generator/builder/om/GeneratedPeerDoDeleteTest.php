@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Tests the delete methods of the generated Peer classes.
@@ -56,9 +56,9 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
         //print_r(AuthorPeer::doSelect(new Criteria()));
 
         // check to make sure the right # of records was removed
-        $this->assertEquals(3, count(AuthorPeer::doSelect(new Criteria())), "Expected 3 authors after deleting.");
-        $this->assertEquals(3, count(PublisherPeer::doSelect(new Criteria())), "Expected 3 publishers after deleting.");
-        $this->assertEquals(3, count(BookPeer::doSelect(new Criteria())), "Expected 3 books after deleting.");
+        $this->assertEquals(3, is_countable(AuthorPeer::doSelect(new Criteria())) ? count(AuthorPeer::doSelect(new Criteria())) : 0, "Expected 3 authors after deleting.");
+        $this->assertEquals(3, is_countable(PublisherPeer::doSelect(new Criteria())) ? count(PublisherPeer::doSelect(new Criteria())) : 0, "Expected 3 publishers after deleting.");
+        $this->assertEquals(3, is_countable(BookPeer::doSelect(new Criteria())) ? count(BookPeer::doSelect(new Criteria())) : 0, "Expected 3 books after deleting.");
     }
 
     /**
@@ -78,7 +78,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
 
         $books = BookPeer::doSelect(new Criteria());
 
-        $this->assertEquals(1, count($books), "Expected 1 book remaining after deleting.");
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, "Expected 1 book remaining after deleting.");
         $this->assertEquals("The Tin Drum", $books[0]->getTitle(), "Expect the only remaining book to be 'The Tin Drum'");
     }
 
@@ -93,7 +93,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
         // 1) Assert the row exists right now
 
         $medias = MediaPeer::doSelect(new Criteria());
-        $this->assertTrue(count($medias) > 0, "Expected to find at least one row in 'media' table.");
+        $this->assertTrue((is_countable($medias) ? count($medias) : 0) > 0, "Expected to find at least one row in 'media' table.");
         $media = $medias[0];
         $mediaId = $media->getId();
 
@@ -222,7 +222,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
     {
         // 1) get all of the books
         $books = BookPeer::doSelect(new Criteria());
-        $bookCount = count($books);
+        $bookCount = is_countable($books) ? count($books) : 0;
 
         // 2) we have enough books to do this test
         $this->assertGreaterThan(1, $bookCount, 'There are at least two books');
@@ -232,7 +232,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
         $book2 = $books[1];
 
         // 4) delete the books
-        BookPeer::doDelete(array($book1->getId(), $book2->getId()));
+        BookPeer::doDelete([$book1->getId(), $book2->getId()]);
 
         // 5) we should have two less books than before
         $this->assertEquals($bookCount-2, BookPeer::doCount(new Criteria()), 'Two books deleted successfully.');
@@ -262,7 +262,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
     public function testDoDeleteAll()
     {
         BookPeer::doDeleteAll();
-        $this->assertEquals(0, count(BookPeer::doSelect(new Criteria())), "Expect all book rows to have been deleted.");
+        $this->assertEquals(0, is_countable(BookPeer::doSelect(new Criteria())) ? count(BookPeer::doSelect(new Criteria())) : 0, "Expect all book rows to have been deleted.");
     }
 
     /**
@@ -283,8 +283,8 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
     public function testDoDeleteAll_Cascade()
     {
         BookPeer::doDeleteAll();
-        $this->assertEquals(0, count(MediaPeer::doSelect(new Criteria())), "Expect all media rows to have been cascade deleted.");
-        $this->assertEquals(0, count(ReviewPeer::doSelect(new Criteria())), "Expect all review rows to have been cascade deleted.");
+        $this->assertEquals(0, is_countable(MediaPeer::doSelect(new Criteria())) ? count(MediaPeer::doSelect(new Criteria())) : 0, "Expect all media rows to have been cascade deleted.");
+        $this->assertEquals(0, is_countable(ReviewPeer::doSelect(new Criteria())) ? count(ReviewPeer::doSelect(new Criteria())) : 0, "Expect all review rows to have been cascade deleted.");
     }
 
     /**
@@ -296,13 +296,13 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
         $c->add(BookPeer::AUTHOR_ID, null, Criteria::NOT_EQUAL);
 
         // 1) make sure there are some books with valid authors
-        $this->assertTrue(count(BookPeer::doSelect($c)) > 0, "Expect some book.author_id columns that are not NULL.");
+        $this->assertTrue((is_countable(BookPeer::doSelect($c)) ? count(BookPeer::doSelect($c)) : 0) > 0, "Expect some book.author_id columns that are not NULL.");
 
         // 2) delete all the authors
         AuthorPeer::doDeleteAll();
 
         // 3) now verify that the book.author_id columns are all nul
-        $this->assertEquals(0, count(BookPeer::doSelect($c)), "Expect all book.author_id columns to be NULL.");
+        $this->assertEquals(0, is_countable(BookPeer::doSelect($c)) ? count(BookPeer::doSelect($c)) : 0, "Expect all book.author_id columns to be NULL.");
     }
 
     /**
@@ -340,7 +340,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
 
         // Now delete 2 of those rows (2 is special in that it is the number of rows
         // being deleted, as well as the number of things in the primary key)
-        ReaderFavoritePeer::doDelete(array(array(1,1), array(2,2)));
+        ReaderFavoritePeer::doDelete([[1, 1], [2, 2]]);
         $this->assertEquals(4, ReaderFavoritePeer::doCount(new Criteria()));
 
         //Note: these composite PK's are pairs of (BookId, ReaderId)
@@ -352,7 +352,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
         $this->assertNull(ReaderFavoritePeer::retrieveByPK(2,2));
 
         //test deletion of a single composite PK
-        ReaderFavoritePeer::doDelete(array(3,1));
+        ReaderFavoritePeer::doDelete([3, 1]);
         $this->assertEquals(3, ReaderFavoritePeer::doCount(new Criteria()));
         $this->assertNotNull(ReaderFavoritePeer::retrieveByPK(2,1));
         $this->assertNotNull(ReaderFavoritePeer::retrieveByPK(1,2));
@@ -362,7 +362,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
         $this->assertNull(ReaderFavoritePeer::retrieveByPk(3,1));
 
         //test deleting the last three
-        ReaderFavoritePeer::doDelete(array(array(2,1), array(1,2), array(3,2)));
+        ReaderFavoritePeer::doDelete([[2, 1], [1, 2], [3, 2]]);
         $this->assertEquals(0, ReaderFavoritePeer::doCount(new Criteria()));
     }
 
@@ -381,7 +381,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
         $c->add(PublisherPeer::NAME, $name);
 
         $matches = PublisherPeer::doSelect($c);
-        $this->assertEquals(1, count($matches), "Expect there to be exactly 1 publisher just-inserted.");
+        $this->assertEquals(1, is_countable($matches) ? count($matches) : 0, "Expect there to be exactly 1 publisher just-inserted.");
         $this->assertTrue( 1 != $matches[0]->getId(), "Expected to have different ID than one put in values Criteria.");
 
     }
@@ -401,7 +401,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
         $c->add(PublisherPeer::NAME, $name);
 
         $matches = PublisherPeer::doSelect($c);
-        $this->assertEquals(1, count($matches), "Expect there to be exactly 1 publisher just-inserted.");
+        $this->assertEquals(1, is_countable($matches) ? count($matches) : 0, "Expect there to be exactly 1 publisher just-inserted.");
         $this->assertTrue( 1 != $matches[0]->getId(), "Expected to have different ID than one put in values Criteria.");
 
     }
@@ -499,7 +499,7 @@ class GeneratedPeerDoDeleteTest extends BookstoreEmptyTestBase
         // if it throws an exception, then it's broken.
         try {
             BookPeer::removeInstanceFromPool(null);
-        } catch (Exception $x) {
+        } catch (Exception) {
             $this->fail("Expected to get no exception when removing an instance from the pool.");
         }
     }

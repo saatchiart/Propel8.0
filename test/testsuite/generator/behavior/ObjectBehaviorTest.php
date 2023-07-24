@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Tests the generated Object behavior hooks.
@@ -134,7 +134,7 @@ class ObjectBehaviorTest extends BookstoreTestBase
   {
     $t = new Table3();
     $t->postHydrate = 0;
-    $t->hydrate(array(1, 'Title', 'Test'));
+    $t->hydrate([1, 'Title', 'Test']);
     $this->assertEquals($t->postHydrate, 1, 'postHydrate hook is called on object hydration');
     $this->assertEquals($t->postHydrateBuilder, 'PHP5ObjectBuilder', 'postHydrate hook is called with the object builder as parameter');
     $this->assertTrue($t->postHydrateIsAfterHydrate, 'postHydrate hook is called after hydrate');

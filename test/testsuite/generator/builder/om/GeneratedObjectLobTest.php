@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 if (!defined('TESTS_BASE_DIR')) {
-    define('TESTS_BASE_DIR', realpath(dirname(__FILE__) . '/../../../..'));
+    define('TESTS_BASE_DIR', realpath(__DIR__ . '/../../../..'));
 }
 
 /**
@@ -38,7 +38,7 @@ class GeneratedObjectLobTest extends BookstoreEmptyTestBase
      *
      * @var        array string[]
      */
-    protected $sampleLobFiles = array();
+    protected $sampleLobFiles = [];
 
     protected function setUp(): void
     {
@@ -99,7 +99,7 @@ class GeneratedObjectLobTest extends BookstoreEmptyTestBase
         $size = $stat['size'];
 
         $this->assertEquals(filesize($blob_path), $size, "Expected filesize to match stat(blobrsc)");
-        $this->assertEquals(filesize($clob_path), strlen($txt), "Expected filesize to match clob strlen");
+        $this->assertEquals(filesize($clob_path), strlen((string) $txt), "Expected filesize to match clob strlen");
     }
 
     /**

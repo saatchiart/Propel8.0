@@ -144,8 +144,8 @@ class PropelSQLDiffTask extends AbstractPropelDataModelTask
 
         // comparing models
         $this->log('Comparing models...');
-        $migrationsUp = array();
-        $migrationsDown = array();
+        $migrationsUp = [];
+        $migrationsDown = [];
         foreach ($ad->getDatabases() as $database) {
             $name = $database->getName();
             $this->log(sprintf('Comparing database "%s"', $name), Project::MSG_VERBOSE);

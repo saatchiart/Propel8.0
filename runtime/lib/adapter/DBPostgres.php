@@ -205,7 +205,7 @@ class DBPostgres extends DBAdapter
     public function quoteIdentifierTable($table)
     {
         // e.g. 'database.table alias' should be escaped as '"database"."table" "alias"'
-        return '"' . strtr($table, array('.' => '"."', ' ' => '" "')) . '"';
+        return '"' . strtr($table, ['.' => '"."', ' ' => '" "']) . '"';
     }
 
     /**
@@ -220,7 +220,7 @@ class DBPostgres extends DBAdapter
     public function doExplainPlan(PropelPDO $con, $query)
     {
         if ($query instanceof ModelCriteria) {
-            $params = array();
+            $params = [];
             $dbMap = Propel::getDatabaseMap($query->getDbName());
             $sql = BasePeer::createSelectSql($query, $params);
         } else {

@@ -9,9 +9,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/diff/PropelDatabaseComparator.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/diff/PropelDatabaseDiff.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/platform/MysqlPlatform.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/diff/PropelDatabaseComparator.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/diff/PropelDatabaseDiff.php';
+require_once __DIR__ . '/../../../../../generator/lib/platform/MysqlPlatform.php';
 
 /**
  * Tests for the Table method of the PropelDatabaseComparator service class.
@@ -113,8 +113,8 @@ class PropelDatabaseTableComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $dc->compareTables();
         $databaseDiff = $dc->getDatabaseDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($databaseDiff->getAddedTables()));
-        $this->assertEquals(array('Bar' => $t4), $databaseDiff->getAddedTables());
+        $this->assertEquals(1, is_countable($databaseDiff->getAddedTables()) ? count($databaseDiff->getAddedTables()) : 0);
+        $this->assertEquals(['Bar' => $t4], $databaseDiff->getAddedTables());
     }
 
     public function testCompareAddedTableSkipSql()
@@ -184,8 +184,8 @@ class PropelDatabaseTableComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $dc->compareTables();
         $databaseDiff = $dc->getDatabaseDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($databaseDiff->getRemovedTables()));
-        $this->assertEquals(array('Bar' => $t2), $databaseDiff->getRemovedTables());
+        $this->assertEquals(1, is_countable($databaseDiff->getRemovedTables()) ? count($databaseDiff->getRemovedTables()) : 0);
+        $this->assertEquals(['Bar' => $t2], $databaseDiff->getRemovedTables());
     }
 
     public function testCompareRemovedTableSkipSql()
@@ -260,9 +260,9 @@ class PropelDatabaseTableComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $dc->compareTables();
         $databaseDiff = $dc->getDatabaseDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($databaseDiff->getModifiedTables()));
+        $this->assertEquals(1, is_countable($databaseDiff->getModifiedTables()) ? count($databaseDiff->getModifiedTables()) : 0);
         $tableDiff = PropelTableComparator::computeDiff($t1, $t3);
-        $this->assertEquals(array('Foo_Table' => $tableDiff), $databaseDiff->getModifiedTables());
+        $this->assertEquals(['Foo_Table' => $tableDiff], $databaseDiff->getModifiedTables());
     }
 
     public function testCompareModifiedTableSkipSql()
@@ -338,10 +338,10 @@ class PropelDatabaseTableComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $dc->compareTables();
         $databaseDiff = $dc->getDatabaseDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($databaseDiff->getRenamedTables()));
-        $this->assertEquals(array('Foo_Table' => 'Foo_Table2'), $databaseDiff->getRenamedTables());
-        $this->assertEquals(array(), $databaseDiff->getAddedTables());
-        $this->assertEquals(array(), $databaseDiff->getRemovedTables());
+        $this->assertEquals(1, is_countable($databaseDiff->getRenamedTables()) ? count($databaseDiff->getRenamedTables()) : 0);
+        $this->assertEquals(['Foo_Table' => 'Foo_Table2'], $databaseDiff->getRenamedTables());
+        $this->assertEquals([], $databaseDiff->getAddedTables());
+        $this->assertEquals([], $databaseDiff->getRemovedTables());
     }
 
     public function testCompareSeveralTableDifferences()
@@ -392,11 +392,11 @@ class PropelDatabaseTableComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $dc->compareTables();
         $databaseDiff = $dc->getDatabaseDiff();
         $this->assertEquals(4, $nbDiffs);
-        $this->assertEquals(array('Bar' => 'Bar2'), $databaseDiff->getRenamedTables());
-        $this->assertEquals(array('Biz' => $t5), $databaseDiff->getAddedTables());
-        $this->assertEquals(array('Baz' => $t11), $databaseDiff->getRemovedTables());
+        $this->assertEquals(['Bar' => 'Bar2'], $databaseDiff->getRenamedTables());
+        $this->assertEquals(['Biz' => $t5], $databaseDiff->getAddedTables());
+        $this->assertEquals(['Baz' => $t11], $databaseDiff->getRemovedTables());
         $tableDiff = PropelTableComparator::computeDiff($t1, $t3);
-        $this->assertEquals(array('Foo_Table' => $tableDiff), $databaseDiff->getModifiedTables());
+        $this->assertEquals(['Foo_Table' => $tableDiff], $databaseDiff->getModifiedTables());
     }
 
     public function testCompareSeveralRenamedSameTables()
@@ -441,10 +441,10 @@ class PropelDatabaseTableComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $dc->compareTables();
         $databaseDiff = $dc->getDatabaseDiff();
         $this->assertEquals(2, $nbDiffs);
-        $this->assertEquals(2, count($databaseDiff->getRenamedTables()));
-        $this->assertEquals(array('table1' => 'table4', 'table2' => 'table5'), $databaseDiff->getRenamedTables());
-        $this->assertEquals(array(), $databaseDiff->getAddedTables());
-        $this->assertEquals(array(), $databaseDiff->getRemovedTables());
+        $this->assertEquals(2, is_countable($databaseDiff->getRenamedTables()) ? count($databaseDiff->getRenamedTables()) : 0);
+        $this->assertEquals(['table1' => 'table4', 'table2' => 'table5'], $databaseDiff->getRenamedTables());
+        $this->assertEquals([], $databaseDiff->getAddedTables());
+        $this->assertEquals([], $databaseDiff->getRemovedTables());
     }
 
 }

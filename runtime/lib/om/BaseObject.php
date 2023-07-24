@@ -50,7 +50,7 @@ abstract class BaseObject
      *
      * @var        array
      */
-    protected $modifiedColumns = array();
+    protected $modifiedColumns = [];
 
     /**
      * The (virtual) columns that are added at runtime
@@ -58,7 +58,7 @@ abstract class BaseObject
      *
      * @var        array
      */
-    protected $virtualColumns = array();
+    protected $virtualColumns = [];
 
     /**
      * Empty constructor (this allows people with their own BaseObject implementation to use its constructor)
@@ -152,7 +152,6 @@ abstract class BaseObject
     /**
      * Code to be run before persisting the object
      *
-     * @param PropelPDO $con
      *
      * @return boolean
      */
@@ -163,8 +162,6 @@ abstract class BaseObject
 
     /**
      * Code to be run after persisting the object
-     *
-     * @param PropelPDO $con
      */
     public function postSave(PropelPDO $con = null)
     {
@@ -173,7 +170,6 @@ abstract class BaseObject
     /**
      * Code to be run before inserting to database
      *
-     * @param PropelPDO $con
      *
      * @return boolean
      */
@@ -184,8 +180,6 @@ abstract class BaseObject
 
     /**
      * Code to be run after inserting to database
-     *
-     * @param PropelPDO $con
      */
     public function postInsert(PropelPDO $con = null)
     {
@@ -194,7 +188,6 @@ abstract class BaseObject
     /**
      * Code to be run before updating the object in database
      *
-     * @param PropelPDO $con
      *
      * @return boolean
      */
@@ -205,8 +198,6 @@ abstract class BaseObject
 
     /**
      * Code to be run after updating the object in database
-     *
-     * @param PropelPDO $con
      */
     public function postUpdate(PropelPDO $con = null)
     {
@@ -215,7 +206,6 @@ abstract class BaseObject
     /**
      * Code to be run before deleting the object in database
      *
-     * @param PropelPDO $con
      *
      * @return boolean
      */
@@ -226,8 +216,6 @@ abstract class BaseObject
 
     /**
      * Code to be run after deleting the object in database
-     *
-     * @param PropelPDO $con
      */
     public function postDelete(PropelPDO $con = null)
     {
@@ -256,7 +244,7 @@ abstract class BaseObject
                 array_splice($this->modifiedColumns, $offset, 1);
             }
         } else {
-            $this->modifiedColumns = array();
+            $this->modifiedColumns = [];
         }
 
         return $this;
@@ -273,7 +261,7 @@ abstract class BaseObject
      */
     public function equals($obj)
     {
-        $thisclass = get_class($this);
+        $thisclass = static::class;
         if (is_object($obj) && $obj instanceof $thisclass) {
             if ($this === $obj) {
                 return true;
@@ -348,7 +336,7 @@ abstract class BaseObject
      *
      * @return BaseObject The current object, for fluid interface
      */
-    public function setVirtualColumn($name, $value)
+    public function setVirtualColumn($name, mixed $value)
     {
         $this->virtualColumns[$name] = $value;
 
@@ -365,7 +353,7 @@ abstract class BaseObject
      */
     protected function log($msg, $priority = Propel::LOG_INFO)
     {
-        return Propel::log(get_class($this) . ': ' . $msg, $priority);
+        return Propel::log(static::class . ': ' . $msg, $priority);
     }
 
     /**
@@ -381,7 +369,7 @@ abstract class BaseObject
      *
      * @return BaseObject The current object, for fluid interface
      */
-    public function importFrom($parser, $data)
+    public function importFrom(mixed $parser, $data)
     {
         if (!$parser instanceof PropelParser) {
             $parser = PropelParser::getParser($parser);
@@ -403,13 +391,13 @@ abstract class BaseObject
      *
      * @return string The exported data
      */
-    public function exportTo($parser, $includeLazyLoadColumns = true)
+    public function exportTo(mixed $parser, $includeLazyLoadColumns = true)
     {
         if (!$parser instanceof PropelParser) {
             $parser = PropelParser::getParser($parser);
         }
 
-        return $parser->fromArray($this->toArray(BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns, array(), true));
+        return $parser->fromArray($this->toArray(BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns, [], true));
     }
 
     /**
@@ -436,7 +424,7 @@ abstract class BaseObject
      *
      * @throws PropelException
      */
-    public function __call($name, $params)
+    public function __call($name, mixed $params)
     {
         if (preg_match('/get(\w+)/', $name, $matches)) {
             $virtualColumn = $matches[1];
@@ -453,7 +441,7 @@ abstract class BaseObject
             return $this->importFrom($matches[1], reset($params));
         }
         if (preg_match('/^to(\w+)$/', $name, $matches)) {
-            $includeLazyLoadColumns = isset($params[0]) ? $params[0] : true;
+            $includeLazyLoadColumns = $params[0] ?? true;
 
             return $this->exportTo($matches[1], $includeLazyLoadColumns);
         }

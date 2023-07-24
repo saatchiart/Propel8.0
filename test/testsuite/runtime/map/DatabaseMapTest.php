@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Test class for DatabaseMap.
@@ -45,7 +45,7 @@ class DatabaseMapTest extends BookstoreTestBase
     try {
       $this->databaseMap->getTable('foo');
       $this->fail('getTable() throws an exception when called on an inexistent table');
-    } catch (PropelException $e) {
+    } catch (PropelException) {
       $this->assertTrue(true, 'getTable() throws an exception when called on an inexistent table');
     }
     $tmap = $this->databaseMap->addTable('foo');
@@ -59,7 +59,7 @@ class DatabaseMapTest extends BookstoreTestBase
     try {
       $this->databaseMap->getTable('foo2');
       $this->fail('getTable() throws an exception when called on a table with no builder');
-    } catch (PropelException $e) {
+    } catch (PropelException) {
       $this->assertTrue(true, 'getTable() throws an exception when called on a table with no builder');
     }
     $tmap = new TableMap('foo2');
@@ -74,7 +74,7 @@ class DatabaseMapTest extends BookstoreTestBase
     try {
       $table2 = $this->databaseMap->getTable('baz');
       $this->assertEquals($table1, $table2, 'addTableFromMapClass() adds a table from a map class');
-    } catch (PropelException $e) {
+    } catch (PropelException) {
       $this->fail('addTableFromMapClass() adds a table from a map class');
     }
   }
@@ -84,14 +84,14 @@ class DatabaseMapTest extends BookstoreTestBase
     try {
       $this->databaseMap->getColumn('foo.BAR');
       $this->fail('getColumn() throws an exception when called on column of an inexistent table');
-    } catch (PropelException $e) {
+    } catch (PropelException) {
       $this->assertTrue(true, 'getColumn() throws an exception when called on column of an inexistent table');
     }
     $tmap = $this->databaseMap->addTable('foo');
     try {
       $this->databaseMap->getColumn('foo.BAR');
       $this->fail('getColumn() throws an exception when called on an inexistent column of an existent table');
-    } catch (PropelException $e) {
+    } catch (PropelException) {
       $this->assertTrue(true, 'getColumn() throws an exception when called on an inexistent column of an existent table');
     }
     $column = $tmap->addColumn('BAR', 'Bar', 'INTEGER');
@@ -103,14 +103,14 @@ class DatabaseMapTest extends BookstoreTestBase
     try {
       $this->databaseMap->getTableByPhpName('Foo1');
       $this->fail('getTableByPhpName() throws an exception when called on an inexistent table');
-    } catch (PropelException $e) {
+    } catch (PropelException) {
       $this->assertTrue(true, 'getTableByPhpName() throws an exception when called on an inexistent table');
     }
     $tmap = $this->databaseMap->addTable('foo1');
     try {
       $this->databaseMap->getTableByPhpName('Foo1');
       $this->fail('getTableByPhpName() throws an exception when called on a table with no phpName');
-    } catch (PropelException $e) {
+    } catch (PropelException) {
       $this->assertTrue(true, 'getTableByPhpName() throws an exception when called on a table with no phpName');
     }
     $tmap2 = new TableMap('foo2');
@@ -127,7 +127,7 @@ class DatabaseMapTest extends BookstoreTestBase
       try {
           $this->databaseMap->getTableByPhpName($classname);
           $this->fail('getTableByPhpName() throws an exception when called on an inexistent table');
-      } catch (PropelException $e) {
+      } catch (PropelException) {
           $this->assertTrue(true, 'getTableByPhpName() throws an exception when called on an inexistent table');
       }
       $tmap2 = new TableMap($name);
@@ -139,16 +139,7 @@ class DatabaseMapTest extends BookstoreTestBase
 
   public static function phpNameData()
   {
-      return array(
-              array('foo3', 'Foo3', 'Foo3'),
-              array('foo_bar', 'FooBar', 'FooBar'),
-              array('foo4', 'Foo4', 'myNameSpace\Foo4'),
-              array('foo_bar2', 'FooBar2', 'myNameSpace\FooBar2'),
-              array('baz6', 'Baz6', '\myNameSpace\FooBar\Baz6'),
-              array('foo7', 'Foo7', '\myNameSpace\Foo7'),
-              array('foo_bar8', 'FooBar8', '\myNameSpace\FooBar8'),
-              array('baz9', 'Baz9', '\myNameSpace\FooBar\Baz9')
-      );
+      return [['foo3', 'Foo3', 'Foo3'], ['foo_bar', 'FooBar', 'FooBar'], ['foo4', 'Foo4', 'myNameSpace\Foo4'], ['foo_bar2', 'FooBar2', 'myNameSpace\FooBar2'], ['baz6', 'Baz6', '\myNameSpace\FooBar\Baz6'], ['foo7', 'Foo7', '\myNameSpace\Foo7'], ['foo_bar8', 'FooBar8', '\myNameSpace\FooBar8'], ['baz9', 'Baz9', '\myNameSpace\FooBar\Baz9']];
   }
 
   public function testGetTableByPhpNameNotLoaded()

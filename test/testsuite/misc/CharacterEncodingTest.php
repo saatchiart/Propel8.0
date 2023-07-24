@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Tests the character encoding support of the adapter.
@@ -41,7 +41,7 @@ class CharacterEncodingTest extends BookstoreTestBase
         }
     }
 
-    public function testUtf8()
+    public function testUtf8(): never
     {
         $this->markTestSkipped();
 
@@ -67,8 +67,8 @@ class CharacterEncodingTest extends BookstoreTestBase
 
         $b->reload();
 
-        $this->assertEquals(37, iconv_strlen($b->getTitle(), 'utf-8'), "Expected 37 characters (not bytes) in title.");
-        $this->assertTrue(strlen($b->getTitle()) > iconv_strlen($b->getTitle(), 'utf-8'), "Expected more bytes than characters in title.");
+        $this->assertEquals(37, iconv_strlen((string) $b->getTitle(), 'utf-8'), "Expected 37 characters (not bytes) in title.");
+        $this->assertTrue(strlen((string) $b->getTitle()) > iconv_strlen((string) $b->getTitle(), 'utf-8'), "Expected more bytes than characters in title.");
 
     }
 
@@ -86,7 +86,7 @@ class CharacterEncodingTest extends BookstoreTestBase
         $a->setLastName("АКУНИН");
         $a->save();
 
-        $authorNameWindows1251 = iconv("utf-8", "windows-1251", $a->getLastName());
+        $authorNameWindows1251 = iconv("utf-8", "windows-1251", (string) $a->getLastName());
         $a->setLastName($authorNameWindows1251);
 
         // Different databases seem to handle invalid data differently (no surprise, I guess...)

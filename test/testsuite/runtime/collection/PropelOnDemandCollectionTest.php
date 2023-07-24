@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelOnDemandCollection.
@@ -36,7 +36,7 @@ class PropelOnDemandCollectionTest extends BookstoreEmptyTestBase
     public function testSetFormatter()
     {
         $this->assertTrue($this->books instanceof PropelOnDemandCollection);
-        $this->assertEquals(4, count($this->books));
+        $this->assertEquals(4, is_countable($this->books) ? count($this->books) : 0);
     }
 
     /**
@@ -95,7 +95,7 @@ class PropelOnDemandCollectionTest extends BookstoreEmptyTestBase
 
     public function testToArray()
     {
-        $this->assertNotEquals(array(), $this->books->toArray());
+        $this->assertNotEquals([], $this->books->toArray());
         // since the code from toArray comes frmo PropelObjectCollection, we'll assume it's good
     }
 
@@ -105,7 +105,7 @@ class PropelOnDemandCollectionTest extends BookstoreEmptyTestBase
     public function testFromArray()
     {
         $this->expectException(PropelException::class);
-        $this->books->fromArray(array());
+        $this->books->fromArray([]);
     }
 
 }

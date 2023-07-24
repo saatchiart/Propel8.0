@@ -20,9 +20,7 @@
 class SoftDeleteBehavior extends Behavior
 {
     // default parameters value
-    protected $parameters = array(
-        'deleted_column' => 'deleted_at',
-    );
+    protected $parameters = ['deleted_column' => 'deleted_at'];
 
     /**
      * Add the deleted_column to the current table
@@ -30,10 +28,7 @@ class SoftDeleteBehavior extends Behavior
     public function modifyTable()
     {
         if (!$this->getTable()->containsColumn($this->getParameter('deleted_column'))) {
-            $this->getTable()->addColumn(array(
-                'name' => $this->getParameter('deleted_column'),
-                'type' => 'TIMESTAMP'
-            ));
+            $this->getTable()->addColumn(['name' => $this->getParameter('deleted_column'), 'type' => 'TIMESTAMP']);
         }
     }
 
@@ -485,16 +480,6 @@ EOT;
 
     public function peerFilter(&$script)
     {
-        $script = str_replace(array(
-            'public static function doDelete(',
-            'public static function doDelete2(',
-            'public static function doDeleteAll(',
-            'public static function doDeleteAll2('
-        ), array(
-            'public static function doForceDelete(',
-            'public static function doDelete(',
-            'public static function doForceDeleteAll(',
-            'public static function doDeleteAll('
-        ), $script);
+        $script = str_replace(['public static function doDelete(', 'public static function doDelete2(', 'public static function doDeleteAll(', 'public static function doDeleteAll2('], ['public static function doForceDelete(', 'public static function doDelete(', 'public static function doForceDeleteAll(', 'public static function doDeleteAll('], (string) $script);
     }
 }

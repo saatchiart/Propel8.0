@@ -17,7 +17,7 @@
  */
 class ISBNValidator implements BasicValidator
 {
-    const NOT_ISBN_REGEXP = '/[^0-9A-Z]/';
+    final public const NOT_ISBN_REGEXP = '/[^0-9A-Z]/';
 
     /**
      * Whether the passed string matches regular expression.

@@ -19,11 +19,7 @@
 class TimestampableBehavior extends Behavior
 {
     // default parameters value
-    protected $parameters = array(
-        'create_column'      => 'created_at',
-        'update_column'      => 'updated_at',
-        'disable_updated_at' => 'false',
-    );
+    protected $parameters = ['create_column'      => 'created_at', 'update_column'      => 'updated_at', 'disable_updated_at' => 'false'];
 
     /**
      * Add the create_column and update_columns to the current table
@@ -31,18 +27,12 @@ class TimestampableBehavior extends Behavior
     public function modifyTable()
     {
         if (!$this->getTable()->containsColumn($this->getParameter('create_column'))) {
-            $this->getTable()->addColumn(array(
-                'name' => $this->getParameter('create_column'),
-                'type' => 'TIMESTAMP'
-            ));
+            $this->getTable()->addColumn(['name' => $this->getParameter('create_column'), 'type' => 'TIMESTAMP']);
         }
 
         if ($this->withUpdatedAt()) {
             if (!$this->getTable()->containsColumn($this->getParameter('update_column'))) {
-                $this->getTable()->addColumn(array(
-                    'name' => $this->getParameter('update_column'),
-                    'type' => 'TIMESTAMP'
-                ));
+                $this->getTable()->addColumn(['name' => $this->getParameter('update_column'), 'type' => 'TIMESTAMP']);
             }
         }
     }
@@ -63,7 +53,6 @@ class TimestampableBehavior extends Behavior
      * Return the constant for a given column.
      *
      * @param string    $columnName
-     * @param OMBuilder $builder
      *
      * @return string
      */
@@ -75,7 +64,6 @@ class TimestampableBehavior extends Behavior
     /**
      * Add code in ObjectBuilder::preUpdate
      *
-     * @param PHP5ObjectBuilder $builder
      *
      * @return string The code to put at the hook
      */
@@ -93,7 +81,6 @@ class TimestampableBehavior extends Behavior
     /**
      * Add code in ObjectBuilder::preInsert
      *
-     * @param PHP5ObjectBuilder $builder
      *
      * @return string The code to put at the hook
      */

@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/schemas/SchemasTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/schemas/SchemasTestBase.php';
 
 /**
  * Test class for ModelCriteria withs schemas.
@@ -22,7 +22,7 @@ class ModelCriteriaWithSchemaTest extends SchemasTestBase
 
     protected function assertCriteriaTranslation($criteria, $expectedSql, $expectedParams, $message = '')
     {
-        $params = array();
+        $params = [];
         $result = BasePeer::createSelectSql($criteria, $params);
 
         $this->assertEquals($expectedSql, $result, $message);
@@ -31,14 +31,19 @@ class ModelCriteriaWithSchemaTest extends SchemasTestBase
 
     public static function conditionsForTestReplaceNamesWithSchemas()
     {
-        return array(
-            array('ContestBookstoreContest.PrizeBookId = ?', 'PrizeBookId', 'contest.bookstore_contest.prize_book_id = ?'), // basic case
-            array('ContestBookstoreContest.PrizeBookId=?', 'PrizeBookId', 'contest.bookstore_contest.prize_book_id=?'), // without spaces
-            array('ContestBookstoreContest.Id<= ?', 'Id', 'contest.bookstore_contest.id<= ?'), // with non-equal comparator
-            array('ContestBookstoreContest.BookstoreId LIKE ?', 'BookstoreId', 'contest.bookstore_contest.bookstore_id LIKE ?'), // with SQL keyword separator
-            array('(ContestBookstoreContest.BookstoreId) LIKE ?', 'BookstoreId', '(contest.bookstore_contest.bookstore_id) LIKE ?'), // with parenthesis
-            array('(ContestBookstoreContest.Id*1.5)=1', 'Id', '(contest.bookstore_contest.id*1.5)=1') // ignore numbers
-        );
+        return [
+            ['ContestBookstoreContest.PrizeBookId = ?', 'PrizeBookId', 'contest.bookstore_contest.prize_book_id = ?'],
+            // basic case
+            ['ContestBookstoreContest.PrizeBookId=?', 'PrizeBookId', 'contest.bookstore_contest.prize_book_id=?'],
+            // without spaces
+            ['ContestBookstoreContest.Id<= ?', 'Id', 'contest.bookstore_contest.id<= ?'],
+            // with non-equal comparator
+            ['ContestBookstoreContest.BookstoreId LIKE ?', 'BookstoreId', 'contest.bookstore_contest.bookstore_id LIKE ?'],
+            // with SQL keyword separator
+            ['(ContestBookstoreContest.BookstoreId) LIKE ?', 'BookstoreId', '(contest.bookstore_contest.bookstore_id) LIKE ?'],
+            // with parenthesis
+            ['(ContestBookstoreContest.Id*1.5)=1', 'Id', '(contest.bookstore_contest.id*1.5)=1'],
+        ];
     }
 
     /**
@@ -55,7 +60,7 @@ class ModelCriteriaWithSchemaTest extends SchemasTestBase
         $c->replaceNames($origClause);
         $columns = $c->replacedColumns;
         if ($columnPhpName) {
-            $this->assertEquals(array($tableMap->getColumnByPhpName($columnPhpName)), $columns);
+            $this->assertEquals([$tableMap->getColumnByPhpName($columnPhpName)], $columns);
         }
         $this->assertEquals($modifiedClause, $origClause);
     }
@@ -64,7 +69,7 @@ class ModelCriteriaWithSchemaTest extends SchemasTestBase
 
 class TestableModelCriteriaWithSchema extends ModelCriteria
 {
-    public $joins = array();
+    public $joins = [];
 
     public function replaceNames(&$clause)
     {

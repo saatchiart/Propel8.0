@@ -158,7 +158,7 @@ class PropelSQLParser
     public static function parseFile($file)
     {
         if (!file_exists($file)) {
-            return array();
+            return [];
         }
 
         return self::parseString(file_get_contents($file));
@@ -166,15 +166,16 @@ class PropelSQLParser
 
     public function convertLineFeedsToUnixStyle()
     {
-        $this->setSQL(str_replace(array("\r\n", "\r"), "\n", $this->sql));
+        $this->setSQL(str_replace(["\r\n", "\r"], "\n", (string) $this->sql));
     }
 
     public function stripSQLCommentLines()
     {
-        $this->setSQL(preg_replace(array(
-            '#^\s*(//|--|\#).*(\n|$)#m',    // //, --, or # style comments
-            '#^\s*/\*.*?\*/#s'              // c-style comments
-        ), '', $this->sql));
+        $this->setSQL(preg_replace([
+            '#^\s*(//|--|\#).*(\n|$)#m',
+            // //, --, or # style comments
+            '#^\s*/\*.*?\*/#s',
+        ], '', (string) $this->sql));
     }
 
     /**
@@ -185,7 +186,7 @@ class PropelSQLParser
     public function explodeIntoStatements()
     {
         $this->pos = 0;
-        $sqlStatements = array();
+        $sqlStatements = [];
         while ($sqlStatement = $this->getNextStatement()) {
             $sqlStatements[] = $sqlStatement;
         }
@@ -207,7 +208,7 @@ class PropelSQLParser
         $parsedString = '';
         $lowercaseString = ''; // helper variable for performance sake
         while ($this->pos <= $this->len) {
-            $char = isset($this->sql[$this->pos]) ? $this->sql[$this->pos] : '';
+            $char = $this->sql[$this->pos] ?? '';
 
             // check flags for strings or escaper
             switch ($char) {
@@ -234,7 +235,7 @@ class PropelSQLParser
             }
 
             if (!$isInString) {
-                if (false !== strpos($lowercaseString, 'delimiter ')) {
+                if (str_contains($lowercaseString, 'delimiter ')) {
                     // remove DELIMITER from string because it's a command-line keyword only
                     $parsedString = trim(str_ireplace('delimiter ', '', $parsedString));
 
@@ -244,7 +245,7 @@ class PropelSQLParser
                     while (isset($this->sql[$this->pos]) && $this->sql[$this->pos] != "\n") {
                         $this->delimiter .= $this->sql[$this->pos++]; // increase position
                     }
-                    $this->delimiter = trim($this->delimiter);
+                    $this->delimiter = trim((string) $this->delimiter);
                     // store delimiter length for better performance
                     $this->delimiterLength = strlen($this->delimiter);
 
@@ -274,7 +275,7 @@ class PropelSQLParser
 
                 // avoid using strtolower on the whole parsed string every time new character is added
                 // there is also no point in adding characters which are in the string
-                $lowercaseString .= strtolower($char);
+                $lowercaseString .= strtolower((string) $char);
             }
 
             $parsedString .= $char;

@@ -23,10 +23,10 @@ class Behavior extends XMLElement
     protected $table;
     protected $database;
     protected $name;
-    protected $parameters = array();
+    protected $parameters = [];
     protected $isTableModified = false;
     protected $dirname;
-    protected $additionalBuilders = array();
+    protected $additionalBuilders = [];
     protected $tableModificationOrder = 50;
 
     /**
@@ -124,11 +124,7 @@ class Behavior extends XMLElement
 
     public function getParameter($name)
     {
-        if (isset($this->parameters[$name])) {
-            return $this->parameters[$name];
-        }
-
-        return null;
+        return $this->parameters[$name] ?? null;
     }
 
     /**
@@ -200,7 +196,7 @@ class Behavior extends XMLElement
      *
      * @throws InvalidArgumentException
      */
-    public function renderTemplate($filename, $vars = array(), $templateDir = '/templates/')
+    public function renderTemplate($filename, $vars = [], $templateDir = '/templates/')
     {
         $filePath = $this->getDirname() . $templateDir . $filename;
         if (!file_exists($filePath)) {
@@ -215,7 +211,7 @@ class Behavior extends XMLElement
         }
         $template = new PropelTemplate();
         $template->setTemplateFile($filePath);
-        $vars = array_merge($vars, array('behavior' => $this));
+        $vars = array_merge($vars, ['behavior' => $this]);
 
         return $template->render($vars);
     }

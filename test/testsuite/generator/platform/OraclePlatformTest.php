@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/PlatformTestProvider.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/platform/OraclePlatform.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/Column.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/VendorInfo.php';
+require_once __DIR__ . '/PlatformTestProvider.php';
+require_once __DIR__ . '/../../../../generator/lib/platform/OraclePlatform.php';
+require_once __DIR__ . '/../../../../generator/lib/model/Column.php';
+require_once __DIR__ . '/../../../../generator/lib/model/VendorInfo.php';
 
 /**
  *
@@ -584,6 +584,6 @@ ALTER TABLE book ADD CONSTRAINT book_FK_1
 
 EOF;
         // ignore tab/space indentation comparison
-        $this->assertEquals($expected, str_replace("\t", '    ', $this->getPlatform()->getAddTablesDDL($database)));
+        $this->assertEquals($expected, str_replace("\t", '    ', (string) $this->getPlatform()->getAddTablesDDL($database)));
     }
 }

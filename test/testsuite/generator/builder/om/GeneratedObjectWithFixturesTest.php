@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Tests the generated Object classes.
@@ -27,7 +27,7 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
     protected function setUp(): void
     {
         parent::setUp();
-        require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/behavior/TestAuthor.php';
+        require_once __DIR__ . '/../../../../tools/helpers/bookstore/behavior/TestAuthor.php';
     }
 
     /**
@@ -99,7 +99,7 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
             $book->setTitle("Will Fail");
             $book->save();
             $this->fail("Expect an exception to be thrown when attempting to save() a deleted object.");
-        } catch (PropelException $e) {}
+        } catch (PropelException) {}
 
             // 4) make sure that it doesn't exist in db
             $book = BookPeer::retrieveByPK($bookId);
@@ -166,6 +166,7 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
      */
     public function testSaveUnique()
     {
+        $acct3 = null;
         // The whole test is in a transaction, but this test needs real transactions
         $this->con->commit();
 
@@ -184,13 +185,13 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
         try {
             $acct2->save();
             $this->fail("Expected PropelException in first attempt to save object with duplicate value for UNIQUE constraint.");
-        } catch (Exception $x) {
+        } catch (Exception) {
             try {
                 // attempt to save it again
                 $acct3 = $acct->copy();
                 $acct3->save();
                 $this->fail("Expected PropelException in second attempt to save object with duplicate value for UNIQUE constraint.");
-            } catch (Exception $x) {
+            } catch (Exception) {
                 // this is expected.
             }
             // now let's double check that it can succeed if we're not violating the constraint.
@@ -257,7 +258,7 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
 
         $r2 = $b2->getReviews();
 
-        $this->assertEquals(count($reviews), count($r2));
+        $this->assertEquals(is_countable($reviews) ? count($reviews) : 0, is_countable($r2) ? count($r2) : 0);
 
         // Test a one-to-one object
         $emp = BookstoreEmployeePeer::doSelectOne(new Criteria());
@@ -296,7 +297,7 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
 
         $diffKeys = array_keys(array_diff($arr1, $arr2));
 
-        $expectedDiff = array(MediaPeer::COVER_IMAGE, MediaPeer::EXCERPT);
+        $expectedDiff = [MediaPeer::COVER_IMAGE, MediaPeer::EXCERPT];
 
         $this->assertEquals($expectedDiff, $diffKeys);
     }
@@ -313,16 +314,8 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
         $books = BookPeer::doSelectJoinAuthor($c);
         $book = $books[0];
 
-        $arr1 = $book->toArray(BasePeer::TYPE_PHPNAME, null, array(), true);
-        $expectedKeys = array(
-            'Id',
-            'Title',
-            'ISBN',
-            'Price',
-            'PublisherId',
-            'AuthorId',
-            'Author'
-        );
+        $arr1 = $book->toArray(BasePeer::TYPE_PHPNAME, null, [], true);
+        $expectedKeys = ['Id', 'Title', 'ISBN', 'Price', 'PublisherId', 'AuthorId', 'Author'];
         $this->assertEquals($expectedKeys, array_keys($arr1), 'toArray() can return sub arrays for hydrated related objects');
         $this->assertEquals('George', $arr1['Author']['FirstName'], 'toArray() can return sub arrays for hydrated related objects');
 
@@ -331,17 +324,8 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
         $books = BookPeer::doSelectJoinAll($c);
         $book = $books[0];
 
-        $arr2 = $book->toArray(BasePeer::TYPE_PHPNAME, null, array(), true);
-        $expectedKeys = array(
-            'Id',
-            'Title',
-            'ISBN',
-            'Price',
-            'PublisherId',
-            'AuthorId',
-            'Publisher',
-            'Author'
-        );
+        $arr2 = $book->toArray(BasePeer::TYPE_PHPNAME, null, [], true);
+        $expectedKeys = ['Id', 'Title', 'ISBN', 'Price', 'PublisherId', 'AuthorId', 'Publisher', 'Author'];
         $this->assertEquals($expectedKeys, array_keys($arr2), 'toArray() can return sub arrays for hydrated related objects');
     }
 
@@ -350,7 +334,7 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
         $a1 = new Author();
         $a1->setFirstName('Leo');
         $a1->setLastName('Tolstoi');
-        $arr = $a1->toArray(BasePeer::TYPE_PHPNAME, null, array(), true);
+        $arr = $a1->toArray(BasePeer::TYPE_PHPNAME, null, [], true);
         $this->assertFalse(array_key_exists('Books', $arr));
         $b1 = new Book();
         $b1->setTitle('War and Peace');
@@ -358,9 +342,9 @@ class GeneratedObjectWithFixturesTest extends BookstoreEmptyTestBase
         $b2->setTitle('Anna Karenina');
         $a1->addBook($b1);
         $a1->addBook($b2);
-        $arr = $a1->toArray(BasePeer::TYPE_PHPNAME, null, array(), true);
+        $arr = $a1->toArray(BasePeer::TYPE_PHPNAME, null, [], true);
         $this->assertTrue(array_key_exists('Books', $arr));
-        $this->assertEquals(2, count($arr['Books']));
+        $this->assertEquals(2, is_countable($arr['Books']) ? count($arr['Books']) : 0);
         $this->assertEquals('War and Peace', $arr['Books']['Book_0']['Title']);
         $this->assertEquals('Anna Karenina', $arr['Books']['Book_1']['Title']);
         $this->assertEquals('*RECURSION*', $arr['Books']['Book_0']['Author']);

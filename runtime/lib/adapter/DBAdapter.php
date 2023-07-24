@@ -1,4 +1,4 @@
-<?php
+runtime/lib/connection/PropelPDO.php<?php
 
 /**
  * This file is part of the Propel package.
@@ -32,26 +32,14 @@
  */
 abstract class DBAdapter
 {
-    const ID_METHOD_NONE = 0;
-    const ID_METHOD_AUTOINCREMENT = 1;
-    const ID_METHOD_SEQUENCE = 2;
+    final public const ID_METHOD_NONE = 0;
+    final public const ID_METHOD_AUTOINCREMENT = 1;
+    final public const ID_METHOD_SEQUENCE = 2;
 
     /**
      * Propel driver to Propel adapter map.
-     *
-     * @var array
      */
-    private static $adapters = array(
-        'mysql'  => 'DBMySQL',
-        'mysqli' => 'DBMySQLi',
-        'mssql'  => 'DBMSSQL',
-        'sqlsrv' => 'DBSQLSRV',
-        'oracle' => 'DBOracle',
-        'oci'    => 'DBOracle',
-        'pgsql'  => 'DBPostgres',
-        'sqlite' => 'DBSQLite',
-        ''       => 'DBNone',
-    );
+    private static array $adapters = ['mysql'  => 'DBMySQL', 'mysqli' => 'DBMySQLi', 'mssql'  => 'DBMSSQL', 'sqlsrv' => 'DBSQLSRV', 'oracle' => 'DBOracle', 'oci'    => 'DBOracle', 'pgsql'  => 'DBPostgres', 'sqlite' => 'DBSQLite', ''       => 'DBNone'];
 
     /**
      * Creates a new instance of the database adapter associated
@@ -65,7 +53,7 @@ abstract class DBAdapter
      */
     public static function factory($driver)
     {
-        $adapterClass = isset(self::$adapters[$driver]) ? self::$adapters[$driver] : null;
+        $adapterClass = self::$adapters[$driver] ?? null;
         if ($adapterClass !== null) {
             $a = new $adapterClass();
 
@@ -229,7 +217,7 @@ abstract class DBAdapter
      **/
     public function quoteIdentifierTable($table)
     {
-        return implode(" ", array_map(array($this, "quoteIdentifier"), explode(" ", $table)));
+        return implode(" ", array_map($this->quoteIdentifier(...), explode(" ", $table)));
     }
 
     /**
@@ -267,9 +255,7 @@ abstract class DBAdapter
      * Warning: duplicates logic from DefaultPlatform::getIdentifierPhp().
      * Any code modification here must be ported there.
      *
-     * @param PDO    $con
      * @param string $name
-     *
      * @return mixed
      */
     public function getId(PDO $con, $name = null)
@@ -285,7 +271,7 @@ abstract class DBAdapter
      *
      * @return string The formatted temporal value
      */
-    public function formatTemporalValue($value, $type)
+    public function formatTemporalValue(mixed $value, mixed $type)
     {
         /** @var $dt PropelDateTime */
         if ($dt = PropelDateTime::newInstance($value)) {
@@ -361,8 +347,6 @@ abstract class DBAdapter
      *
      * @param string      $sql    The sql statement
      * @param array       $params array('column' => ..., 'table' => ..., 'value' => ...)
-     * @param Criteria    $values
-     * @param DatabaseMap $dbMap
      */
     public function cleanupSQL(&$sql, array &$params, Criteria $values, DatabaseMap $dbMap)
     {
@@ -382,7 +366,7 @@ abstract class DBAdapter
      *
      * @param mixed $seed (optional) seed value for databases that support this
      */
-    abstract public function random($seed = null);
+    abstract public function random(mixed $seed = null);
 
     /**
      * Returns the "DELETE FROM <table> [AS <alias>]" part of DELETE query.
@@ -418,15 +402,13 @@ abstract class DBAdapter
      * taking into account select columns and 'as' columns (i.e. columns aliases)
      * Move from BasePeer to DBAdapter and turn from static to non static
      *
-     * @param Criteria $criteria
      * @param array    $fromClause
      * @param boolean  $aliasAll
-     *
      * @return string
      */
     public function createSelectSqlPart(Criteria $criteria, &$fromClause, $aliasAll = false)
     {
-        $selectClause = array();
+        $selectClause = [];
 
         if ($aliasAll) {
             $this->turnSelectColumnsToAliases($criteria);
@@ -441,17 +423,17 @@ abstract class DBAdapter
 
                 $selectClause[] = $columnName; // the full column name: e.g. MAX(books.price)
 
-                $parenPos = strrpos($columnName, '(');
-                $dotPos = strrpos($columnName, '.', ($parenPos !== false ? $parenPos : 0));
+                $parenPos = strrpos((string) $columnName, '(');
+                $dotPos = strrpos((string) $columnName, '.', ($parenPos !== false ? $parenPos : 0));
 
                 if ($dotPos !== false) {
                     if ($parenPos === false) { // table.column
-                        $tableName = substr($columnName, 0, $dotPos);
+                        $tableName = substr((string) $columnName, 0, $dotPos);
                     } else { // FUNC(table.column)
                         // functions may contain qualifiers so only take the last
                         // word as the table name.
                         // COUNT(DISTINCT books.price)
-                        $tableName = substr($columnName, $parenPos + 1, $dotPos - ($parenPos + 1));
+                        $tableName = substr((string) $columnName, $parenPos + 1, $dotPos - ($parenPos + 1));
                         $lastSpace = strrpos($tableName, ' ');
                         if ($lastSpace !== false) { // COUNT(DISTINCT books.price)
                             $tableName = substr($tableName, $lastSpace + 1);
@@ -492,7 +474,6 @@ abstract class DBAdapter
      *
      * @see http://propel.phpdb.org/trac/ticket/795
      *
-     * @param Criteria $criteria
      *
      * @return Criteria The input, with Select columns replaced by aliases
      */
@@ -506,7 +487,7 @@ abstract class DBAdapter
         // add the select columns back
         foreach ($selectColumns as $clause) {
             // Generate a unique alias
-            $baseAlias = preg_replace('/\W/', '_', $clause);
+            $baseAlias = preg_replace('/\W/', '_', (string) $clause);
             $alias = $baseAlias;
             // If it already exists, add a unique suffix
             $i = 0;
@@ -559,7 +540,7 @@ abstract class DBAdapter
             }
             $tableName = $param['table'];
             if (null === $tableName) {
-                $type = isset($param['type']) ? $param['type'] : PDO::PARAM_STR;
+                $type = $param['type'] ?? PDO::PARAM_STR;
                 $stmt->bindValue($parameter, $value, $type);
                 continue;
             }
@@ -582,7 +563,7 @@ abstract class DBAdapter
      *
      * @return boolean
      */
-    public function bindValue(PDOStatement $stmt, $parameter, $value, ColumnMap $cMap, $position = null)
+    public function bindValue(PDOStatement $stmt, $parameter, mixed $value, ColumnMap $cMap, $position = null)
     {
         if ($cMap->isTemporal()) {
             $value = $this->formatTemporalValue($value, $cMap);

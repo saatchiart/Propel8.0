@@ -20,14 +20,12 @@
 class CriterionIterator implements Iterator
 {
 
-    private $idx = 0;
-    private $criteria;
-    private $criteriaKeys;
-    private $criteriaSize;
+    private int $idx = 0;
+    private array $criteriaKeys;
+    private readonly int $criteriaSize;
 
-    public function __construct(Criteria $criteria)
+    public function __construct(private readonly Criteria $criteria)
     {
-        $this->criteria = $criteria;
         $this->criteriaKeys = $criteria->keys();
         $this->criteriaSize = count($this->criteriaKeys);
     }

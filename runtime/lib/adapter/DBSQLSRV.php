@@ -41,16 +41,11 @@ class DBSQLSRV extends DBMSSQL
      */
     public function setCharset(PDO $con, $charset)
     {
-        switch (strtolower($charset)) {
-            case 'utf-8':
-                $con->setAttribute(PDO::SQLSRV_ATTR_ENCODING, PDO::SQLSRV_ENCODING_UTF8);
-                break;
-            case 'system':
-                $con->setAttribute(PDO::SQLSRV_ATTR_ENCODING, PDO::SQLSRV_ENCODING_SYSTEM);
-                break;
-            default:
-                throw new PropelException('only utf-8 or system encoding are supported by the pdo_sqlsrv driver');
-        }
+        match (strtolower($charset)) {
+            'utf-8' => $con->setAttribute(PDO::SQLSRV_ATTR_ENCODING, PDO::SQLSRV_ENCODING_UTF8),
+            'system' => $con->setAttribute(PDO::SQLSRV_ATTR_ENCODING, PDO::SQLSRV_ENCODING_SYSTEM),
+            default => throw new PropelException('only utf-8 or system encoding are supported by the pdo_sqlsrv driver'),
+        };
     }
 
     /**
@@ -105,7 +100,7 @@ class DBSQLSRV extends DBMSSQL
             // value is passed by reference and if we didn't do this then the referenced parameter value
             // would change on the next loop
             $blob = "blob" . $position;
-            $$blob = $value;
+            ${$blob} = $value;
 
             return $stmt->bindParam($parameter, ${$blob}, PDO::PARAM_LOB, 0, PDO::SQLSRV_ENCODING_BINARY);
         }

@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelObjectCollection.
@@ -60,7 +60,7 @@ class PropelArrayCollectionTest extends BookstoreEmptyTestBase
         // check that the modifications are persisted
         BookPeer::clearInstancePool();
         $books = PropelQuery::from('Book')->find();
-        $this->assertEquals(0, count($books));
+        $this->assertEquals(0, is_countable($books) ? count($books) : 0);
     }
 
     /**
@@ -81,13 +81,13 @@ class PropelArrayCollectionTest extends BookstoreEmptyTestBase
     {
         $books = PropelQuery::from('Book')->setFormatter(ModelCriteria::FORMAT_ARRAY)->find();
         $pks = $books->getPrimaryKeys();
-        $this->assertEquals(4, count($pks));
+        $this->assertEquals(4, is_countable($pks) ? count($pks) : 0);
 
-        $keys = array('Book_0', 'Book_1', 'Book_2', 'Book_3');
+        $keys = ['Book_0', 'Book_1', 'Book_2', 'Book_3'];
         $this->assertEquals($keys, array_keys($pks));
 
         $pks = $books->getPrimaryKeys(false);
-        $keys = array(0, 1, 2, 3);
+        $keys = [0, 1, 2, 3];
         $this->assertEquals($keys, array_keys($pks));
 
         $bookObjects = PropelQuery::from('Book')->find();
@@ -102,10 +102,7 @@ class PropelArrayCollectionTest extends BookstoreEmptyTestBase
         $author->setFirstName('Jane');
         $author->setLastName('Austen');
         $author->save();
-        $books = array(
-            array('Title' => 'Mansfield Park', 'ISBN' => '234', 'AuthorId' => $author->getId()),
-            array('Title' => 'Pride And Prejudice', 'ISBN' => '124', 'AuthorId' => $author->getId())
-        );
+        $books = [['Title' => 'Mansfield Park', 'ISBN' => '234', 'AuthorId' => $author->getId()], ['Title' => 'Pride And Prejudice', 'ISBN' => '124', 'AuthorId' => $author->getId()]];
         $col = new PropelArrayCollection();
         $col->setModel('Book');
         $col->fromArray($books);
@@ -125,7 +122,7 @@ class PropelArrayCollectionTest extends BookstoreEmptyTestBase
     {
         $books = PropelQuery::from('Book')->setFormatter(ModelCriteria::FORMAT_ARRAY)->find();
         $booksArray = $books->toArray();
-        $this->assertEquals(4, count($booksArray));
+        $this->assertEquals(4, is_countable($booksArray) ? count($booksArray) : 0);
 
         $bookObjects = PropelQuery::from('Book')->find();
         foreach ($booksArray as $key => $book) {
@@ -133,19 +130,19 @@ class PropelArrayCollectionTest extends BookstoreEmptyTestBase
         }
 
         $booksArray = $books->toArray();
-        $keys = array(0, 1, 2, 3);
+        $keys = [0, 1, 2, 3];
         $this->assertEquals($keys, array_keys($booksArray));
 
         $booksArray = $books->toArray(null, true);
-        $keys = array('Book_0', 'Book_1', 'Book_2', 'Book_3');
+        $keys = ['Book_0', 'Book_1', 'Book_2', 'Book_3'];
         $this->assertEquals($keys, array_keys($booksArray));
 
         $booksArray = $books->toArray('Title');
-        $keys = array('Harry Potter and the Order of the Phoenix', 'Quicksilver', 'Don Juan', 'The Tin Drum');
+        $keys = ['Harry Potter and the Order of the Phoenix', 'Quicksilver', 'Don Juan', 'The Tin Drum'];
         $this->assertEquals($keys, array_keys($booksArray));
 
         $booksArray = $books->toArray('Title', true);
-        $keys = array('Book_Harry Potter and the Order of the Phoenix', 'Book_Quicksilver', 'Book_Don Juan', 'Book_The Tin Drum');
+        $keys = ['Book_Harry Potter and the Order of the Phoenix', 'Book_Quicksilver', 'Book_Don Juan', 'Book_The Tin Drum'];
         $this->assertEquals($keys, array_keys($booksArray));
     }
 
@@ -164,25 +161,8 @@ class PropelArrayCollectionTest extends BookstoreEmptyTestBase
 
         $coll = new PropelArrayCollection();
         $coll->setModel('Book');
-        $coll[]= $book->toArray(BasePeer::TYPE_PHPNAME, true, array(), true);
-        $expected = array(array(
-            'Id' => 9012,
-            'Title' => 'Don Juan',
-            'ISBN' => '0140422161',
-            'Price' => 12.99,
-            'PublisherId' => null,
-            'AuthorId' => 5678,
-            'Author' => array(
-                'Id' => 5678,
-                'FirstName' => 'George',
-                'LastName' => 'Byron',
-                'Email' => null,
-                'Age' => null,
-                'Books' => array(
-                    'Book_0' => '*RECURSION*',
-                )
-            ),
-        ));
+        $coll[]= $book->toArray(BasePeer::TYPE_PHPNAME, true, [], true);
+        $expected = [['Id' => 9012, 'Title' => 'Don Juan', 'ISBN' => '0140422161', 'Price' => 12.99, 'PublisherId' => null, 'AuthorId' => 5678, 'Author' => ['Id' => 5678, 'FirstName' => 'George', 'LastName' => 'Byron', 'Email' => null, 'Age' => null, 'Books' => ['Book_0' => '*RECURSION*']]]];
         $this->assertEquals($expected, $coll->toArray());
     }
 

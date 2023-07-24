@@ -19,13 +19,7 @@ class AggregateColumnBehavior extends Behavior
 {
 
     // default parameters value
-    protected $parameters = array(
-        'name'           => null,
-        'expression'     => null,
-        'condition'      => null,
-        'foreign_table'  => null,
-        'foreign_schema' => null,
-    );
+    protected $parameters = ['name'           => null, 'expression'     => null, 'condition'      => null, 'foreign_table'  => null, 'foreign_schema' => null];
 
     /**
      * Add the aggregate key to the current table
@@ -39,10 +33,7 @@ class AggregateColumnBehavior extends Behavior
 
         // add the aggregate column if not present
         if (!$this->getTable()->containsColumn($columnName)) {
-            $column = $this->getTable()->addColumn(array(
-                'name'    => $columnName,
-                'type'    => 'INTEGER',
-            ));
+            $column = $this->getTable()->addColumn(['name'    => $columnName, 'type'    => 'INTEGER']);
         }
 
         // add a behavior in the foreign table to autoupdate the aggregate column
@@ -51,8 +42,8 @@ class AggregateColumnBehavior extends Behavior
             $relationBehavior = new AggregateColumnRelationBehavior();
             $relationBehavior->setName('aggregate_column_relation');
             $foreignKey = $this->getForeignKey();
-            $relationBehavior->addParameter(array('name' => 'foreign_table', 'value' => $table->getName()));
-            $relationBehavior->addParameter(array('name' => 'update_method', 'value' => 'update' . $this->getColumn()->getPhpName()));
+            $relationBehavior->addParameter(['name' => 'foreign_table', 'value' => $table->getName()]);
+            $relationBehavior->addParameter(['name' => 'update_method', 'value' => 'update' . $this->getColumn()->getPhpName()]);
             $foreignTable->addBehavior($relationBehavior);
         }
     }
@@ -71,12 +62,12 @@ class AggregateColumnBehavior extends Behavior
 
     protected function addObjectCompute()
     {
-        $conditions = array();
+        $conditions = [];
         if ($this->getParameter('condition')) {
             $conditions[] = $this->getParameter('condition');
         }
 
-        $bindings = array();
+        $bindings = [];
         $database = $this->getTable()->getDatabase();
         foreach ($this->getForeignKey()->getColumnObjectsMapping() as $index => $columnReference) {
             $conditions[] = $columnReference['local']->getFullyQualifiedName() . ' = :p' . ($index + 1);
@@ -92,26 +83,17 @@ class AggregateColumnBehavior extends Behavior
             implode(' AND ', $conditions)
         );
 
-        return $this->renderTemplate('objectCompute', array(
-            'column'   => $this->getColumn(),
-            'sql'      => $sql,
-            'bindings' => $bindings,
-        ));
+        return $this->renderTemplate('objectCompute', ['column'   => $this->getColumn(), 'sql'      => $sql, 'bindings' => $bindings]);
     }
 
     protected function addObjectUpdate()
     {
-        return $this->renderTemplate('objectUpdate', array(
-            'column'  => $this->getColumn(),
-        ));
+        return $this->renderTemplate('objectUpdate', ['column'  => $this->getColumn()]);
     }
 
     public function postSave($builder)
     {
-        return $this->renderTemplate('objectPostSave', array(
-                'column'     => $this->getColumn(),
-                'columnRefk' => $builder->getRefFKCollVarName($this->getForeignKey())
-        ));
+        return $this->renderTemplate('objectPostSave', ['column'     => $this->getColumn(), 'columnRefk' => $builder->getRefFKCollVarName($this->getForeignKey())]);
     }
 
     protected function getForeignTable()

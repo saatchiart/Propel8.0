@@ -21,8 +21,6 @@ class PropelForeignKeyComparator
     /**
      * Compute the difference between two Foreign key objects
      *
-     * @param ForeignKey $fromFk
-     * @param ForeignKey $toFk
      *
      * @param boolean $caseInsensitive Whether the comparison is case insensitive.
      *                                 False by default.
@@ -33,7 +31,7 @@ class PropelForeignKeyComparator
     {
         // Check for differences in local and remote table
         $test = $caseInsensitive ?
-            strtolower($fromFk->getTableName()) != strtolower($toFk->getTableName()) :
+            strtolower((string) $fromFk->getTableName()) != strtolower((string) $toFk->getTableName()) :
             $fromFk->getTableName() != $toFk->getTableName();
         if ($test) {
             return true;
@@ -67,15 +65,15 @@ class PropelForeignKeyComparator
          *
          * "RESTRICT" and its synonym "NO ACTION" is default and is not being reported explicitly.
          */
-        $equalBehavior = array('', 'RESTRICT', 'NO ACTION');
+        $equalBehavior = ['', 'RESTRICT', 'NO ACTION'];
 
-        $fromOnUpdate = strtoupper($fromFk->normalizeFKey($fromFk->getOnUpdate()));
-        $toOnUpdate = strtoupper($toFk->normalizeFKey($toFk->getOnUpdate()));
+        $fromOnUpdate = strtoupper((string) $fromFk->normalizeFKey($fromFk->getOnUpdate()));
+        $toOnUpdate = strtoupper((string) $toFk->normalizeFKey($toFk->getOnUpdate()));
         if ((in_array($fromOnUpdate, $equalBehavior) && !in_array($toOnUpdate, $equalBehavior)) || (!in_array($fromOnUpdate, $equalBehavior) && in_array($toOnUpdate, $equalBehavior))) {
             return true;
         }
-        $fromOnDelete = strtoupper($fromFk->normalizeFKey($fromFk->getOnDelete()));
-        $toOnDelete = strtoupper($toFk->normalizeFKey($toFk->getOnDelete()));
+        $fromOnDelete = strtoupper((string) $fromFk->normalizeFKey($fromFk->getOnDelete()));
+        $toOnDelete = strtoupper((string) $toFk->normalizeFKey($toFk->getOnDelete()));
         if ((in_array($fromOnDelete, $equalBehavior) && !in_array($toOnDelete, $equalBehavior)) || (!in_array($fromOnDelete, $equalBehavior) && in_array($toOnDelete, $equalBehavior))) {
             return true;
         }

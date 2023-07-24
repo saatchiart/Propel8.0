@@ -9,9 +9,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/behavior/sortable/SortableBehavior.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../generator/lib/behavior/sortable/SortableBehavior.php';
 
 /**
  * Tests for SortableBehavior class
@@ -57,11 +57,11 @@ EOF;
     public function testParameters()
     {
         $table11 = Table11Peer::getTableMap();
-        $this->assertEquals(count($table11->getColumns()), 3, 'Sortable adds one columns by default');
+        $this->assertEquals(is_countable($table11->getColumns()) ? count($table11->getColumns()) : 0, 3, 'Sortable adds one columns by default');
         $this->assertTrue(method_exists('Table11', 'getRank'), 'Sortable adds a rank column by default');
 
         $table12 = Table12Peer::getTableMap();
-        $this->assertEquals(count($table12->getColumns()), 4, 'Sortable does not add a column when it already exists');
+        $this->assertEquals(is_countable($table12->getColumns()) ? count($table12->getColumns()) : 0, 4, 'Sortable does not add a column when it already exists');
         $this->assertTrue(method_exists('Table12', 'getPosition'), 'Sortable allows customization of rank_column name');
     }
 }

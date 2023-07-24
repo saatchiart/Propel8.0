@@ -114,7 +114,7 @@ class DBMSSQL extends DBAdapter
     public function quoteIdentifierTable($table)
     {
         // e.g. 'database.table alias' should be escaped as '[database].[table] [alias]'
-        return '[' . strtr($table, array('.' => '].[', ' ' => '] [')) . ']';
+        return '[' . strtr($table, ['.' => '].[', ' ' => '] [']) . ']';
     }
 
     /**
@@ -149,13 +149,14 @@ class DBMSSQL extends DBAdapter
      */
     public function applyLimit(&$sql, $offset, $limit)
     {
+        $orderArr = [];
         // make sure offset and limit are numeric
         if (!is_numeric($offset) || !is_numeric($limit)) {
             throw new PropelException('DBMSSQL::applyLimit() expects a number for argument 2 and 3');
         }
 
         //split the select and from clauses out of the original query
-        $selectSegment = array();
+        $selectSegment = [];
 
         $selectText = 'SELECT ';
 
@@ -192,10 +193,7 @@ class DBMSSQL extends DBAdapter
             $orders = array_map('trim', explode(',', $order));
 
             for ($i = 0; $i < count($orders); $i++) {
-                $orderArr[trim(preg_replace('/\s+(ASC|DESC)$/i', '', $orders[$i]))] = array(
-                    'sort' => (stripos($orders[$i], ' DESC') !== false) ? 'DESC' : 'ASC',
-                    'key' => $i
-                );
+                $orderArr[trim(preg_replace('/\s+(ASC|DESC)$/i', '', $orders[$i]))] = ['sort' => (stripos($orders[$i], ' DESC') !== false) ? 'DESC' : 'ASC', 'key' => $i];
             }
         }
 
@@ -215,7 +213,7 @@ class DBMSSQL extends DBAdapter
                 // we replace it with the original Table.Column designation.
                 if ($selColCount) {
                     // column with alias
-                    foreach (array(' ASC', ' DESC') as $sort) {
+                    foreach ([' ASC', ' DESC'] as $sort) {
                         $index = array_search($selColArr[2] . $sort, $orders);
                         if ($index !== false) {
                             // replace alias with "Table.Column ASC/DESC"
@@ -297,7 +295,7 @@ class DBMSSQL extends DBAdapter
     public function cleanupSQL(&$sql, array &$params, Criteria $values, DatabaseMap $dbMap)
     {
         $i = 1;
-        $paramCols = array();
+        $paramCols = [];
         foreach ($params as $param) {
             if (null !== $param['table']) {
                 $column = $dbMap->getTable($param['table'])->getColumn($param['column']);

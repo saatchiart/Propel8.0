@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 
 /**
  * Tests the generated Peer classes for enum column type constants
@@ -36,15 +36,7 @@ EOF;
 
     public function valueSetConstantProvider()
     {
-        return array(
-            array('ComplexColumnTypeEntity103Peer::BAR_FOO', 'foo'),
-            array('ComplexColumnTypeEntity103Peer::BAR_BAR', 'bar'),
-            array('ComplexColumnTypeEntity103Peer::BAR_BAZ', 'baz'),
-            array('ComplexColumnTypeEntity103Peer::BAR_1', '1'),
-            array('ComplexColumnTypeEntity103Peer::BAR_4', '4'),
-            array('ComplexColumnTypeEntity103Peer::BAR__', '('),
-            array('ComplexColumnTypeEntity103Peer::BAR_FOO_BAR', 'foo bar'),
-        );
+        return [['ComplexColumnTypeEntity103Peer::BAR_FOO', 'foo'], ['ComplexColumnTypeEntity103Peer::BAR_BAR', 'bar'], ['ComplexColumnTypeEntity103Peer::BAR_BAZ', 'baz'], ['ComplexColumnTypeEntity103Peer::BAR_1', '1'], ['ComplexColumnTypeEntity103Peer::BAR_4', '4'], ['ComplexColumnTypeEntity103Peer::BAR__', '('], ['ComplexColumnTypeEntity103Peer::BAR_FOO_BAR', 'foo bar']];
     }
 
     /**
@@ -58,13 +50,13 @@ EOF;
 
     public function testGetValueSets()
     {
-        $expected = array(ComplexColumnTypeEntity103Peer::BAR => array('foo', 'bar', 'baz', '1', '4', '(', 'foo bar'));
+        $expected = [ComplexColumnTypeEntity103Peer::BAR => ['foo', 'bar', 'baz', '1', '4', '(', 'foo bar']];
         $this->assertEquals($expected, ComplexColumnTypeEntity103Peer::getValueSets());
     }
 
     public function testGetValueSet()
     {
-        $expected = array('foo', 'bar', 'baz', '1', '4', '(', 'foo bar');
+        $expected = ['foo', 'bar', 'baz', '1', '4', '(', 'foo bar'];
         $this->assertEquals($expected, ComplexColumnTypeEntity103Peer::getValueSet(ComplexColumnTypeEntity103Peer::BAR));
     }
 

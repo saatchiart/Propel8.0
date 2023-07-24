@@ -31,7 +31,7 @@ class VersionableBehaviorQueryBuilderModifier
 
     protected function getColumnAttribute($name = 'version_column')
     {
-        return strtolower($this->behavior->getColumnForParameter($name)->getName());
+        return strtolower((string) $this->behavior->getColumnForParameter($name)->getName());
     }
 
     protected function getColumnPhpName($name = 'version_column')
@@ -80,7 +80,7 @@ class VersionableBehaviorQueryBuilderModifier
     {
         $this->setBuilder($builder);
         $script = '';
-        if (strcasecmp($this->getParameter('version_column'), 'version') != 0) {
+        if (strcasecmp((string) $this->getParameter('version_column'), 'version') != 0) {
             $this->addFilterByVersion($script);
             $this->addOrderByVersion($script);
         }

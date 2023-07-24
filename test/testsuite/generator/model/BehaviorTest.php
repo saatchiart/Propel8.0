@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/Behavior.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/Table.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/builder/util/XmlToAppData.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/behavior/TimestampableBehavior.php';
+require_once __DIR__ . '/../../../../generator/lib/model/Behavior.php';
+require_once __DIR__ . '/../../../../generator/lib/model/Table.php';
+require_once __DIR__ . '/../../../../generator/lib/builder/util/XmlToAppData.php';
+require_once __DIR__ . '/../../../../generator/lib/behavior/TimestampableBehavior.php';
 
 /**
  * Tests for Behavior class
@@ -28,7 +28,7 @@ class BehaviorTest extends \PHPUnit\Framework\TestCase
   public function testSetupObject()
   {
     $b = new Behavior();
-    $b->loadFromXML(array('name' => 'foo'));
+    $b->loadFromXML(['name' => 'foo']);
     $this->assertEquals($b->getName(), 'foo', 'setupObject() sets the Behavior name from XML attributes');
   }
 
@@ -53,16 +53,16 @@ class BehaviorTest extends \PHPUnit\Framework\TestCase
   public function testParameters()
   {
     $b = new Behavior();
-    $this->assertEquals($b->getParameters(), array(), 'Behavior parameters is an empty array by default');
-    $b->addParameter(array('name' => 'foo', 'value' => 'bar'));
-    $this->assertEquals($b->getParameters(), array('foo' => 'bar'), 'addParameter() sets a parameter from an associative array');
-    $b->addParameter(array('name' => 'foo2', 'value' => 'bar2'));
-    $this->assertEquals($b->getParameters(), array('foo' => 'bar', 'foo2' => 'bar2'), 'addParameter() adds a parameter from an associative array');
-    $b->addParameter(array('name' => 'foo', 'value' => 'bar3'));
-    $this->assertEquals($b->getParameters(), array('foo' => 'bar3', 'foo2' => 'bar2'), 'addParameter() changes a parameter from an associative array');
+    $this->assertEquals($b->getParameters(), [], 'Behavior parameters is an empty array by default');
+    $b->addParameter(['name' => 'foo', 'value' => 'bar']);
+    $this->assertEquals($b->getParameters(), ['foo' => 'bar'], 'addParameter() sets a parameter from an associative array');
+    $b->addParameter(['name' => 'foo2', 'value' => 'bar2']);
+    $this->assertEquals($b->getParameters(), ['foo' => 'bar', 'foo2' => 'bar2'], 'addParameter() adds a parameter from an associative array');
+    $b->addParameter(['name' => 'foo', 'value' => 'bar3']);
+    $this->assertEquals($b->getParameters(), ['foo' => 'bar3', 'foo2' => 'bar2'], 'addParameter() changes a parameter from an associative array');
     $this->assertEquals($b->getParameter('foo'), 'bar3', 'getParameter() retrieves a parameter value by name');
-    $b->setParameters(array('foo3' => 'bar3', 'foo4' => 'bar4'));
-    $this->assertEquals($b->getParameters(), array('foo3' => 'bar3', 'foo4' => 'bar4'), 'setParameters() changes the whole parameter array');
+    $b->setParameters(['foo3' => 'bar3', 'foo4' => 'bar4']);
+    $this->assertEquals($b->getParameters(), ['foo3' => 'bar3', 'foo4' => 'bar4'], 'setParameters() changes the whole parameter array');
   }
 
     /**
@@ -92,7 +92,7 @@ EOF;
         $this->assertEquals(1, count($behaviors), 'XmlToAppData ads as many behaviors as there are behaviors tags');
         $behavior = $table->getBehavior('timestampable');
         $this->assertEquals('table1', $behavior->getTable()->getName(), 'XmlToAppData sets the behavior table correctly');
-        $this->assertEquals(array('create_column' => 'created_on', 'update_column' => 'updated_on', 'disable_updated_at' => 'false'), $behavior->getParameters(), 'XmlToAppData sets the behavior parameters correctly');
+        $this->assertEquals(['create_column' => 'created_on', 'update_column' => 'updated_on', 'disable_updated_at' => 'false'], $behavior->getParameters(), 'XmlToAppData sets the behavior parameters correctly');
     }
 
   /**

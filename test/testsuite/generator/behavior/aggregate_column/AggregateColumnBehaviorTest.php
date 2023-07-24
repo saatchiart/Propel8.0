@@ -9,7 +9,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Tests for AggregateColumnBehavior class
@@ -23,7 +23,7 @@ class AggregateColumnBehaviorTest extends BookstoreTestBase
     public function testParameters()
     {
         $postTable = AggregatePostPeer::getTableMap();
-        $this->assertEquals(count($postTable->getColumns()), 2, 'AggregateColumn adds one column by default');
+        $this->assertEquals(is_countable($postTable->getColumns()) ? count($postTable->getColumns()) : 0, 2, 'AggregateColumn adds one column by default');
         $this->assertTrue(method_exists('AggregatePost', 'getNbComments'));
     }
 
@@ -85,7 +85,7 @@ class AggregateColumnBehaviorTest extends BookstoreTestBase
 
     public function testUpdateRelated()
     {
-        list($poll, $item1, $item2) = $this->populatePoll();
+        [$poll, $item1, $item2] = $this->populatePoll();
         $this->assertEquals(19, $poll->getTotalScore());
         $item1->setScore(10);
         $item1->save($this->con);
@@ -94,7 +94,7 @@ class AggregateColumnBehaviorTest extends BookstoreTestBase
 
     public function testDeleteRelated()
     {
-        list($poll, $item1, $item2) = $this->populatePoll();
+        [$poll, $item1, $item2] = $this->populatePoll();
         $this->assertEquals(19, $poll->getTotalScore());
         $item1->delete($this->con);
         $this->assertEquals(7, $poll->getTotalScore(), 'Deleting a related object updates the aggregate column');
@@ -104,26 +104,26 @@ class AggregateColumnBehaviorTest extends BookstoreTestBase
 
     public function testUpdateRelatedWithQuery()
     {
-        list($poll, $item1, $item2) = $this->populatePoll();
+        [$poll, $item1, $item2] = $this->populatePoll();
         $this->assertEquals(19, $poll->getTotalScore());
         AggregateItemQuery::create()
-            ->update(array('Score' => 4), $this->con);
+            ->update(['Score' => 4], $this->con);
         $this->assertEquals(8, $poll->getTotalScore(), 'Updating related objects with a query updates the aggregate column');
     }
 
     public function testUpdateRelatedWithQueryUsingAlias()
     {
-        list($poll, $item1, $item2) = $this->populatePoll();
+        [$poll, $item1, $item2] = $this->populatePoll();
         $this->assertEquals(19, $poll->getTotalScore());
         AggregateItemQuery::create()
             ->setModelAlias('foo', true)
-            ->update(array('Score' => 4), $this->con);
+            ->update(['Score' => 4], $this->con);
         $this->assertEquals(8, $poll->getTotalScore(), 'Updating related objects with a query using alias updates the aggregate column');
     }
 
     public function testDeleteRelatedWithQuery()
     {
-        list($poll, $item1, $item2) = $this->populatePoll();
+        [$poll, $item1, $item2] = $this->populatePoll();
         $this->assertEquals(19, $poll->getTotalScore());
         AggregateItemQuery::create()
             ->deleteAll($this->con);
@@ -132,7 +132,7 @@ class AggregateColumnBehaviorTest extends BookstoreTestBase
 
     public function testDeleteRelatedWithQueryUsingAlias()
     {
-        list($poll, $item1, $item2) = $this->populatePoll();
+        [$poll, $item1, $item2] = $this->populatePoll();
         $this->assertEquals(19, $poll->getTotalScore());
         AggregateItemQuery::create()
             ->setModelAlias('foo', true)
@@ -257,7 +257,7 @@ class AggregateColumnBehaviorTest extends BookstoreTestBase
         $item2->setAggregatePoll($poll);
         $item2->save($this->con);
 
-        return array($poll, $item1, $item2);
+        return [$poll, $item1, $item2];
     }
 
 }
@@ -302,9 +302,8 @@ class TestablePost extends AggregatePost
 {
     public $countComputeCall = 0;
     /**
-    * @param PropelPDO $con
-    * @return string
-    */
+     * @return string
+     */
     public function computeNbComments(PropelPDO $con)
     {
         $this->countComputeCall++;

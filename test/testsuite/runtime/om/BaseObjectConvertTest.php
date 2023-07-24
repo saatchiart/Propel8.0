@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Test class for BaseObject.
@@ -71,7 +71,7 @@ class BaseObjectConvertTest extends BookstoreTestBase
 
 EOF;
 
-        return array(array($expected));
+        return [[$expected]];
     }
 
     /**
@@ -127,7 +127,7 @@ Author:
 
 EOF;
 
-        return array(array($expected));
+        return [[$expected]];
     }
 
     /**
@@ -164,7 +164,7 @@ EOF;
 {"Id":9012,"Title":"Don Juan","ISBN":"0140422161","Price":12.99,"PublisherId":1234,"AuthorId":5678,"Publisher":{"Id":1234,"Name":"Penguin","Books":{"Book_0":"*RECURSION*"}},"Author":{"Id":5678,"FirstName":"George","LastName":"Byron","Email":null,"Age":null,"Books":{"Book_0":"*RECURSION*"}}}
 EOF;
 
-        return array(array($expected));
+        return [[$expected]];
     }
 
     /**
@@ -199,7 +199,7 @@ EOF;
     {
         $expected = "Id,Title,ISBN,Price,PublisherId,AuthorId,Publisher,Author\r\n9012,Don Juan,0140422161,12.99,1234,5678,\"a:3:{s:2:\\\"Id\\\";i:1234;s:4:\\\"Name\\\";s:7:\\\"Penguin\\\";s:5:\\\"Books\\\";a:1:{s:6:\\\"Book_0\\\";s:11:\\\"*RECURSION*\\\";}}\",\"a:6:{s:2:\\\"Id\\\";i:5678;s:9:\\\"FirstName\\\";s:6:\\\"George\\\";s:8:\\\"LastName\\\";s:5:\\\"Byron\\\";s:5:\\\"Email\\\";N;s:3:\\\"Age\\\";N;s:5:\\\"Books\\\";a:1:{s:6:\\\"Book_0\\\";s:11:\\\"*RECURSION*\\\";}}\"\r\n";
 
-        return array(array($expected));
+        return [[$expected]];
     }
 
     /**

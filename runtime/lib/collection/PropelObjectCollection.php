@@ -81,7 +81,7 @@ class PropelObjectCollection extends PropelCollection
      */
     public function getPrimaryKeys($usePrefix = true)
     {
-        $ret = array();
+        $ret = [];
 
         /** @var $obj BaseObject */
         foreach ($this as $key => $obj) {
@@ -111,6 +111,8 @@ class PropelObjectCollection extends PropelCollection
     }
 
     /**
+     * @inheritDoc
+     *
      * Get an array representation of the collection
      *
      * @param string $keyColumn If null, the returned array uses an incremental index.
@@ -138,12 +140,12 @@ class PropelObjectCollection extends PropelCollection
      *
      * @return array
      */
-    public function getArrayCopy($keyColumn = null, $usePrefix = false)
+    public function getArrayCopy($keyColumn = null, $usePrefix = false): array
     {
         if (null === $keyColumn && false === $usePrefix) {
             return parent::getArrayCopy();
         }
-        $ret = array();
+        $ret = [];
         $keyGetterMethod = 'get' . $keyColumn;
         foreach ($this as $key => $obj) {
             $key = null === $keyColumn ? $key : $obj->$keyGetterMethod();
@@ -173,11 +175,11 @@ class PropelObjectCollection extends PropelCollection
      */
     public function toKeyValue($keyColumn = 'PrimaryKey', $valueColumn = null)
     {
-        $ret = array();
+        $ret = [];
         $valueGetterMethod = (null === $valueColumn) ? '__toString' : ('get' . $valueColumn);
 
         if (!is_array($keyColumn)) {
-            $keyColumn = array($keyColumn);
+            $keyColumn = [$keyColumn];
         }
 
         foreach ($this as $obj) {

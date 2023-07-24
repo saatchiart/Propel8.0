@@ -34,18 +34,12 @@ class DebugPDOStatement extends PDOStatement
      * @see       self::bindValue()
      * @var       array
      */
-    protected static $typeMap = array(
-        PDO::PARAM_BOOL => "PDO::PARAM_BOOL",
-        PDO::PARAM_INT => "PDO::PARAM_INT",
-        PDO::PARAM_STR => "PDO::PARAM_STR",
-        PDO::PARAM_LOB => "PDO::PARAM_LOB",
-        PDO::PARAM_NULL => "PDO::PARAM_NULL",
-    );
+    protected static $typeMap = [PDO::PARAM_BOOL => "PDO::PARAM_BOOL", PDO::PARAM_INT => "PDO::PARAM_INT", PDO::PARAM_STR => "PDO::PARAM_STR", PDO::PARAM_LOB => "PDO::PARAM_LOB", PDO::PARAM_NULL => "PDO::PARAM_NULL"];
 
     /**
      * @var       array  The values that have been bound
      */
-    protected $boundValues = array();
+    protected $boundValues = [];
 
     /**
      * Construct a new statement class with reference to main DebugPDO object from
@@ -65,13 +59,13 @@ class DebugPDOStatement extends PDOStatement
      *
      * @return string
      */
-    public function getExecutedQueryString(array $values = array())
+    public function getExecutedQueryString(array $values = []): string
     {
         $sql = $this->queryString;
         $boundValues = empty($values) ? $this->boundValues : $values;
-        $matches = array();
+        $matches = [];
         if (preg_match_all('/(:p[0-9]+\b)/', $sql, $matches)) {
-            $size = count($matches[1]);
+            $size = is_countable($matches[1]) ? count($matches[1]) : 0;
             for ($i = $size - 1; $i >= 0; $i--) {
                 $pos = $matches[1][$i];
 
@@ -101,12 +95,12 @@ class DebugPDOStatement extends PDOStatement
      *
      * @return boolean
      */
-    public function execute($input_parameters = null)
+    #[ReturnTypeWillChange] public function execute($input_parameters = null)
     {
         $debug = $this->pdo->getDebugSnapshot();
         $return = parent::execute($input_parameters);
 
-        $sql = $this->getExecutedQueryString($input_parameters ? $input_parameters : []);
+        $sql = $this->getExecutedQueryString($input_parameters ?: []);
         $this->pdo->log($sql, null, __METHOD__, $debug);
         $this->pdo->setLastExecutedQuery($sql);
         $this->pdo->incrementQueryCount();
@@ -124,10 +118,10 @@ class DebugPDOStatement extends PDOStatement
      *
      * @return boolean
      */
-    public function bindValue($pos, $value, $type = PDO::PARAM_STR)
+    #[ReturnTypeWillChange] public function bindValue($pos, mixed $value, $type = PDO::PARAM_STR)
     {
         $debug = $this->pdo->getDebugSnapshot();
-        $typestr = isset(self::$typeMap[$type]) ? self::$typeMap[$type] : '(default)';
+        $typestr = self::$typeMap[$type] ?? '(default)';
         $return = parent::bindValue($pos, $value, $type);
         $valuestr = $type == PDO::PARAM_LOB ? '[LOB value]' : var_export($value, true);
         $msg = sprintf('Binding %s at position %s w/ PDO type %s', $valuestr, $pos, $typestr);
@@ -149,15 +143,14 @@ class DebugPDOStatement extends PDOStatement
      * @param mixed   $value          The value to bind to the parameter.
      * @param integer $type           Explicit data type for the parameter using the PDO::PARAM_* constants. Defaults to PDO::PARAM_STR.
      * @param integer $length         Length of the data type. To indicate that a parameter is an OUT parameter from a stored procedure, you must explicitly set the length.
-     * @param mixed   $driver_options
      *
      * @return boolean
      */
-    public function bindParam($pos, &$value, $type = PDO::PARAM_STR, $length = 0, $driver_options = null)
+    #[ReturnTypeWillChange] public function bindParam($pos, mixed &$value, $type = PDO::PARAM_STR, $length = 0, mixed $driver_options = null)
     {
         $originalValue = $value;
         $debug = $this->pdo->getDebugSnapshot();
-        $typestr = isset(self::$typeMap[$type]) ? self::$typeMap[$type] : '(default)';
+        $typestr = self::$typeMap[$type] ?? '(default)';
         $return = parent::bindParam($pos, $value, $type, $length, $driver_options);
         $valuestr = $length > 100 ? '[Large value]' : var_export($value, true);
         $msg = sprintf('Binding %s at position %s w/ PDO type %s', $valuestr, $pos, $typestr);

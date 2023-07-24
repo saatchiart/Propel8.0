@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/builder/util/XmlToAppData.php';
+require_once __DIR__ . '/../../../../../generator/lib/builder/util/XmlToAppData.php';
 
 /**
  * Tests for XmlToAppData class
@@ -79,7 +79,7 @@ EOF;
 
     public function testParseFile()
     {
-        $path = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'testSchema.xml');
+        $path = realpath(__DIR__ . DIRECTORY_SEPARATOR . 'testSchema.xml');
         $xtad = new XmlToAppData();
         $appData = $xtad->parseFile($path);
         $expectedAppData = <<<EOF
@@ -96,7 +96,7 @@ EOF;
 
     public function testParseFileExternalSchema()
     {
-        $path = realpath(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'outerSchema.xml');
+        $path = realpath(__DIR__ . DIRECTORY_SEPARATOR . 'outerSchema.xml');
         $xtad = new XmlToAppData();
         $appData = $xtad->parseFile($path);
         $expectedAppData = <<<EOF
@@ -130,15 +130,7 @@ EOF;
      */
     public function providePathsForIsAbsolutePath()
     {
-        return array(
-            array('/var/lib', true),
-            array('c:\\\\var\\lib', true),
-            array('\\var\\lib', true),
-            array('var/lib', false),
-            array('../var/lib', false),
-            array('', false),
-            array(null, false)
-        );
+        return [['/var/lib', true], ['c:\\\\var\\lib', true], ['\\var\\lib', true], ['var/lib', false], ['../var/lib', false], ['', false], [null, false]];
     }
 }
 

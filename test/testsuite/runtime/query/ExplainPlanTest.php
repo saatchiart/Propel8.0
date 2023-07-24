@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
 
 /**
  * Test class for SubQueryTest.
@@ -49,7 +49,7 @@ class ExplainPlanTest extends BookstoreTestBase
         } elseif ($db instanceof DBOracle) {
             $this->assertTrue(sizeof($explain) > 2, 'Explain plan return more than 2 lines');
         } else {
-            $this->markTestSkipped('Cannot test explain plan on adapter ' . get_class($db));
+            $this->markTestSkipped('Cannot test explain plan on adapter ' . $db::class);
         }
     }
 
@@ -80,7 +80,7 @@ class ExplainPlanTest extends BookstoreTestBase
         } elseif ($db instanceof DBOracle) {
             $this->assertTrue(sizeof($explain) > 2, 'Explain plan return more than 2 lines');
         } else {
-            $this->markTestSkipped('Cannot test explain plan on adapter ' . get_class($db));
+            $this->markTestSkipped('Cannot test explain plan on adapter ' . $db::class);
         }
     }
 }

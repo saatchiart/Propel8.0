@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * @package misc
@@ -23,7 +23,7 @@ class PoisonedCacheBugTest extends BookstoreTestBase
     /**
      * @var Book[]
      */
-    private $books;
+    private array $books;
 
     public function setUp(): void
     {
@@ -46,7 +46,7 @@ class PoisonedCacheBugTest extends BookstoreTestBase
         $a->save();
 
         $this->author = $a;
-        $this->books = array($b1, $b2);
+        $this->books = [$b1, $b2];
 
         Propel::enableInstancePooling();
 
@@ -58,7 +58,7 @@ class PoisonedCacheBugTest extends BookstoreTestBase
     {
         $this->assertTrue(Propel::isInstancePoolingEnabled());
 
-        $this->assertEquals(2, count($this->author->getBooks()));
+        $this->assertEquals(2, is_countable($this->author->getBooks()) ? count($this->author->getBooks()) : 0);
         $this->assertEquals(2, $this->author->countBooks());
     }
 
@@ -72,7 +72,7 @@ class PoisonedCacheBugTest extends BookstoreTestBase
 
         $books = BookPeer::doSelectJoinAuthor($c);
 
-        $this->assertEquals(2, count($books[0]->getAuthor()->getBooks()));
+        $this->assertEquals(2, is_countable($books[0]->getAuthor()->getBooks()) ? count($books[0]->getAuthor()->getBooks()) : 0);
         $this->assertEquals(2, $books[0]->getAuthor()->countBooks());
     }
 
@@ -99,7 +99,7 @@ class PoisonedCacheBugTest extends BookstoreTestBase
         // ... later down the line fetch the author
         $author = AuthorPeer::retrieveByPK($this->author->getId());
 
-        $this->assertEquals(2, count($author->getBooks()));
+        $this->assertEquals(2, is_countable($author->getBooks()) ? count($author->getBooks()) : 0);
         $this->assertEquals(2, $author->countBooks());
     }
 
@@ -111,7 +111,7 @@ class PoisonedCacheBugTest extends BookstoreTestBase
         $c1->setTitle("ORM 101");
         $author->addBook($c1);
 
-        $this->assertEquals(3, count($author->getBooks()));
+        $this->assertEquals(3, is_countable($author->getBooks()) ? count($author->getBooks()) : 0);
         $this->assertEquals(3, $author->countBooks());
     }
 
@@ -124,7 +124,7 @@ class PoisonedCacheBugTest extends BookstoreTestBase
         $books[0]->setTitle('Modified');
 
         $books2 = $books[0]->getAuthor()->getBooks();
-        $this->assertEquals(2, count($books2));
+        $this->assertEquals(2, is_countable($books2) ? count($books2) : 0);
         $this->assertEquals(2, $books2[0]->getAuthor()->countBooks());
 
         $this->assertEquals('Modified', $books2[0]->getTitle());

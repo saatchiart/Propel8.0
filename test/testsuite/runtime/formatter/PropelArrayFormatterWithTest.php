@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelArrayFormatter when Criteria uses with().
@@ -107,7 +107,7 @@ class PropelArrayFormatterWithTest extends BookstoreEmptyTestBase
         $book = $c->findOne($con);
         $count = $con->getQueryCount();
         $author = $book['Author'];
-        $this->assertEquals(array(), $author, 'Related object is not hydrated if empty');
+        $this->assertEquals([], $author, 'Related object is not hydrated if empty');
     }
 
     public function testFindOneWithRelationName()
@@ -155,7 +155,7 @@ class PropelArrayFormatterWithTest extends BookstoreEmptyTestBase
         $c->with('Author');
         $books = $c->find();
 
-        $this->assertEquals(2, count($books));
+        $this->assertEquals(2, is_countable($books) ? count($books) : 0);
         $firstBook = $books[0];
         $this->assertTrue(isset($firstBook['Author']));
         $secondBook = $books[1];
@@ -265,14 +265,14 @@ class PropelArrayFormatterWithTest extends BookstoreEmptyTestBase
         $c->with('Review');
         $con = Propel::getConnection(BookPeer::DATABASE_NAME);
         $books = $c->find($con);
-        $this->assertEquals(1, count($books), 'with() does not duplicate the main object');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'with() does not duplicate the main object');
         $book = $books[0];
         $this->assertEquals($book['Title'], 'Harry Potter and the Order of the Phoenix', 'Main object is correctly hydrated');
-        $this->assertEquals(array('Id', 'Title', 'ISBN', 'Price', 'PublisherId', 'AuthorId', 'Reviews'), array_keys($book), 'with() adds a plural index for the one to many relationship');
+        $this->assertEquals(['Id', 'Title', 'ISBN', 'Price', 'PublisherId', 'AuthorId', 'Reviews'], array_keys($book), 'with() adds a plural index for the one to many relationship');
         $reviews = $book['Reviews'];
-        $this->assertEquals(2, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(2, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
         $review1 = $reviews[0];
-        $this->assertEquals(array('Id', 'ReviewedBy', 'ReviewDate', 'Recommended', 'Status', 'BookId'), array_keys($review1), 'with() Related objects are correctly hydrated');
+        $this->assertEquals(['Id', 'ReviewedBy', 'ReviewDate', 'Recommended', 'Status', 'BookId'], array_keys($review1), 'with() Related objects are correctly hydrated');
     }
 
     public function testFindOneWithOneToManyCustomOrder()
@@ -304,7 +304,7 @@ class PropelArrayFormatterWithTest extends BookstoreEmptyTestBase
             ->orderBy('Book.Title')
             ->with('Book')
             ->find();
-        $this->assertEquals(2, count($authors), 'with() used on a many-to-many doesn\'t change the main object count');
+        $this->assertEquals(2, is_countable($authors) ? count($authors) : 0, 'with() used on a many-to-many doesn\'t change the main object count');
     }
 
     public function testFindOneWithOneToManyThenManyToOne()
@@ -320,15 +320,15 @@ class PropelArrayFormatterWithTest extends BookstoreEmptyTestBase
         $c->setFormatter(ModelCriteria::FORMAT_ARRAY);
         $con = Propel::getConnection(BookPeer::DATABASE_NAME);
         $authors = $c->find($con);
-        $this->assertEquals(1, count($authors), 'with() does not duplicate the main object');
+        $this->assertEquals(1, is_countable($authors) ? count($authors) : 0, 'with() does not duplicate the main object');
         $rowling = $authors[0];
         $this->assertEquals($rowling['FirstName'], 'J.K.', 'Main object is correctly hydrated');
         $books = $rowling['Books'];
-        $this->assertEquals(1, count($books), 'Related objects are correctly hydrated');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'Related objects are correctly hydrated');
         $book = $books[0];
         $this->assertEquals($book['Title'], 'Harry Potter and the Order of the Phoenix', 'Related object is correctly hydrated');
         $reviews = $book['Reviews'];
-        $this->assertEquals(2, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(2, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
     }
 
     public function testFindOneWithOneToManyThenManyToOneUsingAlias()
@@ -344,15 +344,15 @@ class PropelArrayFormatterWithTest extends BookstoreEmptyTestBase
         $c->setFormatter(ModelCriteria::FORMAT_ARRAY);
         $con = Propel::getConnection(BookPeer::DATABASE_NAME);
         $authors = $c->find($con);
-        $this->assertEquals(1, count($authors), 'with() does not duplicate the main object');
+        $this->assertEquals(1, is_countable($authors) ? count($authors) : 0, 'with() does not duplicate the main object');
         $rowling = $authors[0];
         $this->assertEquals($rowling['FirstName'], 'J.K.', 'Main object is correctly hydrated');
         $books = $rowling['Books'];
-        $this->assertEquals(1, count($books), 'Related objects are correctly hydrated');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'Related objects are correctly hydrated');
         $book = $books[0];
         $this->assertEquals($book['Title'], 'Harry Potter and the Order of the Phoenix', 'Related object is correctly hydrated');
         $reviews = $book['Reviews'];
-        $this->assertEquals(2, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(2, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
     }
 
     public function testFindWithLeftJoinWithOneToManyAndNullObject()
@@ -406,7 +406,7 @@ class PropelArrayFormatterWithTest extends BookstoreEmptyTestBase
         $c->withColumn('Author.LastName', 'AuthorName2');
         $con = Propel::getConnection(BookPeer::DATABASE_NAME);
         $book = $c->findOne($con);
-        $this->assertEquals(array('Id', 'Title', 'ISBN', 'Price', 'PublisherId', 'AuthorId', 'AuthorName', 'AuthorName2'), array_keys($book), 'withColumn() do not change the resulting model class');
+        $this->assertEquals(['Id', 'Title', 'ISBN', 'Price', 'PublisherId', 'AuthorId', 'AuthorName', 'AuthorName2'], array_keys($book), 'withColumn() do not change the resulting model class');
         $this->assertEquals('The Tin Drum', $book['Title']);
         $this->assertEquals('Gunter', $book['AuthorName'], 'PropelArrayFormatter adds withColumns as columns');
         $this->assertEquals('Grass', $book['AuthorName2'], 'PropelArrayFormatter correctly hydrates all as columns');
@@ -427,7 +427,7 @@ class PropelArrayFormatterWithTest extends BookstoreEmptyTestBase
         $c->with('Author');
         $con = Propel::getConnection(BookPeer::DATABASE_NAME);
         $book = $c->findOne($con);
-        $this->assertEquals(array('Id', 'Title', 'ISBN', 'Price', 'PublisherId', 'AuthorId', 'Author', 'AuthorName', 'AuthorName2'), array_keys($book), 'withColumn() do not change the resulting model class');
+        $this->assertEquals(['Id', 'Title', 'ISBN', 'Price', 'PublisherId', 'AuthorId', 'Author', 'AuthorName', 'AuthorName2'], array_keys($book), 'withColumn() do not change the resulting model class');
         $this->assertEquals('The Tin Drum', $book['Title']);
         $this->assertEquals('Gunter', $book['Author']['FirstName'], 'PropelArrayFormatter correctly hydrates withclass and columns');
         $this->assertEquals('Gunter', $book['AuthorName'], 'PropelArrayFormatter adds withColumns as columns');
@@ -450,6 +450,6 @@ class PropelArrayFormatterWithTest extends BookstoreEmptyTestBase
             ->joinWith('Review')
             ->findPk($pk, $con);
         $reviews = $book['Reviews'];
-        $this->assertEquals(2, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(2, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
     }
 }

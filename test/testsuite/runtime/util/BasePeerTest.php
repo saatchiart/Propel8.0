@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
 
 /**
  * Tests the BasePeer classes.
@@ -70,7 +70,7 @@ class BasePeerTest extends BookstoreTestBase
         $c->setLimit(3);
         try {
             $count = BasePeer::doCount($c, $con);
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('doCount() cannot deal with a criteria selecting duplicate column names ');
         }
     }
@@ -90,7 +90,7 @@ class BasePeerTest extends BookstoreTestBase
         $b->setStoreName("SortTest3")->setPopulationServed(302)->save();
 
         $b = new Bookstore();
-        $b->setStoreName("SortTest4")->setPopulationServed(10000000)->save();
+        $b->setStoreName("SortTest4")->setPopulationServed(10_000_000)->save();
 
         $c = new Criteria();
         $c->setIgnoreCase(true);
@@ -107,7 +107,7 @@ class BasePeerTest extends BookstoreTestBase
     /**
      *
      */
-    public function testMixedJoinOrder()
+    public function testMixedJoinOrder(): never
     {
         $this->markTestSkipped('Famous cross join problem, to be solved one day');
         $c = new Criteria(BookPeer::DATABASE_NAME);
@@ -117,7 +117,7 @@ class BasePeerTest extends BookstoreTestBase
         $c->addJoin(BookPeer::PUBLISHER_ID, PublisherPeer::ID, Criteria::LEFT_JOIN);
         $c->addJoin(BookPeer::AUTHOR_ID, AuthorPeer::ID);
 
-        $params = array();
+        $params = [];
         $sql = BasePeer::createSelectSql($c, $params);
 
         $expectedSql = "SELECT book.id, book.title FROM book LEFT JOIN publisher ON (book.PUBLISHER_ID=publisher.id), author WHERE book.AUTHOR_ID=author.id";
@@ -142,7 +142,7 @@ class BasePeerTest extends BookstoreTestBase
         $c->setOffset(0);
         $c->setLimit(20);
 
-        $params = array();
+        $params = [];
         $sql = BasePeer::createSelectSql($c, $params);
 
         $expectedSql = "SELECT TOP 20 book.id, book.title, publisher.NAME, (SELECT MAX(publisher.NAME) FROM publisher WHERE publisher.id = book.PUBLISHER_ID) AS PublisherName FROM book LEFT JOIN publisher ON (book.PUBLISHER_ID=publisher.id)";
@@ -165,7 +165,7 @@ class BasePeerTest extends BookstoreTestBase
         $c->setOffset(20);
         $c->setLimit(20);
 
-        $params = array();
+        $params = [];
 
         $expectedSql = "SELECT [book.id], [book.title], [publisher.NAME], [PublisherName] FROM (SELECT ROW_NUMBER() OVER(ORDER BY book.id) AS [RowNumber], book.id AS [book.id], book.title AS [book.title], publisher.NAME AS [publisher.NAME], (SELECT MAX(publisher.NAME) FROM publisher WHERE publisher.id = book.PUBLISHER_ID) AS [PublisherName] FROM book LEFT JOIN publisher ON (book.PUBLISHER_ID=publisher.id)) AS derivedb WHERE RowNumber BETWEEN 21 AND 40";
         $sql = BasePeer::createSelectSql($c, $params);
@@ -189,7 +189,7 @@ class BasePeerTest extends BookstoreTestBase
         $c->setOffset(20);
         $c->setLimit(20);
 
-        $params = array();
+        $params = [];
 
         $expectedSql = "SELECT [book.id], [book.title], [publisher.NAME], [PublisherName] FROM (SELECT ROW_NUMBER() OVER(ORDER BY (SELECT MAX(publisher.NAME) FROM publisher WHERE publisher.id = book.PUBLISHER_ID) DESC) AS [RowNumber], book.id AS [book.id], book.title AS [book.title], publisher.NAME AS [publisher.NAME], (SELECT MAX(publisher.NAME) FROM publisher WHERE publisher.id = book.PUBLISHER_ID) AS [PublisherName] FROM book LEFT JOIN publisher ON (book.PUBLISHER_ID=publisher.id)) AS derivedb WHERE RowNumber BETWEEN 21 AND 40";
         $sql = BasePeer::createSelectSql($c, $params);
@@ -214,7 +214,7 @@ class BasePeerTest extends BookstoreTestBase
         $c->setOffset(20);
         $c->setLimit(20);
 
-        $params = array();
+        $params = [];
 
         $expectedSql = "SELECT [book.id], [book.title], [publisher.NAME], [PublisherName] FROM (SELECT ROW_NUMBER() OVER(ORDER BY (SELECT MAX(publisher.NAME) FROM publisher WHERE publisher.id = book.PUBLISHER_ID) DESC, book.title ASC) AS [RowNumber], book.id AS [book.id], book.title AS [book.title], publisher.NAME AS [publisher.NAME], (SELECT MAX(publisher.NAME) FROM publisher WHERE publisher.id = book.PUBLISHER_ID) AS [PublisherName] FROM book LEFT JOIN publisher ON (book.PUBLISHER_ID=publisher.id)) AS derivedb WHERE RowNumber BETWEEN 21 AND 40";
         $sql = BasePeer::createSelectSql($c, $params);
@@ -308,7 +308,7 @@ class BasePeerTest extends BookstoreTestBase
         $c->setComment('Foo');
         $c->addSelectColumn(BookPeer::ID);
         $expected = 'SELECT /* Foo */ book.id FROM `book`';
-        $params = array();
+        $params = [];
         $this->assertEquals($expected, BasePeer::createSelectSQL($c, $params), 'Criteria::setComment() adds a comment to select queries');
     }
 
@@ -347,7 +347,7 @@ class BasePeerTest extends BookstoreTestBase
         try {
             $rowCount = BookPeer::doUpdate($book, $con);
             $this->assertEquals(0, $rowCount, 'BookPeer::doUpdate() should indicate zero rows updated');
-        } catch (Exception $ex) {
+        } catch (Exception) {
             $this->fail('BookPeer::doUpdate() threw an exception');
         }
 

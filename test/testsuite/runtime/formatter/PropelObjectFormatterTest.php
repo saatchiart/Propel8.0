@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelObjectFormatter.
@@ -35,7 +35,7 @@ class PropelObjectFormatterTest extends BookstoreEmptyTestBase
         try {
             $books = $formatter->format($stmt);
             $this->fail('PropelObjectFormatter::format() trows an exception when called with no valid criteria');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true,'PropelObjectFormatter::format() trows an exception when called with no valid criteria');
         }
     }
@@ -60,7 +60,7 @@ class PropelObjectFormatterTest extends BookstoreEmptyTestBase
         $books = $formatter->format($stmt);
 
         $this->assertTrue($books instanceof PropelCollection, 'PropelObjectFormatter::format() returns a PropelCollection');
-        $this->assertEquals(5, count($books), 'PropelObjectFormatter::format() returns as many rows as the results in the query');
+        $this->assertEquals(5, is_countable($books) ? count($books) : 0, 'PropelObjectFormatter::format() returns as many rows as the results in the query');
         foreach ($books as $book) {
             $this->assertTrue($book instanceof Book, 'PropelObjectFormatter::format() returns an array of Model objects');
         }
@@ -76,7 +76,7 @@ class PropelObjectFormatterTest extends BookstoreEmptyTestBase
         $books = $formatter->format($stmt);
 
         $this->assertTrue($books instanceof PropelCollection, 'PropelObjectFormatter::format() returns a PropelCollection');
-        $this->assertEquals(1, count($books), 'PropelObjectFormatter::format() returns as many rows as the results in the query');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'PropelObjectFormatter::format() returns as many rows as the results in the query');
         $book = $books->shift();
         $this->assertTrue($book instanceof Book, 'PropelObjectFormatter::format() returns an array of Model objects');
         $this->assertEquals('Quicksilver', $book->getTitle(), 'PropelObjectFormatter::format() returns the model objects matching the query');
@@ -92,7 +92,7 @@ class PropelObjectFormatterTest extends BookstoreEmptyTestBase
         $books = $formatter->format($stmt);
 
         $this->assertTrue($books instanceof PropelCollection, 'PropelObjectFormatter::format() returns a PropelCollection');
-        $this->assertEquals(0, count($books), 'PropelObjectFormatter::format() returns as many rows as the results in the query');
+        $this->assertEquals(0, is_countable($books) ? count($books) : 0, 'PropelObjectFormatter::format() returns as many rows as the results in the query');
     }
 
     public function testFormatOneNoCriteria()
@@ -104,7 +104,7 @@ class PropelObjectFormatterTest extends BookstoreEmptyTestBase
         try {
             $book = $formatter->formatOne($stmt);
             $this->fail('PropelObjectFormatter::formatOne() throws an exception when called with no valid criteria');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true,'PropelObjectFormatter::formatOne() throws an exception when called with no valid criteria');
         }
     }

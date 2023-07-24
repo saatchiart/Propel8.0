@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/PlatformTestBase.php';
+require_once __DIR__ . '/PlatformTestBase.php';
 
 /**
  * provider for platform DDL unit tests
@@ -40,7 +40,7 @@ abstract class PlatformTestProvider extends PlatformTestBase
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     public function providerForTestGetAddTablesDDLSchema()
@@ -74,7 +74,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     public function providerForTestGetAddTablesSkipSQLDDL()
@@ -100,7 +100,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     public function providerForTestGetAddTableDDLSimplePK()
@@ -114,7 +114,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     public function providerForTestGetAddTableDDLNonIntegerPK()
@@ -128,7 +128,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     public function providerForTestGetAddTableDDLCompositePK()
@@ -143,7 +143,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     public function providerForTestGetAddTableDDLUniqueIndex()
@@ -160,7 +160,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     public function providerForTestGetAddTableDDLSchema()
@@ -174,7 +174,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     public function providerForTestGetUniqueDDL()
@@ -191,9 +191,7 @@ EOF;
         $index->addColumn($column2);
         $table->addUnique($index);
 
-        return array(
-            array($index)
-        );
+        return [[$index]];
     }
 
     public function providerForTestGetIndicesDDL()
@@ -213,9 +211,7 @@ EOF;
         $index2->addColumn($column1);
         $table->addIndex($index2);
 
-        return array(
-            array($table)
-        );
+        return [[$table]];
     }
 
     public function providerForTestGetIndexDDL()
@@ -232,9 +228,7 @@ EOF;
         $index->addColumn($column2);
         $table->addIndex($index);
 
-        return array(
-            array($index)
-        );
+        return [[$index]];
     }
 
     public function providerForTestPrimaryKeyDDL()
@@ -244,9 +238,7 @@ EOF;
         $column->setPrimaryKey(true);
         $table->addColumn($column);
 
-        return array(
-            array($table)
-        );
+        return [[$table]];
     }
 
     public function providerForTestGetForeignKeyDDL()
@@ -265,9 +257,7 @@ EOF;
         $fk->setOnDelete('CASCADE');
         $table1->addForeignKey($fk);
 
-        return array(
-            array($fk)
-        );
+        return [[$fk]];
     }
 
     public function providerForTestGetForeignKeySkipSqlDDL()
@@ -276,9 +266,7 @@ EOF;
         $fk = $arr[0][0];
         $fk->setSkipSql(true);
 
-        return array(
-            array($fk)
-        );
+        return [[$fk]];
     }
 
     public function providerForTestGetForeignKeysDDL()
@@ -313,9 +301,7 @@ EOF;
         $fk->setOnDelete('SETNULL');
         $table1->addForeignKey($fk);
 
-        return array(
-            array($table1)
-        );
+        return [[$table1]];
     }
 
 }

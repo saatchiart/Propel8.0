@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
 
 /**
  * Test class for ModelCriteria select() method.
@@ -37,7 +37,7 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
     {
         $this->expectException(PropelException::class);
         $c = new ModelCriteria('bookstore', 'Book');
-        $c->select(array());
+        $c->select([]);
     }
 
     public function testSelectStringNoResult()
@@ -193,7 +193,7 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
         $expectedSQL = 'SELECT book.id AS `Book.Id`, book.title AS `Book.Title`, book.isbn AS `Book.ISBN`, book.price AS `Book.Price`, book.publisher_id AS `Book.PublisherId`, book.author_id AS `Book.AuthorId` FROM `book` LIMIT 1';
         $this->assertEquals($expectedSQL, $this->con->getLastExecutedQuery(), 'select(\'*\') selects all the columns from the main object');
         $this->assertTrue(is_array($book), 'findOne() called after select(\'*\') returns an array');
-        $this->assertEquals(array_keys($book), array('Book.Id', 'Book.Title', 'Book.ISBN', 'Book.Price', 'Book.PublisherId', 'Book.AuthorId'), 'select(\'*\') returns all the columns from the main object, in complete form');
+        $this->assertEquals(array_keys($book), ['Book.Id', 'Book.Title', 'Book.ISBN', 'Book.Price', 'Book.PublisherId', 'Book.AuthorId'], 'select(\'*\') returns all the columns from the main object, in complete form');
     }
 
     public function testSelectArrayFind()
@@ -203,13 +203,13 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
 
         // fix for a bug/limitation in pdo_dblib where it truncates columnnames to a maximum of 31 characters when doing PDO::FETCH_ASSOC
         $c = new ModelCriteria('bookstore', 'BookstoreEmployeeAccount');
-        $c->select(array('BookstoreEmployeeAccount.Authenticator', 'BookstoreEmployeeAccount.Password'));
+        $c->select(['BookstoreEmployeeAccount.Authenticator', 'BookstoreEmployeeAccount.Password']);
         $account = $c->findOne($this->con);
-        $this->assertEquals($account, array('BookstoreEmployeeAccount.Authenticator' => 'Password', 'BookstoreEmployeeAccount.Password' => 'johnp4ss'), 'select() does not mind long column names');
+        $this->assertEquals($account, ['BookstoreEmployeeAccount.Authenticator' => 'Password', 'BookstoreEmployeeAccount.Password' => 'johnp4ss'], 'select() does not mind long column names');
 
         $c = new ModelCriteria('bookstore', 'Author');
         $c->where('Author.FirstName = ?', 'Neal');
-        $c->select(array('FirstName', 'LastName'));
+        $c->select(['FirstName', 'LastName']);
         $authors = $c->find($this->con);
         $this->assertEquals($authors->count(), 1, 'find() called after select(array) allows for where() statements');
         $expectedSQL = "SELECT author.first_name AS `FirstName`, author.last_name AS `LastName` FROM `author` WHERE author.first_name = 'Neal'";
@@ -223,9 +223,9 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
 
         $c = new ModelCriteria('bookstore', 'Author');
         $c->where('Author.FirstName = ?', 'Neal');
-        $c->select(array('FirstName', 'LastName'));
+        $c->select(['FirstName', 'LastName']);
         $author = $c->findOne($this->con);
-        $this->assertEquals(count($author), 2, 'findOne() called after select(array) allows for where() statements');
+        $this->assertEquals(is_countable($author) ? count($author) : 0, 2, 'findOne() called after select(array) allows for where() statements');
         $expectedSQL = "SELECT author.first_name AS `FirstName`, author.last_name AS `LastName` FROM `author` WHERE author.first_name = 'Neal' LIMIT 1";
         $this->assertEquals($expectedSQL, $this->con->getLastExecutedQuery(), 'findOne() called after select(array) allows for where() statements');
     }
@@ -238,7 +238,7 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
         $c = new ModelCriteria('bookstore', 'Book');
         $c->join('Book.Author');
         $c->where('Author.FirstName = ?', 'Neal');
-        $c->select(array('Title', 'ISBN'));
+        $c->select(['Title', 'ISBN']);
         $titles = $c->find($this->con);
         $this->assertEquals($titles->count(), 1, 'find() called after select(array) allows for join() statements');
         $expectedSQL = "SELECT book.title AS `Title`, book.isbn AS `ISBN` FROM `book` INNER JOIN `author` ON (book.author_id=author.id) WHERE author.first_name = 'Neal'";
@@ -247,25 +247,25 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
         $c = new ModelCriteria('bookstore', 'Book');
         $c->join('Book.Author');
         $c->where('Author.FirstName = ?', 'Neal');
-        $c->select(array('Author.FirstName', 'Author.LastName'));
+        $c->select(['Author.FirstName', 'Author.LastName']);
         $titles = $c->find($this->con);
-        $this->assertEquals(array_values($titles->shift()), array('Neal', 'Stephenson'), 'find() called after select(array) will return values from the joined table using complete column names');
+        $this->assertEquals(array_values($titles->shift()), ['Neal', 'Stephenson'], 'find() called after select(array) will return values from the joined table using complete column names');
 
         $c = new ModelCriteria('bookstore', 'Book');
         $c->join('Book.Author');
         $c->where('Author.FirstName = ?', 'Neal');
-        $c->select(array('Title', 'ISBN'));
+        $c->select(['Title', 'ISBN']);
         $title = $c->findOne($this->con);
-        $this->assertEquals(count($title), 2, 'findOne() called after select(array) allows for join() statements');
+        $this->assertEquals(is_countable($title) ? count($title) : 0, 2, 'findOne() called after select(array) allows for join() statements');
         $expectedSQL = "SELECT book.title AS `Title`, book.isbn AS `ISBN` FROM `book` INNER JOIN `author` ON (book.author_id=author.id) WHERE author.first_name = 'Neal' LIMIT 1";
         $this->assertEquals($expectedSQL, $this->con->getLastExecutedQuery(), 'findOne() called after select(array) allows for join() statements');
 
         $c = new ModelCriteria('bookstore', 'Book');
         $c->join('Book.Author');
         $c->where('Author.FirstName = ?', 'Neal');
-        $c->select(array('Author.FirstName', 'Author.LastName'));
+        $c->select(['Author.FirstName', 'Author.LastName']);
         $title = $c->findOne($this->con);
-        $this->assertEquals(array_values($title), array('Neal', 'Stephenson'), 'findOne() called after select(array) will return values from the joined table using complete column names');
+        $this->assertEquals(array_values($title), ['Neal', 'Stephenson'], 'findOne() called after select(array) will return values from the joined table using complete column names');
     }
 
     public function testSelectArrayRelation()
@@ -276,58 +276,24 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
         $c = new ModelCriteria('bookstore', 'Book');
         $c->join('Book.Author');
         $c->orderBy('Book.Title');
-        $c->select(array('Author.LastName', 'Book.Title'));
+        $c->select(['Author.LastName', 'Book.Title']);
         $rows = $c->find($this->con);
         $expectedSQL = 'SELECT author.last_name AS `Author.LastName`, book.title AS `Book.Title` FROM `book` INNER JOIN `author` ON (book.author_id=author.id) ORDER BY book.title ASC';
         $this->assertEquals($expectedSQL, $this->con->getLastExecutedQuery(), 'select(array) can select columns from several tables (many-to-one)');
 
-        $expectedRows = array(
-            array(
-                'Author.LastName' => 'Byron',
-                'Book.Title' => 'Don Juan',
-            ),
-            array(
-                'Author.LastName' => 'Rowling',
-                'Book.Title' => 'Harry Potter and the Order of the Phoenix',
-            ),
-            array(
-                'Author.LastName' => 'Stephenson',
-                'Book.Title' => 'Quicksilver',
-            ),
-            array(
-                'Author.LastName' => 'Grass',
-                'Book.Title' => 'The Tin Drum',
-            ),
-        );
+        $expectedRows = [['Author.LastName' => 'Byron', 'Book.Title' => 'Don Juan'], ['Author.LastName' => 'Rowling', 'Book.Title' => 'Harry Potter and the Order of the Phoenix'], ['Author.LastName' => 'Stephenson', 'Book.Title' => 'Quicksilver'], ['Author.LastName' => 'Grass', 'Book.Title' => 'The Tin Drum']];
         $this->assertEquals(serialize($rows->getData()), serialize($expectedRows), 'find() called after select(array) returns columns from several tables (many-to-one');
 
         $c = new ModelCriteria('bookstore', 'Book');
         $c->join('Book.Author');
-        $c->select(array('Author.LastName', 'Book.Title'));
+        $c->select(['Author.LastName', 'Book.Title']);
         $c->orderBy('Book.Id');
         $c->orderBy('Author.Id');
         $rows = $c->find($this->con);
         $expectedSQL = 'SELECT author.last_name AS `Author.LastName`, book.title AS `Book.Title` FROM `book` INNER JOIN `author` ON (book.author_id=author.id) ORDER BY book.id ASC,author.id ASC';
         $this->assertEquals($expectedSQL, $this->con->getLastExecutedQuery(), 'select(array) can select columns from several tables (many-to-one)');
 
-        $expectedRows = array (
-            array (
-                'Author.LastName' => 'Rowling',
-                'Book.Title' => 'Harry Potter and the Order of the Phoenix',
-            ),
-            array (
-                'Author.LastName' => 'Stephenson',
-                'Book.Title' => 'Quicksilver',
-            ),
-            array (
-                'Author.LastName' => 'Byron',
-                'Book.Title' => 'Don Juan',
-            ),
-            array (
-                'Author.LastName' => 'Grass',
-                'Book.Title' => 'The Tin Drum',
-            )
-        );
+        $expectedRows = [['Author.LastName' => 'Rowling', 'Book.Title' => 'Harry Potter and the Order of the Phoenix'], ['Author.LastName' => 'Stephenson', 'Book.Title' => 'Quicksilver'], ['Author.LastName' => 'Byron', 'Book.Title' => 'Don Juan'], ['Author.LastName' => 'Grass', 'Book.Title' => 'The Tin Drum']];
         $this->assertEquals(serialize($rows->getData()), serialize($expectedRows), 'find() called after select(array) returns columns from several tables (many-to-one');
     }
 
@@ -339,30 +305,13 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
         $c = new ModelCriteria('bookstore', 'Book');
         $c->join('Book.Author');
         $c->withColumn('LOWER(Book.Title)', 'LowercaseTitle');
-        $c->select(array('LowercaseTitle', 'Book.Title'));
+        $c->select(['LowercaseTitle', 'Book.Title']);
         $c->orderBy('Book.Title');
         $rows = $c->find($this->con);
         $expectedSQL = 'SELECT LOWER(book.title) AS `LowercaseTitle`, book.title AS `Book.Title` FROM `book` INNER JOIN `author` ON (book.author_id=author.id) ORDER BY book.title ASC';
         $this->assertEquals($expectedSQL, $this->con->getLastExecutedQuery(), 'find() called after select(array) can cope with a column added with withColumn()');
 
-        $expectedRows = array (
-            array (
-                'LowercaseTitle' => 'don juan',
-                'Book.Title' => 'Don Juan',
-            ),
-            array (
-                'LowercaseTitle' => 'harry potter and the order of the phoenix',
-                'Book.Title' => 'Harry Potter and the Order of the Phoenix',
-            ),
-            array (
-                'LowercaseTitle' => 'quicksilver',
-                'Book.Title' => 'Quicksilver',
-            ),
-            array (
-                'LowercaseTitle' => 'the tin drum',
-                'Book.Title' => 'The Tin Drum',
-            ),
-        );
+        $expectedRows = [['LowercaseTitle' => 'don juan', 'Book.Title' => 'Don Juan'], ['LowercaseTitle' => 'harry potter and the order of the phoenix', 'Book.Title' => 'Harry Potter and the Order of the Phoenix'], ['LowercaseTitle' => 'quicksilver', 'Book.Title' => 'Quicksilver'], ['LowercaseTitle' => 'the tin drum', 'Book.Title' => 'The Tin Drum']];
         $this->assertEquals(serialize($rows->getData()), serialize($expectedRows), 'find() called after select(array) can cope with a column added with withColumn()');
     }
 
@@ -375,38 +324,13 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
         $c->join('Book.Author');
         $c->withColumn('LOWER(Book.Title)', 'LowercaseTitle');
         $c->withColumn('UPPER(Book.Title)', 'UppercaseTitle');
-        $c->select(array('Book.ISBN', 'LowercaseTitle', 'Book.Title', 'UppercaseTitle'));
+        $c->select(['Book.ISBN', 'LowercaseTitle', 'Book.Title', 'UppercaseTitle']);
         $c->orderBy('Book.Title');
         $rows = $c->find($this->con);
         $expectedSQL = 'SELECT book.isbn AS `Book.ISBN`, LOWER(book.title) AS `LowercaseTitle`, book.title AS `Book.Title`, UPPER(book.title) AS `UppercaseTitle` FROM `book` INNER JOIN `author` ON (book.author_id=author.id) ORDER BY book.title ASC';
         $this->assertEquals($expectedSQL, $this->con->getLastExecutedQuery(), 'find() called after select(array) can cope with a column added with withColumn()');
 
-        $expectedRows = array (
-                array (
-                        'Book.ISBN' => '0140422161',
-                        'LowercaseTitle' => 'don juan',
-                        'Book.Title' => 'Don Juan',
-                        'UppercaseTitle' => 'DON JUAN',
-                ),
-                array (
-                        'Book.ISBN' => '043935806X',
-                        'LowercaseTitle' => 'harry potter and the order of the phoenix',
-                        'Book.Title' => 'Harry Potter and the Order of the Phoenix',
-                        'UppercaseTitle' => 'HARRY POTTER AND THE ORDER OF THE PHOENIX',
-                ),
-                array (
-                        'Book.ISBN' => '0380977427',
-                        'LowercaseTitle' => 'quicksilver',
-                        'Book.Title' => 'Quicksilver',
-                        'UppercaseTitle' => 'QUICKSILVER',
-                ),
-                array (
-                        'Book.ISBN' => '067972575X',
-                        'LowercaseTitle' => 'the tin drum',
-                        'Book.Title' => 'The Tin Drum',
-                        'UppercaseTitle' => 'THE TIN DRUM',
-                ),
-        );
+        $expectedRows = [['Book.ISBN' => '0140422161', 'LowercaseTitle' => 'don juan', 'Book.Title' => 'Don Juan', 'UppercaseTitle' => 'DON JUAN'], ['Book.ISBN' => '043935806X', 'LowercaseTitle' => 'harry potter and the order of the phoenix', 'Book.Title' => 'Harry Potter and the Order of the Phoenix', 'UppercaseTitle' => 'HARRY POTTER AND THE ORDER OF THE PHOENIX'], ['Book.ISBN' => '0380977427', 'LowercaseTitle' => 'quicksilver', 'Book.Title' => 'Quicksilver', 'UppercaseTitle' => 'QUICKSILVER'], ['Book.ISBN' => '067972575X', 'LowercaseTitle' => 'the tin drum', 'Book.Title' => 'The Tin Drum', 'UppercaseTitle' => 'THE TIN DRUM']];
         $this->assertEquals(serialize($rows->getData()), serialize($expectedRows), 'find() called after select(array) can cope with a column added with withColumn()');
     }
 
@@ -416,11 +340,11 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
         BookstoreDataPopulator::populate($this->con);
 
         $pager =  BookQuery::create()
-            ->select(array('Id', 'Title', 'ISBN', 'Price'))
+            ->select(['Id', 'Title', 'ISBN', 'Price'])
             ->paginate(1, 10, $this->con);
         $this->assertInstanceOf('PropelModelPager', $pager);
         foreach ($pager as $result) {
-            $this->assertEquals(array('Id', 'Title', 'ISBN', 'Price'), array_keys($result));
+            $this->assertEquals(['Id', 'Title', 'ISBN', 'Price'], array_keys($result));
         }
     }
 
@@ -440,22 +364,22 @@ class ModelCriteriaSelectTest extends BookstoreTestBase
     public function testGetSelectReturnsArrayWhenSelectingSeveralColumns()
     {
         $c = new ModelCriteria('bookstore', 'Book');
-        $c->select(array('Id', 'Title'));
-        $this->assertEquals(array('Id', 'Title'), $c->getSelect());
+        $c->select(['Id', 'Title']);
+        $this->assertEquals(['Id', 'Title'], $c->getSelect());
     }
 
     public function testGetSelectReturnsArrayWhenSelectingASingleColumnAsArray()
     {
         $c = new ModelCriteria('bookstore', 'Book');
-        $c->select(array('Title'));
-        $this->assertEquals(array('Title'), $c->getSelect());
+        $c->select(['Title']);
+        $this->assertEquals(['Title'], $c->getSelect());
     }
 
     public function testGetSelectReturnsArrayWhenSelectingAllColumns()
     {
         $c = new ModelCriteria('bookstore', 'Book');
         $c->select('*');
-        $this->assertEquals(array('Book.Id', 'Book.Title', 'Book.ISBN', 'Book.Price', 'Book.PublisherId', 'Book.AuthorId'), $c->getSelect());
+        $this->assertEquals(['Book.Id', 'Book.Title', 'Book.ISBN', 'Book.Price', 'Book.PublisherId', 'Book.AuthorId'], $c->getSelect());
     }
 
     public function testQuotingAliases()

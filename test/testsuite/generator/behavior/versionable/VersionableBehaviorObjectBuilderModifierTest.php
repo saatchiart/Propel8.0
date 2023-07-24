@@ -9,9 +9,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/behavior/versionable/VersionableBehavior.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../generator/lib/behavior/versionable/VersionableBehavior.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 
 /**
  * Tests for VersionableBehavior class
@@ -220,10 +220,7 @@ XML;
 
     public function providerForNewActiveRecordTests()
     {
-        return array(
-            array('VersionableBehaviorTest1'),
-            array('VersionableBehaviorTest2'),
-        );
+        return [['VersionableBehaviorTest1'], ['VersionableBehaviorTest2']];
     }
 
     /**
@@ -798,18 +795,14 @@ XML;
         $o->setVersionComment('Foo');
         $o->save();
         $diff = $o->compareVersion(3); // $o is in version 3
-        $expected = array();
+        $expected = [];
         $this->assertEquals($expected, $diff);
         $diff = $o->compareVersion(2);
-        $expected = array(
-            'Bar' => array(2 => 456, 3 => 789),
-        );
+        $expected = ['Bar' => [2 => 456, 3 => 789]];
         $this->assertEquals($expected, $diff);
 
         $diff = $o->compareVersion(1);
-        $expected = array(
-            'Bar' => array(1 => 123, 3 => 789),
-        );
+        $expected = ['Bar' => [1 => 123, 3 => 789]];
         $this->assertEquals($expected, $diff);
     }
 
@@ -826,15 +819,10 @@ XML;
         $o->setVersionComment('Foo');
         $o->save();
         $diff = $o->compareVersions(1, 3);
-        $expected = array(
-            'Bar' => array(1 => 123, 3 => 789)
-        );
+        $expected = ['Bar' => [1 => 123, 3 => 789]];
         $this->assertEquals($expected, $diff);
         $diff = $o->compareVersions(1, 3, 'versions');
-        $expected = array(
-            1 => array('Bar' => 123),
-            3 => array('Bar' => 789)
-        );
+        $expected = [1 => ['Bar' => 123], 3 => ['Bar' => 789]];
         $this->assertEquals($expected, $diff);
     }
 
@@ -870,11 +858,11 @@ XML;
         $a->addVersionableBehaviorTest5($b2);
         $a->save(); //b1
         $this->assertEquals(1, $a->getVersion());
-        $this->assertEquals(array(1, 1), $a->getOneVersion(1)->getVersionableBehaviorTest5Versions());
+        $this->assertEquals([1, 1], $a->getOneVersion(1)->getVersionableBehaviorTest5Versions());
         $b1->setFoo('Heloo');
         $a->save();
         $this->assertEquals(2, $a->getVersion());
-        $this->assertEquals(array(2, 1), $a->getOneVersion(2)->getVersionableBehaviorTest5Versions());
+        $this->assertEquals([2, 1], $a->getOneVersion(2)->getVersionableBehaviorTest5Versions());
         $b3 = new VersionableBehaviorTest5();
         $b3->setFoo('Yep');
         $a->clearVersionableBehaviorTest5s();
@@ -882,7 +870,7 @@ XML;
         $a->save();
         $a->clearVersionableBehaviorTest5s();
         $this->assertEquals(3, $a->getVersion());
-        $this->assertEquals(array(2, 1, 1), $a->getOneVersion(3)->getVersionableBehaviorTest5Versions());
+        $this->assertEquals([2, 1, 1], $a->getOneVersion(3)->getVersionableBehaviorTest5Versions());
     }
 
     public function testEnumField()
@@ -1008,8 +996,8 @@ XML;
 
         $classes = $builder->getClasses();
 
-        preg_match_all('/public function getVersion\(/', $classes, $getterMatches);
-        preg_match_all('/public function filterByVersion\(/', $classes, $filterMatches);
+        preg_match_all('/public function getVersion\(/', (string) $classes, $getterMatches);
+        preg_match_all('/public function filterByVersion\(/', (string) $classes, $filterMatches);
 
         // there should be two versions of this getter in the source.  one for the main
         // class and one for the version class

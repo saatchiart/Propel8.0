@@ -23,26 +23,20 @@
 class ConcreteInheritanceBehavior extends Behavior
 {
     // default parameters value
-    protected $parameters = array(
-        'extends'             => '',
-        'descendant_column'   => 'descendant_class',
-        'copy_data_to_parent' => 'true',
-        'schema'              => '',
-        'excluded_parent_behavior' => 'nested_set',
-    );
+    protected $parameters = ['extends'             => '', 'descendant_column'   => 'descendant_class', 'copy_data_to_parent' => 'true', 'schema'              => '', 'excluded_parent_behavior' => 'nested_set'];
 
     public function modifyTable()
     {
         $table = $this->getTable();
         $parentTable = $this->getParentTable();
-        $excludedParentBehavior = explode(',', $this->parameters['excluded_parent_behavior']);
+        $excludedParentBehavior = explode(',', (string) $this->parameters['excluded_parent_behavior']);
 
         if ($this->isCopyData()) {
             // tell the parent table that it has a descendant
             if (!$parentTable->hasBehavior('concrete_inheritance_parent')) {
                 $parentBehavior = new ConcreteInheritanceParentBehavior();
                 $parentBehavior->setName('concrete_inheritance_parent');
-                $parentBehavior->addParameter(array('name' => 'descendant_column', 'value' => $this->getParameter('descendant_column')));
+                $parentBehavior->addParameter(['name' => 'descendant_column', 'value' => $this->getParameter('descendant_column')]);
                 $parentTable->addBehavior($parentBehavior);
                 // The parent table's behavior modifyTable() must be executed before this one
                 $parentBehavior->getTableModifier()->modifyTable();
@@ -133,7 +127,7 @@ class ConcreteInheritanceBehavior extends Behavior
     public function parentClass($builder)
     {
         $parentTable = $this->getParentTable();
-        switch (get_class($builder)) {
+        switch ($builder::class) {
             case 'PHP5ObjectBuilder':
                 $objectBuilder = $builder->getNewStubObjectBuilder($parentTable);
                 $builder->declareClass($objectBuilder->getFullyQualifiedClassname());

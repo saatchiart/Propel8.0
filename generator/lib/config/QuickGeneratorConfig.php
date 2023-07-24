@@ -17,36 +17,15 @@
  */
 class QuickGeneratorConfig implements GeneratorConfigInterface
 {
-    protected $builders = array(
-        'peer'					=> 'PHP5PeerBuilder',
-        'object'				=> 'PHP5ObjectBuilder',
-        'objectstub'		    => 'PHP5ExtensionObjectBuilder',
-        'peerstub'			    => 'PHP5ExtensionPeerBuilder',
-        'objectmultiextend'     => 'PHP5MultiExtendObjectBuilder',
-        'tablemap'			    => 'PHP5TableMapBuilder',
-        'query'					=> 'QueryBuilder',
-        'querystub'			    => 'ExtensionQueryBuilder',
-        'queryinheritance'      => 'QueryInheritanceBuilder',
-        'queryinheritancestub'  => 'ExtensionQueryInheritanceBuilder',
-        'interface'			    => 'PHP5InterfaceBuilder',
-        'node'					=> 'PHP5NodeBuilder',
-        'nodepeer'			    => 'PHP5NodePeerBuilder',
-        'nodestub'			    => 'PHP5ExtensionNodeBuilder',
-        'nodepeerstub'	        => 'PHP5ExtensionNodePeerBuilder',
-        'nestedset'			    => 'PHP5NestedSetBuilder',
-        'nestedsetpeer'         => 'PHP5NestedSetPeerBuilder',
-    );
+    protected $builders = ['peer'					=> 'PHP5PeerBuilder', 'object'				=> 'PHP5ObjectBuilder', 'objectstub'		    => 'PHP5ExtensionObjectBuilder', 'peerstub'			    => 'PHP5ExtensionPeerBuilder', 'objectmultiextend'     => 'PHP5MultiExtendObjectBuilder', 'tablemap'			    => 'PHP5TableMapBuilder', 'query'					=> 'QueryBuilder', 'querystub'			    => 'ExtensionQueryBuilder', 'queryinheritance'      => 'QueryInheritanceBuilder', 'queryinheritancestub'  => 'ExtensionQueryInheritanceBuilder', 'interface'			    => 'PHP5InterfaceBuilder', 'node'					=> 'PHP5NodeBuilder', 'nodepeer'			    => 'PHP5NodePeerBuilder', 'nodestub'			    => 'PHP5ExtensionNodeBuilder', 'nodepeerstub'	        => 'PHP5ExtensionNodePeerBuilder', 'nestedset'			    => 'PHP5NestedSetBuilder', 'nestedsetpeer'         => 'PHP5NestedSetPeerBuilder'];
 
-    protected $buildProperties  = array();
+    protected $buildProperties  = [];
 
-    private $generatorConfig    = null;
+    private ?\GeneratorConfig $generatorConfig    = null;
 
-    private $configuredPlatform = null;
-
-    public function __construct(PropelPlatformInterface $platform = null)
+    public function __construct(private readonly ?\PropelPlatformInterface $configuredPlatform = null)
     {
-        $this->configuredPlatform = $platform;
-        $this->setBuildProperties($this->parsePseudoIniFile(dirname(__FILE__) . '/../../default.properties'));
+        $this->setBuildProperties($this->parsePseudoIniFile(__DIR__ . '/../../default.properties'));
     }
 
     /**
@@ -55,7 +34,7 @@ class QuickGeneratorConfig implements GeneratorConfigInterface
      */
     protected function parsePseudoIniFile($filepath)
     {
-        $properties = array();
+        $properties = [];
         if (($lines = @file($filepath)) === false) {
             throw new Exception("Unable to parse contents of $filepath");
         }
@@ -116,14 +95,14 @@ class QuickGeneratorConfig implements GeneratorConfigInterface
      *
      * @param mixed $props Array or Iterator
      */
-    public function setBuildProperties($props)
+    public function setBuildProperties(mixed $props)
     {
-        $this->buildProperties = array();
+        $this->buildProperties = [];
 
-        $renamedPropelProps = array();
+        $renamedPropelProps = [];
         foreach ($props as $key => $propValue) {
-            if (strpos($key, "propel.") === 0) {
-                $newKey = substr($key, strlen("propel."));
+            if (str_starts_with((string) $key, "propel.")) {
+                $newKey = substr((string) $key, strlen("propel."));
                 $j = strpos($newKey, '.');
                 while ($j !== false) {
                     $newKey = substr($newKey, 0, $j) . ucfirst(substr($newKey, $j + 1));
@@ -143,7 +122,7 @@ class QuickGeneratorConfig implements GeneratorConfigInterface
      */
     public function getBuildProperty($name)
     {
-        return isset($this->buildProperties[$name]) ? $this->buildProperties[$name] : null;
+        return $this->buildProperties[$name] ?? null;
     }
 
     /**

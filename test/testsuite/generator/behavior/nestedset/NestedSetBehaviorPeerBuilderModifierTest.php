@@ -9,7 +9,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/behavior/BookstoreNestedSetTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/behavior/BookstoreNestedSetTestBase.php';
 
 /**
  * Tests for NestedSetBehaviorPeerBuilderModifier class
@@ -46,13 +46,13 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
 
     public function testRetrieveTree()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         $tree = Table9Peer::retrieveTree();
-        $this->assertEquals(array($t1, $t2, $t3, $t4, $t5, $t6, $t7), $tree, 'retrieveTree() retrieves the whole tree');
+        $this->assertEquals([$t1, $t2, $t3, $t4, $t5, $t6, $t7], $tree, 'retrieveTree() retrieves the whole tree');
         $c = new Criteria();
         $c->add(Table9Peer::LEFT_COL, 4, Criteria::GREATER_EQUAL);
         $tree = Table9Peer::retrieveTree($c);
-        $this->assertEquals(array($t3, $t4, $t5, $t6, $t7), $tree, 'retrieveTree() accepts a Criteria as first parameter');
+        $this->assertEquals([$t3, $t4, $t5, $t6, $t7], $tree, 'retrieveTree() accepts a Criteria as first parameter');
     }
 
     public function testIsValid()
@@ -76,7 +76,7 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
     {
         $this->initTree();
         Table9Peer::deleteTree();
-        $this->assertEquals(array(), Table9Peer::doSelect(new Criteria()), 'deleteTree() deletes the whole tree');
+        $this->assertEquals([], Table9Peer::doSelect(new Criteria()), 'deleteTree() deletes the whole tree');
     }
 
     public function testShiftRLValuesDelta()
@@ -84,53 +84,21 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
         $this->initTree();
         Table9Peer::shiftRLValues($delta = 1, $left = 1);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1' => array(2, 15, 0),
-            't2' => array(3, 4, 1),
-            't3' => array(5, 14, 1),
-            't4' => array(6, 7, 2),
-            't5' => array(8, 13, 2),
-            't6' => array(9, 10, 3),
-            't7' => array(11, 12, 3),
-        );
+        $expected = ['t1' => [2, 15, 0], 't2' => [3, 4, 1], 't3' => [5, 14, 1], 't4' => [6, 7, 2], 't5' => [8, 13, 2], 't6' => [9, 10, 3], 't7' => [11, 12, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues shifts all nodes with a positive amount');
         $this->initTree();
         Table9Peer::shiftRLValues($delta = -1, $left = 1);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1' => array(0, 13, 0),
-            't2' => array(1, 2, 1),
-            't3' => array(3, 12, 1),
-            't4' => array(4, 5, 2),
-            't5' => array(6, 11, 2),
-            't6' => array(7, 8, 3),
-            't7' => array(9, 10, 3),
-        );
+        $expected = ['t1' => [0, 13, 0], 't2' => [1, 2, 1], 't3' => [3, 12, 1], 't4' => [4, 5, 2], 't5' => [6, 11, 2], 't6' => [7, 8, 3], 't7' => [9, 10, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues can shift all nodes with a negative amount');
         $this->initTree();
         Table9Peer::shiftRLValues($delta = 3, $left = 1);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1'=> array(4, 17, 0),
-            't2' => array(5, 6, 1),
-            't3' => array(7, 16, 1),
-            't4' => array(8, 9, 2),
-            't5' => array(10, 15, 2),
-            't6' => array(11, 12, 3),
-            't7' => array(13, 14, 3),
-        );
+        $expected = ['t1'=> [4, 17, 0], 't2' => [5, 6, 1], 't3' => [7, 16, 1], 't4' => [8, 9, 2], 't5' => [10, 15, 2], 't6' => [11, 12, 3], 't7' => [13, 14, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues shifts all nodes several units to the right');
         Table9Peer::shiftRLValues($delta = -3, $left = 1);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues shifts all nodes several units to the left');
     }
 
@@ -139,41 +107,17 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
         $this->initTree();
         Table9Peer::shiftRLValues($delta = 1, $left = 15);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues does not shift anything when the left parameter is higher than the highest right value');
         $this->initTree();
         Table9Peer::shiftRLValues($delta = 1, $left = 5);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1' => array(1, 15, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 14, 1),
-            't4' => array(6, 7, 2),
-            't5' => array(8, 13, 2),
-            't6' => array(9, 10, 3),
-            't7' => array(11, 12, 3),
-        );
+        $expected = ['t1' => [1, 15, 0], 't2' => [2, 3, 1], 't3' => [4, 14, 1], 't4' => [6, 7, 2], 't5' => [8, 13, 2], 't6' => [9, 10, 3], 't7' => [11, 12, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues shifts only the nodes having a LR value higher than the given left parameter');
         $this->initTree();
         Table9Peer::shiftRLValues($delta = 1, $left = 1);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1'=> array(2, 15, 0),
-            't2' => array(3, 4, 1),
-            't3' => array(5, 14, 1),
-            't4' => array(6, 7, 2),
-            't5' => array(8, 13, 2),
-            't6' => array(9, 10, 3),
-            't7' => array(11, 12, 3),
-        );
+        $expected = ['t1'=> [2, 15, 0], 't2' => [3, 4, 1], 't3' => [5, 14, 1], 't4' => [6, 7, 2], 't5' => [8, 13, 2], 't6' => [9, 10, 3], 't7' => [11, 12, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues shifts all nodes when the left parameter is 1');
     }
 
@@ -182,41 +126,17 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
         $this->initTree();
         Table9Peer::shiftRLValues($delta = 1, $left = 1, $right = 0);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues does not shift anything when the right parameter is 0');
         $this->initTree();
         Table9Peer::shiftRLValues($delta = 1, $left = 1, $right = 5);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1' => array(2, 14, 0),
-            't2' => array(3, 4, 1),
-            't3' => array(5, 13, 1),
-            't4' => array(6, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-        );
+        $expected = ['t1' => [2, 14, 0], 't2' => [3, 4, 1], 't3' => [5, 13, 1], 't4' => [6, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues shiftRLValues shifts only the nodes having a LR value lower than the given right parameter');
         $this->initTree();
         Table9Peer::shiftRLValues($delta = 1, $left = 1, $right = 15);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1'=> array(2, 15, 0),
-            't2' => array(3, 4, 1),
-            't3' => array(5, 14, 1),
-            't4' => array(6, 7, 2),
-            't5' => array(8, 13, 2),
-            't6' => array(9, 10, 3),
-            't7' => array(11, 12, 3),
-        );
+        $expected = ['t1'=> [2, 15, 0], 't2' => [3, 4, 1], 't3' => [5, 14, 1], 't4' => [6, 7, 2], 't5' => [8, 13, 2], 't6' => [9, 10, 3], 't7' => [11, 12, 3]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftRLValues shifts all nodes when the right parameter is higher than the highest right value');
     }
 
@@ -234,28 +154,12 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
         $this->initTree();
         Table9Peer::shiftLevel($delta = 1, $first = 7, $last = 12);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 3),
-            't6' => array(8, 9, 4),
-            't7' => array(10, 11, 4),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 3], 't6' => [8, 9, 4], 't7' => [10, 11, 4]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftLevel shifts all nodes with a left value between the first and last');
         $this->initTree();
         Table9Peer::shiftLevel($delta = -1, $first = 7, $last = 12);
         Table9Peer::clearInstancePool();
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 1),
-            't6' => array(8, 9, 2),
-            't7' => array(10, 11, 2),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 1], 't6' => [8, 9, 2], 't7' => [10, 11, 2]];
         $this->assertEquals($this->dumpTree(), $expected, 'shiftLevel shifts all nodes wit ha negative amount');
     }
 
@@ -264,33 +168,17 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
         $this->assertTrue(method_exists('Table9Peer', 'updateLoadedNodes'), 'nested_set adds a updateLoadedNodes() method');
         $fixtures = $this->initTree();
         Table9Peer::shiftRLValues(1, 5);
-        $expected = array(
-            't1' => array(1, 14),
-            't2' => array(2, 3),
-            't3' => array(4, 13),
-            't4' => array(5, 6),
-            't5' => array(7, 12),
-            't6' => array(8, 9),
-            't7' => array(10, 11),
-        );
-        $actual = array();
+        $expected = ['t1' => [1, 14], 't2' => [2, 3], 't3' => [4, 13], 't4' => [5, 6], 't5' => [7, 12], 't6' => [8, 9], 't7' => [10, 11]];
+        $actual = [];
         foreach ($fixtures as $t) {
-            $actual[$t->getTitle()] = array($t->getLeftValue(), $t->getRightValue());
+            $actual[$t->getTitle()] = [$t->getLeftValue(), $t->getRightValue()];
         }
         $this->assertEquals($actual, $expected, 'Loaded nodes are not in sync before calling updateLoadedNodes()');
         Table9Peer::updateLoadedNodes();
-        $expected = array(
-            't1' => array(1, 15),
-            't2' => array(2, 3),
-            't3' => array(4, 14),
-            't4' => array(6, 7),
-            't5' => array(8, 13),
-            't6' => array(9, 10),
-            't7' => array(11, 12),
-        );
-        $actual = array();
+        $expected = ['t1' => [1, 15], 't2' => [2, 3], 't3' => [4, 14], 't4' => [6, 7], 't5' => [8, 13], 't6' => [9, 10], 't7' => [11, 12]];
+        $actual = [];
         foreach ($fixtures as $t) {
-            $actual[$t->getTitle()] = array($t->getLeftValue(), $t->getRightValue());
+            $actual[$t->getTitle()] = [$t->getLeftValue(), $t->getRightValue()];
         }
         $this->assertEquals($actual, $expected, 'Loaded nodes are in sync after calling updateLoadedNodes()');
     }
@@ -298,7 +186,7 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
     public function testMakeRoomForLeaf()
     {
         $this->assertTrue(method_exists('Table9Peer', 'makeRoomForLeaf'), 'nested_set adds a makeRoomForLeaf() method');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -309,18 +197,10 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
                t6 t7
         */
         $t = Table9Peer::makeRoomForLeaf(5); // first child of t3
-        $expected = array(
-            't1' => array(1, 16, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 15, 1),
-            't4' => array(7, 8, 2),
-            't5' => array(9, 14, 2),
-            't6' => array(10, 11, 3),
-            't7' => array(12, 13, 3),
-        );
+        $expected = ['t1' => [1, 16, 0], 't2' => [2, 3, 1], 't3' => [4, 15, 1], 't4' => [7, 8, 2], 't5' => [9, 14, 2], 't6' => [10, 11, 3], 't7' => [12, 13, 3]];
         $this->assertEquals($expected, $this->dumpTree(), 'makeRoomForLeaf() shifts the other nodes correctly');
         foreach ($expected as $key => $values) {
-            $this->assertEquals($values, array($$key->getLeftValue(), $$key->getRightValue(), $$key->getLevel()), 'makeRoomForLeaf() updates nodes already in memory');
+            $this->assertEquals($values, [${$key}->getLeftValue(), ${$key}->getRightValue(), ${$key}->getLevel()], 'makeRoomForLeaf() updates nodes already in memory');
         }
     }
 
@@ -333,15 +213,7 @@ class NestedSetBehaviorPeerBuilderModifierTest extends BookstoreNestedSetTestBas
         }
         // fix the levels
         Table9Peer::fixLevels();
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3]];
         $this->assertEquals($expected, $this->dumpTree(), 'fixLevels() fixes the levels correctly');
         Table9Peer::fixLevels();
         $this->assertEquals($expected, $this->dumpTree(), 'fixLevels() can be called several times');

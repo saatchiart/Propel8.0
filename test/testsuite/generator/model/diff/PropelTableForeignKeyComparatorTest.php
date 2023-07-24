@@ -9,10 +9,10 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/diff/PropelTableComparator.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/diff/PropelTableDiff.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/platform/MysqlPlatform.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/model/Database.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/diff/PropelTableComparator.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/diff/PropelTableDiff.php';
+require_once __DIR__ . '/../../../../../generator/lib/platform/MysqlPlatform.php';
+require_once __DIR__ . '/../../../../../generator/lib/model/Database.php';
 
 /**
  * Tests for the Column methods of the PropelTableComparator service class.
@@ -103,8 +103,8 @@ class PropelTableForeignKeyComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $tc->compareForeignKeys();
         $tableDiff = $tc->getTableDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($tableDiff->getAddedFks()));
-        $this->assertEquals(array('Baz_FK_1' => $fk2), $tableDiff->getAddedFks());
+        $this->assertEquals(1, is_countable($tableDiff->getAddedFks()) ? count($tableDiff->getAddedFks()) : 0);
+        $this->assertEquals(['Baz_FK_1' => $fk2], $tableDiff->getAddedFks());
     }
 
     public function testCompareRemovedFks()
@@ -132,8 +132,8 @@ class PropelTableForeignKeyComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $tc->compareForeignKeys();
         $tableDiff = $tc->getTableDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($tableDiff->getRemovedFks()));
-        $this->assertEquals(array('Baz_FK_1' => $fk1), $tableDiff->getRemovedFks());
+        $this->assertEquals(1, is_countable($tableDiff->getRemovedFks()) ? count($tableDiff->getRemovedFks()) : 0);
+        $this->assertEquals(['Baz_FK_1' => $fk1], $tableDiff->getRemovedFks());
     }
 
     public function testCompareModifiedFks()
@@ -166,7 +166,7 @@ class PropelTableForeignKeyComparatorTest extends \PHPUnit\Framework\TestCase
         $nbDiffs = $tc->compareForeignKeys();
         $tableDiff = $tc->getTableDiff();
         $this->assertEquals(1, $nbDiffs);
-        $this->assertEquals(1, count($tableDiff->getModifiedFks()));
-        $this->assertEquals(array('Baz_FK_1' => array($fk1, $fk2)), $tableDiff->getModifiedFks());
+        $this->assertEquals(1, is_countable($tableDiff->getModifiedFks()) ? count($tableDiff->getModifiedFks()) : 0);
+        $this->assertEquals(['Baz_FK_1' => [$fk1, $fk2]], $tableDiff->getModifiedFks());
     }
 }

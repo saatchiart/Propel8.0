@@ -25,7 +25,7 @@
  * @author     Francois Zaninotto
  * @package    propel.runtime.collection
  */
-class PropelCollection extends ArrayObject implements Serializable
+class PropelCollection extends ArrayObject implements Serializable, \Stringable
 {
     /**
      * @var       string
@@ -207,13 +207,11 @@ class PropelCollection extends ArrayObject implements Serializable
      * Get an element from its key
      * Alias for ArrayObject::offsetGet()
      *
-     * @param mixed $key
      *
      * @return mixed The element
-     *
      * @throws PropelException
      */
-    public function get($key)
+    public function get(mixed $key)
     {
         if (!$this->offsetExists($key)) {
             throw new PropelException('Unknown key ' . $key);
@@ -262,7 +260,7 @@ class PropelCollection extends ArrayObject implements Serializable
      *
      * @return integer The number of new elements in the array
      */
-    public function prepend($value)
+    public function prepend(mixed $value)
     {
         // the reindexing is complicated to deal with through the iterator
         // so let's use the simple solution
@@ -276,11 +274,8 @@ class PropelCollection extends ArrayObject implements Serializable
     /**
      * Add an element to the collection with the given key
      * Alias for ArrayObject::offsetSet()
-     *
-     * @param mixed $key
-     * @param mixed $value
      */
-    public function set($key, $value)
+    public function set(mixed $key, mixed $value)
     {
         $this->offsetSet($key, $value);
     }
@@ -289,13 +284,11 @@ class PropelCollection extends ArrayObject implements Serializable
      * Removes a specified collection element
      * Alias for ArrayObject::offsetUnset()
      *
-     * @param mixed $key
      *
      * @return mixed The removed element
-     *
      * @throws PropelException
      */
-    public function remove($key)
+    public function remove(mixed $key)
     {
         if (!$this->offsetExists($key)) {
             throw new PropelException('Unknown key ' . $key);
@@ -311,17 +304,16 @@ class PropelCollection extends ArrayObject implements Serializable
      */
     public function clear()
     {
-        return $this->exchangeArray(array());
+        return $this->exchangeArray([]);
     }
 
     /**
      * Whether or not this collection contains a specified element
      *
-     * @param mixed $element
      *
      * @return boolean
      */
-    public function contains($element)
+    public function contains(mixed $element)
     {
         return in_array($element, $this->getArrayCopy(), true);
     }
@@ -329,11 +321,10 @@ class PropelCollection extends ArrayObject implements Serializable
     /**
      * Search an element in the collection
      *
-     * @param mixed $element
      *
      * @return mixed Returns the key for the element if it is found in the collection, FALSE otherwise
      */
-    public function search($element)
+    public function search(mixed $element)
     {
         return array_search($element, $this->getArrayCopy(), true);
     }
@@ -363,24 +354,21 @@ class PropelCollection extends ArrayObject implements Serializable
     // Serializable interface
 
     /**
-     * @return string
+     * @inheritDoc
      */
-    public function serialize()
+    public function serialize(): string
     {
-        $repr = array(
-            'data'   => $this->getArrayCopy(),
-            'model'  => $this->model,
-        );
+        $repr = ['data'   => $this->getArrayCopy(), 'model'  => $this->model];
 
         return serialize($repr);
     }
 
     /**
-     * @param string $data
+     * @inheritDoc
      *
-     * @return void
+     * @param string $data
      */
-    public function unserialize($data)
+    public function unserialize($data): void
     {
         $repr = unserialize($data);
         $this->exchangeArray($repr['data']);
@@ -390,12 +378,13 @@ class PropelCollection extends ArrayObject implements Serializable
     // IteratorAggregate method
 
     /**
+     * @inheritDoc
      * Overrides ArrayObject::getIterator() to save the iterator object
      * for internal use e.g. getNext(), isOdd(), etc.
      *
      * @return ArrayIterator
      */
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         $this->iterator = new ArrayIterator($this);
 
@@ -464,9 +453,6 @@ class PropelCollection extends ArrayObject implements Serializable
         return constant($this->getModel() . '::PEER');
     }
 
-    /**
-     * @param PropelFormatter $formatter
-     */
     public function setFormatter(PropelFormatter $formatter)
     {
         $this->formatter = $formatter;
@@ -507,7 +493,7 @@ class PropelCollection extends ArrayObject implements Serializable
      *
      * @return BaseObject The current object, for fluid interface
      */
-    public function importFrom($parser, $data)
+    public function importFrom(mixed $parser, $data)
     {
         if (!$parser instanceof PropelParser) {
             $parser = PropelParser::getParser($parser);
@@ -537,7 +523,7 @@ class PropelCollection extends ArrayObject implements Serializable
      *
      * @return string The exported data
      */
-    public function exportTo($parser, $usePrefix = true, $includeLazyLoadColumns = true)
+    public function exportTo(mixed $parser, $usePrefix = true, $includeLazyLoadColumns = true)
     {
         if (!$parser instanceof PropelParser) {
             $parser = PropelParser::getParser($parser);
@@ -559,14 +545,14 @@ class PropelCollection extends ArrayObject implements Serializable
      *
      * @throws PropelException
      */
-    public function __call($name, $params)
+    public function __call($name, mixed $params)
     {
         if (preg_match('/^from(\w+)$/', $name, $matches)) {
             return $this->importFrom($matches[1], reset($params));
         }
         if (preg_match('/^to(\w+)$/', $name, $matches)) {
-            $usePrefix = isset($params[0]) ? $params[0] : true;
-            $includeLazyLoadColumns = isset($params[1]) ? $params[1] : true;
+            $usePrefix = $params[0] ?? true;
+            $includeLazyLoadColumns = $params[1] ?? true;
 
             return $this->exportTo($matches[1], $usePrefix, $includeLazyLoadColumns);
         }
@@ -580,7 +566,7 @@ class PropelCollection extends ArrayObject implements Serializable
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->exportTo(constant($this->getPeerClass() . '::DEFAULT_STRING_FORMAT'));
     }
@@ -634,9 +620,9 @@ class PropelCollection extends ArrayObject implements Serializable
      *
      * @return array
      */
-    public function toArray($keyColumn = null, $usePrefix = false, $keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyColumn = null, $usePrefix = false, $keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = [])
     {
-        $ret = array();
+        $ret = [];
         $keyGetterMethod = 'get' . $keyColumn;
 
         /** @var $obj BaseObject */

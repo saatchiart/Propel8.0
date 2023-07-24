@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
 
 /**
  * Tests the generated Object classes.
@@ -32,7 +32,7 @@ class GeneratedObjectTest extends BookstoreTestBase
     protected function setUp(): void
     {
         parent::setUp();
-        require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/behavior/TestAuthor.php';
+        require_once __DIR__ . '/../../../../tools/helpers/bookstore/behavior/TestAuthor.php';
     }
 
     /**
@@ -663,7 +663,7 @@ class GeneratedObjectTest extends BookstoreTestBase
         }
 
         $this->assertEquals($num, $book->countReviews(), "Expected countReviews to return $num");
-        $this->assertEquals($num, count($book->getReviews()), "Expected getReviews to return $num reviews");
+        $this->assertEquals($num, is_countable($book->getReviews()) ? count($book->getReviews()) : 0, "Expected getReviews to return $num reviews");
 
         $book->save();
 
@@ -672,7 +672,7 @@ class GeneratedObjectTest extends BookstoreTestBase
 
         $book = BookPeer::retrieveByPK($book->getId());
         $this->assertEquals($num, $book->countReviews(), "Expected countReviews() to return $num (after save)");
-        $this->assertEquals($num, count($book->getReviews()), "Expected getReviews() to return $num (after save)");
+        $this->assertEquals($num, is_countable($book->getReviews()) ? count($book->getReviews()) : 0, "Expected getReviews() to return $num (after save)");
 
         // Now set different criteria and expect different results
         $c = new Criteria();
@@ -682,7 +682,7 @@ class GeneratedObjectTest extends BookstoreTestBase
         // Change Criteria, run again -- expect different.
         $c = new Criteria();
         $c->add(ReviewPeer::RECOMMENDED, true);
-        $this->assertEquals(ceil($num/2), count($book->getReviews($c)), "Expected " . ceil($num/2) . " results from getReviews(recomm=true)");
+        $this->assertEquals(ceil($num/2), is_countable($book->getReviews($c)) ? count($book->getReviews($c)) : 0, "Expected " . ceil($num/2) . " results from getReviews(recomm=true)");
 
         $this->assertEquals($num, $book->countReviews(), "Expected countReviews to return $num with new empty Criteria");
     }
@@ -715,7 +715,7 @@ class GeneratedObjectTest extends BookstoreTestBase
         $this->assertNull($br2->getId());
 
         $opinions = $br2->getBookOpinions();
-        $this->assertEquals(1, count($opinions), "Expected to have a related BookOpinion after copy()");
+        $this->assertEquals(1, is_countable($opinions) ? count($opinions) : 0, "Expected to have a related BookOpinion after copy()");
 
         // We DO expect the reader_id to be null
         $this->assertNull($opinions[0]->getReaderId());
@@ -778,17 +778,17 @@ class GeneratedObjectTest extends BookstoreTestBase
         $this->assertEquals(1, BookQuery::create()->count(), '1 Book');
         $this->assertEquals(1, BookOpinionQuery::create()->count(), 'Only 1 BookOpinion; the new one got inserted and the previously associated one got deleted');
 
-        $this->assertEquals(1, count($b->getBookOpinions()), 'Book has 1 BookOpinion');
+        $this->assertEquals(1, is_countable($b->getBookOpinions()) ? count($b->getBookOpinions()) : 0, 'Book has 1 BookOpinion');
         $this->assertEquals(1, count([$op2->getBook()]), 'BookOpinion2 has a relation to the Book');
-        $this->assertEquals(1, count($br1->getBookOpinions()), 'BookReader1 has 1 BookOpinion (BookOpinion1)');
-        $this->assertEquals(1, count($br2->getBookOpinions()), 'BookReader2 has 1 BookOpinion (BookOpinion2)');
+        $this->assertEquals(1, is_countable($br1->getBookOpinions()) ? count($br1->getBookOpinions()) : 0, 'BookReader1 has 1 BookOpinion (BookOpinion1)');
+        $this->assertEquals(1, is_countable($br2->getBookOpinions()) ? count($br2->getBookOpinions()) : 0, 'BookReader2 has 1 BookOpinion (BookOpinion2)');
 
         $this->assertFalse($op1->isDeleted(), 'BookOpinion1 think it has not been deleted');
 
         $caughtException = false;
         try {
           $op1->reload(false);  // will fail because won't find the entry in the db
-        } catch (PropelException $pe) {
+        } catch (PropelException) {
           $caughtException = true;
         }
 
@@ -796,14 +796,14 @@ class GeneratedObjectTest extends BookstoreTestBase
 
         $this->assertFalse($op2->isDeleted(), 'BookOpinion2 is not deleted');
 
-        $this->assertEquals(1, count($br1->getBookOpinions()), 'BookReader1 thinks it is assigned to 1 BookOpinion (BookOpinion1)');
+        $this->assertEquals(1, is_countable($br1->getBookOpinions()) ? count($br1->getBookOpinions()) : 0, 'BookReader1 thinks it is assigned to 1 BookOpinion (BookOpinion1)');
         $temp_op = $br1->getBookOpinions();
         $this->assertEquals(spl_object_hash($op1), spl_object_hash($temp_op[0]), 'BookReader1 assigned BookOpinion is still BookOpinion1');
         $this->assertFalse($temp_op[0]->isDeleted(), 'BookReader1 assigned BookOpinion still thinks it has not been deleted');
 
         $br1->reload(true);  // and reset the relations
 
-        $this->assertEquals(0, count($br1->getBookOpinions()), 'BookReader1 no longer has any BookOpinion');
+        $this->assertEquals(0, is_countable($br1->getBookOpinions()) ? count($br1->getBookOpinions()) : 0, 'BookReader1 no longer has any BookOpinion');
     }
 
     /**
@@ -846,13 +846,13 @@ class GeneratedObjectTest extends BookstoreTestBase
         $b->save();
 
         // the Book knows that there is no longer an opinion
-        $this->assertEquals(0, count($b->getBookOpinions()), 'Book knows there is no opinion');
+        $this->assertEquals(0, is_countable($b->getBookOpinions()) ? count($b->getBookOpinions()) : 0, 'Book knows there is no opinion');
         // but not the BookReader
-        $this->assertEquals(1, count($br->getBookOpinions()), 'BookReader still thinks it has 1 opinion');
+        $this->assertEquals(1, is_countable($br->getBookOpinions()) ? count($br->getBookOpinions()) : 0, 'BookReader still thinks it has 1 opinion');
 
         $br->reload(true);  // with relations
 
-        $this->assertEquals(0, count($br->getBookOpinions()), 'BookReader now knows the opinion is gone');
+        $this->assertEquals(0, is_countable($br->getBookOpinions()) ? count($br->getBookOpinions()) : 0, 'BookReader now knows the opinion is gone');
 
         $this->assertEquals(1, BookReaderQuery::create()->count(), '1 BookReader');
         $this->assertEquals(1, BookQuery::create()->count(), '1 Book');
@@ -902,14 +902,7 @@ class GeneratedObjectTest extends BookstoreTestBase
         $b->setTitle('Don Juan');
 
         $arr1 = $b->toArray();
-        $expectedKeys = array(
-            'Id',
-            'Title',
-            'ISBN',
-            'Price',
-            'PublisherId',
-            'AuthorId'
-        );
+        $expectedKeys = ['Id', 'Title', 'ISBN', 'Price', 'PublisherId', 'AuthorId'];
         $this->assertEquals($expectedKeys, array_keys($arr1), 'toArray() returns an associative array with BasePeer::TYPE_PHPNAME keys by default');
         $this->assertEquals('Don Juan', $arr1['Title'], 'toArray() returns an associative array representation of the object');
     }
@@ -927,14 +920,7 @@ class GeneratedObjectTest extends BookstoreTestBase
         $b->setTitle('Don Juan');
 
         $arr1 = $b->toArray(BasePeer::TYPE_COLNAME);
-        $expectedKeys = array(
-            BookPeer::ID,
-            BookPeer::TITLE,
-            BookPeer::ISBN,
-            BookPeer::PRICE,
-            BookPeer::PUBLISHER_ID,
-            BookPeer::AUTHOR_ID
-        );
+        $expectedKeys = [BookPeer::ID, BookPeer::TITLE, BookPeer::ISBN, BookPeer::PRICE, BookPeer::PUBLISHER_ID, BookPeer::AUTHOR_ID];
         $this->assertEquals($expectedKeys, array_keys($arr1), 'toArray() accepts a $keyType parameter to change the result keys');
         $this->assertEquals('Don Juan', $arr1[BookPeer::TITLE], 'toArray() returns an associative array representation of the object');
     }
@@ -954,10 +940,7 @@ EOF;
         $builder->getConfig()->setBuildProperty('defaultKeyType', 'studlyPhpName');
         $builder->buildClasses();
 
-        $expectedKeys = array(
-            'idKeyType',
-            'nameKeyType',
-        );
+        $expectedKeys = ['idKeyType', 'nameKeyType'];
 
         $object = new TestKeyTypeTable();
 
@@ -1001,7 +984,7 @@ EOF;
         $b->setStoreName("Test2");
         try {
             $b->save();
-        } catch (Exception $x) {
+        } catch (Exception) {
             $this->fail("Expected no exception when setting auto-increment primary key to NULL");
         }
         // success ...
@@ -1074,7 +1057,7 @@ EOF;
 
         $logs = $lookupacct->getAcctAuditLogs();
 
-        $this->assertTrue(count($logs) == 1, "Expected 1 audit log result.");
+        $this->assertTrue((is_countable($logs) ? count($logs) : 0) == 1, "Expected 1 audit log result.");
         $this->assertEquals($logs[0]->getId(), $al->getId(), "Expected returned audit log to match created audit log.");
     }
 
@@ -1092,13 +1075,13 @@ EOF;
     {
         $b = new BookOpinion();
         $this->assertTrue($b->isPrimaryKeyNull());
-        $b->setPrimaryKey(array(123, 456));
+        $b->setPrimaryKey([123, 456]);
         $this->assertFalse($b->isPrimaryKeyNull());
-        $b->setPrimaryKey(array(123, null));
+        $b->setPrimaryKey([123, null]);
         $this->assertFalse($b->isPrimaryKeyNull());
-        $b->setPrimaryKey(array(null, 456));
+        $b->setPrimaryKey([null, 456]);
         $this->assertFalse($b->isPrimaryKeyNull());
-        $b->setPrimaryKey(array(null, null));
+        $b->setPrimaryKey([null, null]);
         $this->assertTrue($b->isPrimaryKeyNull());
     }
 
@@ -1236,7 +1219,7 @@ EOF;
     public function testPostHydrate()
     {
         $author = new TestAuthor();
-        $author->hydrate(array(1, 'bogus', 'Lastname', 'bogus@mail.com', 21));
+        $author->hydrate([1, 'bogus', 'Lastname', 'bogus@mail.com', 21]);
         $this->assertEquals("Post-Hydrated", $author->getLastName());
     }
 
@@ -1262,12 +1245,7 @@ EOF;
 
     public static function conditionsForTestReadOnly()
     {
-        return array(
-            array('reload'),
-            array('delete'),
-            array('save'),
-            array('doSave'),
-        );
+        return [['reload'], ['delete'], ['save'], ['doSave']];
     }
 
     /**
@@ -1527,7 +1505,7 @@ EOF;
         $a->save();
 
         $this->assertEquals(3, $coll->count());
-        $this->assertEquals(3, count($a->getBooks()));
+        $this->assertEquals(3, is_countable($a->getBooks()) ? count($a->getBooks()) : 0);
         $this->assertSame($coll, $a->getBooks());
         $this->assertEquals(1, AuthorQuery::create()->count());
         $this->assertEquals(3, BookQuery::create()->count());
@@ -1555,7 +1533,7 @@ EOF;
         $a->setBooks($books);
         $a->save();
 
-        $this->assertEquals(3, count($a->getBooks()));
+        $this->assertEquals(3, is_countable($a->getBooks()) ? count($a->getBooks()) : 0);
         $this->assertEquals(1, AuthorQuery::create()->count());
         $this->assertEquals(3, BookQuery::create()->count());
 
@@ -1577,7 +1555,7 @@ EOF;
         $a->setBooks(new PropelObjectCollection());
         $a->save();
 
-        $this->assertEquals(0, count($a->getBooks()));
+        $this->assertEquals(0, is_countable($a->getBooks()) ? count($a->getBooks()) : 0);
 
         $this->assertEquals(0, BookQuery::create()->count());
         $this->assertEquals(1, AuthorQuery::create()->count());
@@ -1590,7 +1568,7 @@ EOF;
         AuthorQuery::create()->deleteAll();
 
         $books = new PropelObjectCollection();
-        foreach (array('foo', 'bar') as $title) {
+        foreach (['foo', 'bar'] as $title) {
             $b = new Book();
             $b->setTitle($title);
             $b->setIsbn('12354');
@@ -1609,7 +1587,7 @@ EOF;
         $this->assertEquals('bar', $books[1]->getTitle());
 
         $books = new PropelObjectCollection();
-        foreach (array('bam', 'bom') as $title) {
+        foreach (['bam', 'bom'] as $title) {
             $b = new Book();
             $b->setTitle($title);
             $b->setIsbn('1235');
@@ -1636,7 +1614,7 @@ EOF;
         BookQuery::create()->deleteAll();
 
         $bookSummaries = new PropelObjectCollection();
-        foreach (array('foo', 'bar') as $summary) {
+        foreach (['foo', 'bar'] as $summary) {
             $s = new BookSummary();
             $s->setSummary($summary);
             $bookSummaries[] = $s;
@@ -1653,7 +1631,7 @@ EOF;
         $this->assertEquals('bar', $bookSummaries[1]->getSummary());
 
         $bookSummaries = new PropelObjectCollection();
-        foreach (array('bam', 'bom') as $summary) {
+        foreach (['bam', 'bom'] as $summary) {
             $s = new BookSummary();
             $s->setSummary($summary);
             $bookSummaries[] = $s;

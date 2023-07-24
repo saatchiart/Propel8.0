@@ -9,7 +9,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/behavior/BookstoreNestedSetTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/behavior/BookstoreNestedSetTestBase.php';
 
 /**
  * Tests for NestedSetBehaviorObjectBuilderModifier class
@@ -46,7 +46,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testObjectAttributes()
     {
-        $expectedAttributes = array('nestedSetQueries');
+        $expectedAttributes = ['nestedSetQueries'];
         foreach ($expectedAttributes as $attribute) {
             $this->assertClassHasAttribute($attribute, 'Table9');
         }
@@ -66,7 +66,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         try {
             $t1->makeRoot();
             $this->assertTrue(true, 'A saved node can be turned into root');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('A saved node can be turned into root');
         }
         $t1->save();
@@ -76,13 +76,13 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         try {
             $t2->insertAsFirstChildOf($t1);
             $this->assertTrue(true, 'A saved node can be inserted into the tree');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('A saved node can be inserted into the tree');
         }
         try {
             $t2->save();
             $this->assertTrue(true, 'A saved node can be inserted into the tree');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('A saved node can be inserted into the tree');
         }
     }
@@ -104,19 +104,19 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testPreUpdate()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         $t3->setLeftValue(null);
         try {
             $t3->save();
             $this->fail('Trying to save a node incorrectly updated throws an exception');
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->assertTrue(true, 'Trying to save a node incorrectly updated throws an exception');
         }
     }
 
     public function testDelete()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -128,21 +128,16 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         */
         $t5->delete();
         $this->assertEquals(13, $t3->getRightValue(), 'delete() does not update existing nodes (because delete() clears the instance cache)');
-        $expected = array(
-            't1' => array(1, 8, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 7, 1),
-            't4' => array(5, 6, 2),
-        );
+        $expected = ['t1' => [1, 8, 0], 't2' => [2, 3, 1], 't3' => [4, 7, 1], 't4' => [5, 6, 2]];
         $this->assertEquals($expected, $this->dumpTree(), 'delete() deletes all descendants and shifts the entire subtree correctly');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         try {
             $t1->delete();
             $this->fail('delete() throws an exception when called on a root node');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'delete() throws an exception when called on a root node');
         }
-        $this->assertNotEquals(array(), Table9Peer::doSelect(new Criteria()), 'delete() called on the root node does not delete the whole tree');
+        $this->assertNotEquals([], Table9Peer::doSelect(new Criteria()), 'delete() called on the root node does not delete the whole tree');
     }
 
     public function testDeleteNotInTree()
@@ -165,7 +160,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         try {
             $t->makeRoot();
             $this->fail('makeRoot() throws an exception when called on an object with a left_column value');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'makeRoot() throws an exception when called on an object with a left_column value');
         }
     }
@@ -190,7 +185,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testIsRoot()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -207,7 +202,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testIsLeaf()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -224,7 +219,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testIsDescendantOf()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -244,7 +239,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testIsAncestorOf()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -299,7 +294,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetParentCache()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -335,7 +330,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetPrevSibling()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -370,7 +365,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetNextSibling()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -401,7 +396,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testHasChildren()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -418,7 +413,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetChildren()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -431,55 +426,42 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
     $this->assertTrue($t2->getChildren() instanceof PropelObjectCollection, 'getChildren() returns a collection');
         $this->assertEquals(0, count($t2->getChildren()), 'getChildren() returns an empty collection for leafs');
         $children = $t3->getChildren();
-        $expected = array(
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'getChildren() returns a collection of children');
+        $expected = ['t4' => [5, 6, 2], 't5' => [7, 12, 2]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'getChildren() returns a collection of children');
         $c = new Criteria();
         $c->add(Table9Peer::TITLE, 't5');
         $children = $t3->getChildren($c);
-        $expected = array(
-            't5' => array(7, 12, 2),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'getChildren() accepts a criteria as parameter');
+        $expected = ['t5' => [7, 12, 2]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'getChildren() accepts a criteria as parameter');
     }
 
     public function testGetChildrenCache()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         $con = Propel::getConnection();
         $count = $con->getQueryCount();
         $children = $t3->getChildren(null, $con);
         $children = $t3->getChildren(null, $con);
         $this->assertEquals($count + 1, $con->getQueryCount(), 'getChildren() only issues a query once');
-        $expected = array(
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'getChildren() returns a collection of children');
+        $expected = ['t4' => [5, 6, 2], 't5' => [7, 12, 2]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'getChildren() returns a collection of children');
         // when using criteria, cache is not used
         $c = new Criteria();
         $c->add(Table9Peer::TITLE, 't5');
         $children = $t3->getChildren($c, $con);
         $this->assertEquals($count + 2, $con->getQueryCount(), 'getChildren() issues a new query when âssed a non-null Criteria');
-        $expected = array(
-            't5' => array(7, 12, 2),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'getChildren() accepts a criteria as parameter');
+        $expected = ['t5' => [7, 12, 2]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'getChildren() accepts a criteria as parameter');
         // but not erased either
         $children = $t3->getChildren(null, $con);
         $this->assertEquals($count + 2, $con->getQueryCount(), 'getChildren() keeps its internal cache after being called with a Criteria');
-        $expected = array(
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-        );
-    $this->assertEquals($expected, $this->dumpNodes($children, true), 'getChildren() returns a collection of children');
+        $expected = ['t4' => [5, 6, 2], 't5' => [7, 12, 2]];
+    $this->assertEquals($expected, $this->dumpNodes($children), 'getChildren() returns a collection of children');
     }
 
     public function testCountChildren()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -498,7 +480,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testCountChildrenCache()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -519,7 +501,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetFirstChild()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         $t5->moveToNextSiblingOf($t3);
         /* Results in
          t1
@@ -533,7 +515,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetLastChild()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         $t5->moveToNextSiblingOf($t3);
         /* Results in
          t1
@@ -547,7 +529,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetSiblings()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -557,17 +539,12 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
                |  \
                t6 t7
         */
-        $this->assertEquals(array(), $t1->getSiblings(), 'getSiblings() returns an empty array for root');
+        $this->assertEquals([], $t1->getSiblings(), 'getSiblings() returns an empty array for root');
         $siblings = $t5->getSiblings();
-        $expected = array(
-            't4' => array(5, 6, 2),
-        );
+        $expected = ['t4' => [5, 6, 2]];
         $this->assertEquals($expected, $this->dumpNodes($siblings), 'getSiblings() returns an array of siblings');
         $siblings = $t5->getSiblings(true);
-        $expected = array(
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2)
-        );
+        $expected = ['t4' => [5, 6, 2], 't5' => [7, 12, 2]];
         $this->assertEquals($expected, $this->dumpNodes($siblings), 'getSiblings(true) includes the current node');
         $t5->moveToNextSiblingOf($t3);
         /* Results in
@@ -577,12 +554,9 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
             |   | \
             t4  t6 t7
         */
-        $this->assertEquals(0, count($t4->getSiblings()), 'getSiblings() returns an empty colleciton for lone children');
+        $this->assertEquals(0, is_countable($t4->getSiblings()) ? count($t4->getSiblings()) : 0, 'getSiblings() returns an empty colleciton for lone children');
         $siblings = $t3->getSiblings();
-        $expected = array(
-            't2' => array(2, 3, 1),
-            't5' => array(8, 13, 1),
-        );
+        $expected = ['t2' => [2, 3, 1], 't5' => [8, 13, 1]];
         $this->assertEquals($expected, $this->dumpNodes($siblings), 'getSiblings() returns all siblings');
         $this->assertEquals('t2', $siblings[0]->getTitle(), 'getSiblings() returns siblings in natural order');
         $this->assertEquals('t5', $siblings[1]->getTitle(), 'getSiblings() returns siblings in natural order');
@@ -590,7 +564,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetDescendants()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -600,27 +574,20 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
                |  \
                t6 t7
         */
-        $this->assertEquals(array(), $t2->getDescendants(), 'getDescendants() returns an empty array for leafs');
+        $this->assertEquals([], $t2->getDescendants(), 'getDescendants() returns an empty array for leafs');
         $descendants = $t3->getDescendants();
-        $expected = array(
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-        );
+        $expected = ['t4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3]];
         $this->assertEquals($expected, $this->dumpNodes($descendants), 'getDescendants() returns an array of descendants');
         $c = new Criteria();
         $c->add(Table9Peer::TITLE, 't5');
         $descendants = $t3->getDescendants($c);
-        $expected = array(
-            't5' => array(7, 12, 2),
-        );
+        $expected = ['t5' => [7, 12, 2]];
         $this->assertEquals($expected, $this->dumpNodes($descendants), 'getDescendants() accepts a criteria as parameter');
     }
 
     public function testCountDescendants()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -639,7 +606,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetBranch()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -649,15 +616,9 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
                |  \
                t6 t7
         */
-        $this->assertEquals(array($t2), $t2->getBranch()->getArrayCopy(), 'getBranch() returns the current node for leafs');
+        $this->assertEquals([$t2], $t2->getBranch()->getArrayCopy(), 'getBranch() returns the current node for leafs');
         $descendants = $t3->getBranch();
-        $expected = array(
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-        );
+        $expected = ['t3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3]];
         $this->assertEquals($expected, $this->dumpNodes($descendants), 'getBranch() returns an array of descendants, uncluding the current node');
         $c = new Criteria();
         $c->add(Table9Peer::TITLE, 't3', Criteria::NOT_EQUAL);
@@ -668,7 +629,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetAncestors()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -678,19 +639,14 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
                |  \
                t6 t7
         */
-        $this->assertEquals(array(), $t1->getAncestors(), 'getAncestors() returns an empty array for roots');
+        $this->assertEquals([], $t1->getAncestors(), 'getAncestors() returns an empty array for roots');
         $ancestors = $t5->getAncestors();
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't3' => array(4, 13, 1),
-        );
+        $expected = ['t1' => [1, 14, 0], 't3' => [4, 13, 1]];
         $this->assertEquals($expected, $this->dumpNodes($ancestors), 'getAncestors() returns an array of ancestors');
         $c = new Criteria();
         $c->add(Table9Peer::TITLE, 't3');
         $ancestors = $t5->getAncestors($c);
-        $expected = array(
-            't3' => array(4, 13, 1),
-        );
+        $expected = ['t3' => [4, 13, 1]];
         $this->assertEquals($expected, $this->dumpNodes($ancestors), 'getAncestors() accepts a criteria as parameter');
     }
 
@@ -713,19 +669,14 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         $t4->setTitle('t4');
         $t2->addChild($t4);
         $t4->save();
-        $expected = array(
-            't1' => array(1, 8, 0),
-            't2' => array(4, 7, 1),
-            't3' => array(2, 3, 1),
-            't4' => array(5, 6, 2),
-        );
+        $expected = ['t1' => [1, 8, 0], 't2' => [4, 7, 1], 't3' => [2, 3, 1], 't4' => [5, 6, 2]];
         $this->assertEquals($expected, $this->dumpTree(), 'addChild() adds the child and saves it');
     }
 
     public function testInsertAsFirstChildOf()
     {
         $this->assertTrue(method_exists('Table9', 'insertAsFirstChildOf'), 'nested_set adds a insertAsFirstChildOf() method');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -744,21 +695,12 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         $this->assertEquals(5, $t8->getLeftValue(), 'insertAsFirstChildOf() sets the left value correctly');
         $this->assertEquals(6, $t8->getRightValue(), 'insertAsFirstChildOf() sets the right value correctly');
         $this->assertEquals(2, $t8->getLevel(), 'insertAsFirstChildOf() sets the level correctly');
-        $expected = array(
-            't1' => array(1, 16, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 15, 1),
-            't4' => array(7, 8, 2),
-            't5' => array(9, 14, 2),
-            't6' => array(10, 11, 3),
-            't7' => array(12, 13, 3),
-            't8' => array(5, 6, 2)
-        );
+        $expected = ['t1' => [1, 16, 0], 't2' => [2, 3, 1], 't3' => [4, 15, 1], 't4' => [7, 8, 2], 't5' => [9, 14, 2], 't6' => [10, 11, 3], 't7' => [12, 13, 3], 't8' => [5, 6, 2]];
         $this->assertEquals($expected, $this->dumpTree(), 'insertAsFirstChildOf() shifts the other nodes correctly');
         try {
             $t8->insertAsFirstChildOf($t4);
             $this->fail('insertAsFirstChildOf() throws an exception when called on a saved object');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'insertAsFirstChildOf() throws an exception when called on a saved object');
         }
     }
@@ -790,7 +732,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
     public function testInsertAsLastChildOf()
     {
         $this->assertTrue(method_exists('Table9', 'insertAsLastChildOf'), 'nested_set adds a insertAsLastChildOf() method');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -809,21 +751,12 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         $this->assertEquals(13, $t8->getLeftValue(), 'insertAsLastChildOf() sets the left value correctly');
         $this->assertEquals(14, $t8->getRightValue(), 'insertAsLastChildOf() sets the right value correctly');
         $this->assertEquals(2, $t8->getLevel(), 'insertAsLastChildOf() sets the level correctly');
-        $expected = array(
-            't1' => array(1, 16, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 15, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-            't8' => array(13, 14, 2)
-        );
+        $expected = ['t1' => [1, 16, 0], 't2' => [2, 3, 1], 't3' => [4, 15, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3], 't8' => [13, 14, 2]];
         $this->assertEquals($expected, $this->dumpTree(), 'insertAsLastChildOf() shifts the other nodes correctly');
         try {
             $t8->insertAsLastChildOf($t4);
             $this->fail('insertAsLastChildOf() throws an exception when called on a saved object');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'insertAsLastChildOf() throws an exception when called on a saved object');
         }
     }
@@ -855,7 +788,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
     public function testInsertAsPrevSiblingOf()
     {
         $this->assertTrue(method_exists('Table9', 'insertAsPrevSiblingOf'), 'nested_set adds a insertAsPrevSiblingOf() method');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -874,21 +807,12 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         $this->assertEquals(4, $t8->getLeftValue(), 'insertAsPrevSiblingOf() sets the left value correctly');
         $this->assertEquals(5, $t8->getRightValue(), 'insertAsPrevSiblingOf() sets the right value correctly');
         $this->assertEquals(1, $t8->getLevel(), 'insertAsPrevSiblingOf() sets the level correctly');
-        $expected = array(
-            't1' => array(1, 16, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(6, 15, 1),
-            't4' => array(7, 8, 2),
-            't5' => array(9, 14, 2),
-            't6' => array(10, 11, 3),
-            't7' => array(12, 13, 3),
-            't8' => array(4, 5, 1)
-        );
+        $expected = ['t1' => [1, 16, 0], 't2' => [2, 3, 1], 't3' => [6, 15, 1], 't4' => [7, 8, 2], 't5' => [9, 14, 2], 't6' => [10, 11, 3], 't7' => [12, 13, 3], 't8' => [4, 5, 1]];
         $this->assertEquals($expected, $this->dumpTree(), 'insertAsPrevSiblingOf() shifts the other nodes correctly');
         try {
             $t8->insertAsPrevSiblingOf($t4);
             $this->fail('insertAsPrevSiblingOf() throws an exception when called on a saved object');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'insertAsPrevSiblingOf() throws an exception when called on a saved object');
         }
     }
@@ -929,7 +853,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
     public function testInsertAsNextSiblingOf()
     {
         $this->assertTrue(method_exists('Table9', 'insertAsNextSiblingOf'), 'nested_set adds a insertAsNextSiblingOf() method');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -948,21 +872,12 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         $this->assertEquals(14, $t8->getLeftValue(), 'insertAsNextSiblingOf() sets the left value correctly');
         $this->assertEquals(15, $t8->getRightValue(), 'insertAsNextSiblingOf() sets the right value correctly');
         $this->assertEquals(1, $t8->getLevel(), 'insertAsNextSiblingOf() sets the level correctly');
-        $expected = array(
-            't1' => array(1, 16, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-            't8' => array(14, 15, 1)
-        );
+        $expected = ['t1' => [1, 16, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3], 't8' => [14, 15, 1]];
         $this->assertEquals($expected, $this->dumpTree(), 'insertAsNextSiblingOf() shifts the other nodes correctly');
         try {
             $t8->insertAsNextSiblingOf($t4);
             $this->fail('insertAsNextSiblingOf() throws an exception when called on a saved object');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'insertAsNextSiblingOf() throws an exception when called on a saved object');
         }
     }
@@ -1003,7 +918,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
     public function testMoveToFirstChildOf()
     {
         $this->assertTrue(method_exists('Table9', 'moveToFirstChildOf'), 'nested_set adds a moveToFirstChildOf() method');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1016,53 +931,29 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         try {
             $t3->moveToFirstChildOf($t5);
             $this->fail('moveToFirstChildOf() throws an exception when the target is a child node');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'moveToFirstChildOf() throws an exception when the target is a child node');
         }
         // moving down
         $t = $t3->moveToFirstChildOf($t2);
         $this->assertEquals($t3, $t, 'moveToFirstChildOf() returns the object it was called on');
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 13, 1),
-            't3' => array(3, 12, 2),
-            't4' => array(4, 5, 3),
-            't5' => array(6, 11, 3),
-            't6' => array(7, 8, 4),
-            't7' => array(9, 10, 4),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 13, 1], 't3' => [3, 12, 2], 't4' => [4, 5, 3], 't5' => [6, 11, 3], 't6' => [7, 8, 4], 't7' => [9, 10, 4]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToFirstChildOf() moves the entire subtree down correctly');
         // moving up
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         $t5->moveToFirstChildOf($t1);
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(8, 9, 1),
-            't3' => array(10, 13, 1),
-            't4' => array(11, 12, 2),
-            't5' => array(2, 7, 1),
-            't6' => array(3, 4, 2),
-            't7' => array(5, 6, 2),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [8, 9, 1], 't3' => [10, 13, 1], 't4' => [11, 12, 2], 't5' => [2, 7, 1], 't6' => [3, 4, 2], 't7' => [5, 6, 2]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToFirstChildOf() moves the entire subtree up correctly');
         // moving to the same level
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         $t5->moveToFirstChildOf($t3);
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(11, 12, 2),
-            't5' => array(5, 10, 2),
-            't6' => array(6, 7, 3),
-            't7' => array(8, 9, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [11, 12, 2], 't5' => [5, 10, 2], 't6' => [6, 7, 3], 't7' => [8, 9, 3]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToFirstChildOf() moves the entire subtree to the same level correctly');
     }
 
     public function testMoveToFirstChildOfAndChildrenCache()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1078,23 +969,17 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         // move
         $t5->moveToFirstChildOf($t1);
         $children = $t3->getChildren();
-        $expected = array(
-            't4' => array(11, 12, 2),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'moveToFirstChildOf() reinitializes the child collection of all concerned nodes');
+        $expected = ['t4' => [11, 12, 2]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'moveToFirstChildOf() reinitializes the child collection of all concerned nodes');
         $children = $t1->getChildren();
-        $expected = array(
-            't5' => array(2, 7, 1),
-            't2' => array(8, 9, 1),
-            't3' => array(10, 13, 1),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'moveToFirstChildOf() reinitializes the child collection of all concerned nodes');
+        $expected = ['t5' => [2, 7, 1], 't2' => [8, 9, 1], 't3' => [10, 13, 1]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'moveToFirstChildOf() reinitializes the child collection of all concerned nodes');
     }
 
     public function testMoveToLastChildOf()
     {
         $this->assertTrue(method_exists('Table9', 'moveToLastChildOf'), 'nested_set adds a moveToLastChildOf() method');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1107,53 +992,29 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         try {
             $t3->moveToLastChildOf($t5);
             $this->fail('moveToLastChildOf() throws an exception when the target is a child node');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'moveToLastChildOf() throws an exception when the target is a child node');
         }
         // moving up
         $t = $t5->moveToLastChildOf($t1);
         $this->assertEquals($t5, $t, 'moveToLastChildOf() returns the object it was called on');
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 7, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(8, 13, 1),
-            't6' => array(9, 10, 2),
-            't7' => array(11, 12, 2),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 7, 1], 't4' => [5, 6, 2], 't5' => [8, 13, 1], 't6' => [9, 10, 2], 't7' => [11, 12, 2]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToLastChildOf() moves the entire subtree up correctly');
         // moving down
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         $t3->moveToLastChildOf($t2);
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 13, 1),
-            't3' => array(3, 12, 2),
-            't4' => array(4, 5, 3),
-            't5' => array(6, 11, 3),
-            't6' => array(7, 8, 4),
-            't7' => array(9, 10, 4),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 13, 1], 't3' => [3, 12, 2], 't4' => [4, 5, 3], 't5' => [6, 11, 3], 't6' => [7, 8, 4], 't7' => [9, 10, 4]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToLastChildOf() moves the entire subtree down correctly');
         // moving to the same level
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         $t4->moveToLastChildOf($t3);
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(11, 12, 2),
-            't5' => array(5, 10, 2),
-            't6' => array(6, 7, 3),
-            't7' => array(8, 9, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [11, 12, 2], 't5' => [5, 10, 2], 't6' => [6, 7, 3], 't7' => [8, 9, 3]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToLastChildOf() moves the entire subtree to the same level correctly');
     }
 
     public function testMoveToLastChildOfAndChildrenCache()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1169,23 +1030,17 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         // move
         $t5->moveToLastChildOf($t1);
         $children = $t3->getChildren();
-        $expected = array(
-            't4' => array(5, 6, 2),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'moveToLastChildOf() reinitializes the child collection of all concerned nodes');
+        $expected = ['t4' => [5, 6, 2]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'moveToLastChildOf() reinitializes the child collection of all concerned nodes');
         $children = $t1->getChildren();
-        $expected = array(
-            't2' => array(2, 3, 1),
-            't3' => array(4, 7, 1),
-            't5' => array(8, 13, 1),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'moveToLastChildOf() reinitializes the child collection of all concerned nodes');
+        $expected = ['t2' => [2, 3, 1], 't3' => [4, 7, 1], 't5' => [8, 13, 1]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'moveToLastChildOf() reinitializes the child collection of all concerned nodes');
     }
 
     public function testMoveToPrevSiblingOf()
     {
         $this->assertTrue(method_exists('Table9', 'moveToPrevSiblingOf'), 'nested_set adds a moveToPrevSiblingOf() method');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1198,13 +1053,13 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         try {
             $t5->moveToPrevSiblingOf($t1);
             $this->fail('moveToPrevSiblingOf() throws an exception when the target is a root node');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'moveToPrevSiblingOf() throws an exception when the target is a root node');
         }
         try {
             $t5->moveToPrevSiblingOf($t6);
             $this->fail('moveToPrevSiblingOf() throws an exception when the target is a child node');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'moveToPrevSiblingOf() throws an exception when the target is a child node');
         }
         // moving up
@@ -1217,15 +1072,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
             t6 t7  t4
         */
         $this->assertEquals($t5, $t, 'moveToPrevSiblingOf() returns the object it was called on');
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(10, 13, 1),
-            't4' => array(11, 12, 2),
-            't5' => array(4, 9, 1),
-            't6' => array(5, 6, 2),
-            't7' => array(7, 8, 2),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [10, 13, 1], 't4' => [11, 12, 2], 't5' => [4, 9, 1], 't6' => [5, 6, 2], 't7' => [7, 8, 2]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToPrevSiblingOf() moves the entire subtree up correctly');
         // moving down
         $t5->moveToPrevSiblingOf($t4);
@@ -1238,15 +1085,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
             | \
             t6 t7
         */
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(11, 12, 2),
-            't5' => array(5, 10, 2),
-            't6' => array(6, 7, 3),
-            't7' => array(8, 9, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [11, 12, 2], 't5' => [5, 10, 2], 't6' => [6, 7, 3], 't7' => [8, 9, 3]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToPrevSiblingOf() moves the entire subtree down correctly');
         // moving at the same level
         $t4->moveToPrevSiblingOf($t5);
@@ -1259,21 +1098,13 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
                |  \
                t6 t7
         */
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToPrevSiblingOf() moves the entire subtree at the same level correctly');
     }
 
     public function testMoveToPrevSiblingOfAndChildrenCache()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1289,22 +1120,16 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         // move
         $t5->moveToPrevSiblingOf($t2);
         $children = $t3->getChildren();
-        $expected = array(
-            't4' => array(11, 12, 2),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'moveToPrevSiblingOf() reinitializes the child collection of all concerned nodes');
+        $expected = ['t4' => [11, 12, 2]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'moveToPrevSiblingOf() reinitializes the child collection of all concerned nodes');
         $children = $t1->getChildren();
-        $expected = array(
-            't5' => array(2, 7, 1),
-            't2' => array(8, 9, 1),
-            't3' => array(10, 13, 1),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'moveToPrevSiblingOf() reinitializes the child collection of all concerned nodes');
+        $expected = ['t5' => [2, 7, 1], 't2' => [8, 9, 1], 't3' => [10, 13, 1]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'moveToPrevSiblingOf() reinitializes the child collection of all concerned nodes');
     }
 
     public function testMoveToNextSiblingOfAndChildrenCache()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1320,23 +1145,17 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         // move
         $t5->moveToNextSiblingOf($t3);
         $children = $t3->getChildren();
-        $expected = array(
-            't4' => array(5, 6, 2),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'moveToNextSiblingOf() reinitializes the child collection of all concerned nodes');
+        $expected = ['t4' => [5, 6, 2]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'moveToNextSiblingOf() reinitializes the child collection of all concerned nodes');
         $children = $t1->getChildren();
-        $expected = array(
-            't2' => array(2, 3, 1),
-            't3' => array(4, 7, 1),
-            't5' => array(8, 13, 1),
-        );
-        $this->assertEquals($expected, $this->dumpNodes($children, true), 'moveToNextSiblingOf() reinitializes the child collection of all concerned nodes');
+        $expected = ['t2' => [2, 3, 1], 't3' => [4, 7, 1], 't5' => [8, 13, 1]];
+        $this->assertEquals($expected, $this->dumpNodes($children), 'moveToNextSiblingOf() reinitializes the child collection of all concerned nodes');
     }
 
     public function testMoveToNextSiblingOf()
     {
         $this->assertTrue(method_exists('Table9', 'moveToNextSiblingOf'), 'nested_set adds a moveToNextSiblingOf() method');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1349,13 +1168,13 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         try {
             $t5->moveToNextSiblingOf($t1);
             $this->fail('moveToNextSiblingOf() throws an exception when the target is a root node');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'moveToNextSiblingOf() throws an exception when the target is a root node');
         }
         try {
             $t5->moveToNextSiblingOf($t6);
             $this->fail('moveToNextSiblingOf() throws an exception when the target is a child node');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'moveToNextSiblingOf() throws an exception when the target is a child node');
         }
         // moving up
@@ -1368,15 +1187,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
             t4  t6 t7
         */
         $this->assertEquals($t5, $t, 'moveToPrevSiblingOf() returns the object it was called on');
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 7, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(8, 13, 1),
-            't6' => array(9, 10, 2),
-            't7' => array(11, 12, 2),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 7, 1], 't4' => [5, 6, 2], 't5' => [8, 13, 1], 't6' => [9, 10, 2], 't7' => [11, 12, 2]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToNextSiblingOf() moves the entire subtree up correctly');
         // moving down
         $t = $t5->moveToNextSiblingOf($t4);
@@ -1389,15 +1200,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
                |  \
                t6 t7
         */
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(5, 6, 2),
-            't5' => array(7, 12, 2),
-            't6' => array(8, 9, 3),
-            't7' => array(10, 11, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [5, 6, 2], 't5' => [7, 12, 2], 't6' => [8, 9, 3], 't7' => [10, 11, 3]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToNextSiblingOf() moves the entire subtree down correctly');
         // moving at the same level
         $t = $t4->moveToNextSiblingOf($t5);
@@ -1410,21 +1213,13 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
             | \
             t6 t7
         */
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 13, 1),
-            't4' => array(11, 12, 2),
-            't5' => array(5, 10, 2),
-            't6' => array(6, 7, 3),
-            't7' => array(8, 9, 3),
-        );
+        $expected = ['t1' => [1, 14, 0], 't2' => [2, 3, 1], 't3' => [4, 13, 1], 't4' => [11, 12, 2], 't5' => [5, 10, 2], 't6' => [6, 7, 3], 't7' => [8, 9, 3]];
         $this->assertEquals($expected, $this->dumpTree(), 'moveToNextSiblingOf() moves the entire subtree at the same level correctly');
     }
 
     public function testDeleteDescendants()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1438,13 +1233,9 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
         $this->assertEquals(4, $t3->deleteDescendants(), 'deleteDescendants() returns the number of deleted nodes');
         $this->assertEquals(5, $t3->getRightValue(), 'deleteDescendants() updates the current node');
         $this->assertEquals(5, $t4->getLeftValue(), 'deleteDescendants() does not update existing nodes (because delete() clears the instance cache)');
-        $expected = array(
-            't1' => array(1, 6, 0),
-            't2' => array(2, 3, 1),
-            't3' => array(4, 5, 1),
-        );
+        $expected = ['t1' => [1, 6, 0], 't2' => [2, 3, 1], 't3' => [4, 5, 1]];
         $this->assertEquals($expected, $this->dumpTree(), 'deleteDescendants() shifts the entire subtree correctly');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7) = $this->initTree();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7] = $this->initTree();
         /* Tree used for tests
          t1
          |  \
@@ -1455,9 +1246,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
                t6 t7
         */
         $this->assertEquals(6, $t1->deleteDescendants(), 'deleteDescendants() can be called on the root node');
-        $expected = array(
-            't1' => array(1, 2, 0),
-        );
+        $expected = ['t1' => [1, 2, 0]];
         $this->assertEquals($expected, $this->dumpTree(), 'deleteDescendants() can delete all descendants of the root node');
     }
 
@@ -1476,7 +1265,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testCompatibilityProxies()
     {
-        $proxies = array('createRoot', 'retrieveParent', 'setParentNode', 'getNumberOfDescendants', 'getNumberOfChildren', 'retrievePrevSibling', 'retrieveNextSibling', 'retrieveFirstChild', 'retrieveLastChild', 'getPath');
+        $proxies = ['createRoot', 'retrieveParent', 'setParentNode', 'getNumberOfDescendants', 'getNumberOfChildren', 'retrievePrevSibling', 'retrieveNextSibling', 'retrieveFirstChild', 'retrieveLastChild', 'getPath'];
         foreach ($proxies as $method) {
             $this->assertFalse(method_exists('Table9', $method), 'proxies are not enabled by default');
             $this->assertTrue(method_exists('Table10', $method), 'setting method_proxies to true adds compatibility proxies');
@@ -1494,7 +1283,7 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
 
     public function testGetPath()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -1509,13 +1298,9 @@ class NestedSetBehaviorObjectBuilderModifierTest extends BookstoreNestedSetTestB
          | \
          t9 t10
         */
-        $this->assertEquals(array($t1), $t1->getPath(), 'getPath() returns the current object for roots');
+        $this->assertEquals([$t1], $t1->getPath(), 'getPath() returns the current object for roots');
         $path = $t5->getPath();
-        $expected = array(
-            't1' => array(1, 14, 0),
-            't3' => array(4, 13, 1),
-            't5' => array(7, 12, 2),
-        );
+        $expected = ['t1' => [1, 14, 0], 't3' => [4, 13, 1], 't5' => [7, 12, 2]];
         $this->assertEquals($expected, $this->dumpNodes($path), 'getPath() returns path from the current scope only');
     }
 

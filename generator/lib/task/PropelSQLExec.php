@@ -29,16 +29,16 @@
 class PropelSQLExec extends AbstractPropelTask
 {
 
-    private $goodSql = 0;
-    private $totalSql = 0;
+    private int $goodSql = 0;
+    private int $totalSql = 0;
 
     //private static $errorActions = array("continue", "stop", "abort");
 
     /** PDO Database connection */
-    private $conn = null;
+    private ?\PDO $conn = null;
 
     /** Autocommit flag. Default value is false */
-    private $autocommit = false;
+    private bool $autocommit = false;
 
     /** DB url. */
     private $url = null;
@@ -50,20 +50,20 @@ class PropelSQLExec extends AbstractPropelTask
     private $password = null;
 
     /** Action to perform if an error is found */
-    private $onError = "abort";
+    private string $onError = "abort";
 
     /** Src directory for the files listed in the sqldbmap. */
-    private $srcDir;
+    private ?\PhingFile $srcDir = null;
 
     /** Properties file that maps an individual SQL file to a database. */
-    private $sqldbmap;
+    private ?\PhingFile $sqldbmap = null;
 
     /**
      * The buildtime connection settings
      *
      * @var        Array
      */
-    protected $buildConnections = array();
+    protected $buildConnections = [];
 
     /**
      * Set the sqldbmap properties file.
@@ -116,11 +116,7 @@ class PropelSQLExec extends AbstractPropelTask
     {
         if (!isset($this->buildConnections[$database])) {
             // fallback to default connection settings from build.properties
-            return array(
-                'dsn'      => $this->url,
-                'user'     => $this->userId,
-                'password' => $this->password,
-            );
+            return ['dsn'      => $this->url, 'user'     => $this->userId, 'password' => $this->password];
         }
 
         return $this->buildConnections[$database];
@@ -224,7 +220,7 @@ class PropelSQLExec extends AbstractPropelTask
 
         $this->log(sprintf('Reading SQL files...'));
         foreach ($databases as $database => $files) {
-            $statements[$database] = array();
+            $statements[$database] = [];
             foreach ($files as $fileName) {
                 $fullFileName = $this->srcDir ? $this->srcDir . DIRECTORY_SEPARATOR . $fileName : $fileName;
                 if (file_exists($fullFileName)) {
@@ -252,19 +248,19 @@ class PropelSQLExec extends AbstractPropelTask
         $map = new Properties();
         try {
             $map->load($this->getSqlDbMap());
-        } catch (IOException $ioe) {
+        } catch (IOException) {
             throw new BuildException("Cannot open and process the sqldbmap!");
         }
-        $databases = array();
+        $databases = [];
         foreach ($map->getProperties() as $sqlfile => $database) {
 
             if (!isset($databases[$database])) {
-                $databases[$database] = array();
+                $databases[$database] = [];
             }
 
             // We want to make sure that the base schemas
             // are inserted first.
-            if (strpos($sqlfile, "schema.sql") !== false) {
+            if (str_contains($sqlfile, "schema.sql")) {
                 // add to the beginning of the array
                 array_unshift($databases[$database], $sqlfile);
             } else {
@@ -289,7 +285,7 @@ class PropelSQLExec extends AbstractPropelTask
     protected function insertDatabaseSqlFiles($database, $statements)
     {
         $buildConnection = $this->getBuildConnection($database);
-        $dsn = str_replace("@DB@", $database, $buildConnection['dsn']);
+        $dsn = str_replace("@DB@", $database, (string) $buildConnection['dsn']);
         $this->log(sprintf('  Connecting to database "%s" using DSN "%s"', $database, $dsn));
 
         try {
@@ -313,7 +309,7 @@ class PropelSQLExec extends AbstractPropelTask
             if (!$this->autocommit && $this->conn !== null && $this->onError == "abort") {
                 try {
                     $this->conn->rollBack();
-                } catch (PDOException $ex) {
+                } catch (PDOException) {
                     // do nothing.
                     $this->log("  Rollback failed.");
                 }
@@ -323,7 +319,7 @@ class PropelSQLExec extends AbstractPropelTask
             if (!$this->autocommit && $this->conn !== null && $this->onError == "abort") {
                 try {
                     $this->conn->rollBack();
-                } catch (PDOException $ex) {
+                } catch (PDOException) {
                     // do nothing.
                     $this->log("  Rollback failed");
                 }

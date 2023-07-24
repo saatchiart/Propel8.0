@@ -20,7 +20,7 @@
  * @version    $Revision$
  * @package    propel.generator.model
  */
-class AppData
+class AppData implements \Stringable
 {
 
     /**
@@ -28,14 +28,12 @@ class AppData
      *
      * @var        Database[]
      */
-    private $dbList = array();
+    private array $dbList = [];
 
     /**
      * The platform class for our database(s).
-     *
-     * @var        string
      */
-    private $platform;
+    private ?\PropelPlatformInterface $platform = null;
 
     /**
      * The generator configuration
@@ -52,10 +50,8 @@ class AppData
 
     /**
      * Flag to ensure that initialization is performed only once.
-     *
-     * @var        boolean
      */
-    private $isInitialized = false;
+    private bool $isInitialized = false;
 
     /**
      * Creates a new instance for the specified database type.
@@ -71,8 +67,6 @@ class AppData
 
     /**
      * Sets the platform object to use for any databases added to this application model.
-     *
-     * @param PropelPlatformInterface $defaultPlatform
      */
     public function setPlatform(PropelPlatformInterface $defaultPlatform)
     {
@@ -91,8 +85,6 @@ class AppData
 
     /**
      * Set the generator configuration
-     *
-     * @param GeneratorConfigInterface $generatorConfig
      */
     public function setGeneratorConfig(GeneratorConfigInterface $generatorConfig)
     {
@@ -136,7 +128,7 @@ class AppData
      */
     public function getShortName()
     {
-        return str_replace("-schema", "", $this->name);
+        return str_replace("-schema", "", (string) $this->name);
     }
 
     /**
@@ -228,7 +220,7 @@ class AppData
             if ($db->getPlatform() === null) {
                 if ($config = $this->getGeneratorConfig()) {
                     $pf = $config->getConfiguredPlatform(null, $db->getName());
-                    $db->setPlatform($pf ? $pf : $this->platform);
+                    $db->setPlatform($pf ?: $this->platform);
                 } else {
                     $db->setPlatform($this->platform);
                 }
@@ -335,7 +327,7 @@ class AppData
      *
      * @see toString()
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toString();
     }

@@ -100,7 +100,7 @@ class PgsqlPlatform extends DefaultPlatform
      */
     public function getSequenceName(Table $table)
     {
-        static $longNamesMap = array();
+        static $longNamesMap = [];
         $result = null;
         if ($table->getIdMethod() == IDMethod::NATIVE) {
             $idMethodParams = $table->getIdMethodParameters();
@@ -151,7 +151,7 @@ DROP SEQUENCE %s;
     public function getAddSchemasDDL(Database $database)
     {
         $ret = '';
-        $schemas = array();
+        $schemas = [];
         foreach ($database->getTables() as $table) {
             $vi = $table->getVendorInfoForType('pgsql');
             if ($vi->hasParameter('schema') && !isset($schemas[$vi->getParameter('schema')])) {
@@ -221,7 +221,7 @@ SET search_path TO public;
         $ret .= $this->getUseSchemaDDL($table);
         $ret .= $this->getAddSequenceDDL($table);
 
-        $lines = array();
+        $lines = [];
 
         foreach ($table->getColumns() as $column) {
             $lines[] = $this->getColumnDDL($column);
@@ -313,7 +313,7 @@ DROP TABLE IF EXISTS %s CASCADE;
     {
         $domain = $col->getDomain();
 
-        $ddl = array($this->quoteIdentifier($col->getName()));
+        $ddl = [$this->quoteIdentifier($col->getName())];
         $sqlType = $domain->getSqlType();
         $table = $col->getTable();
         if ($col->isAutoIncrement() && $table && $table->getIdMethodParameters() == null) {
@@ -502,6 +502,6 @@ ALTER TABLE %s ALTER COLUMN %s;
             $columnValueMutator
         );
 
-        return preg_replace('/^/m', $tab, $script);
+        return preg_replace('/^/m', (string) $tab, $script);
     }
 }

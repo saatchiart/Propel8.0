@@ -41,16 +41,16 @@ class BuildPropelGenPEARPackageTask extends MatchingTask
 {
 
     /** Base directory for reading files. */
-    private $dir;
+    private ?\PhingFile $dir = null;
 
     private $version;
-    private $state = 'stable';
+    private string $state = 'stable';
     private $notes;
 
-    private $filesets = array();
+    private array $filesets = [];
 
     /** Package file */
-    private $packageFile;
+    private ?\PhingFile $packageFile = null;
 
     public function init()
     {
@@ -62,6 +62,7 @@ class BuildPropelGenPEARPackageTask extends MatchingTask
 
     private function setOptions($pkg)
     {
+        $options = [];
         $options['baseinstalldir'] = 'propel';
         $options['packagedirectory'] = $this->dir->getAbsolutePath();
 
@@ -87,20 +88,11 @@ class BuildPropelGenPEARPackageTask extends MatchingTask
         }
 
         // add baseinstalldir exceptions
-        $options['installexceptions'] = array(
-            'pear-propel-gen' => '/',
-            'pear-propel-gen.bat' => '/',
-        );
+        $options['installexceptions'] = ['pear-propel-gen' => '/', 'pear-propel-gen.bat' => '/'];
 
-        $options['dir_roles'] = array(
-            'lib' => 'data',
-            'resources' => 'data'
-        );
+        $options['dir_roles'] = ['lib' => 'data', 'resources' => 'data'];
 
-        $options['exceptions'] = array(
-            'pear-propel-gen.bat' => 'script',
-            'pear-propel-gen' => 'script',
-        );
+        $options['exceptions'] = ['pear-propel-gen.bat' => 'script', 'pear-propel-gen' => 'script'];
 
         $pkg->setOptions($options);
     }
@@ -250,7 +242,6 @@ class BuildPropelGenPEARPackageTask extends MatchingTask
     /**
      * Sets "dir" property from XML.
      *
-     * @param PhingFile $f
      *
      * @return void
      */

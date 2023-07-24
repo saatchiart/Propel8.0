@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/PlatformTestBase.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/diff/PropelDatabaseComparator.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/diff/PropelTableComparator.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/diff/PropelColumnComparator.php';
+require_once __DIR__ . '/PlatformTestBase.php';
+require_once __DIR__ . '/../../../../generator/lib/model/diff/PropelDatabaseComparator.php';
+require_once __DIR__ . '/../../../../generator/lib/model/diff/PropelTableComparator.php';
+require_once __DIR__ . '/../../../../generator/lib/model/diff/PropelColumnComparator.php';
 
 /**
  * provider for platform migration unit tests
@@ -61,12 +61,12 @@ EOF;
         $d1 = $this->getDatabaseFromSchema($schema1);
         $d2 = $this->getDatabaseFromSchema($schema2);
 
-        return array(array(PropelDatabaseComparator::computeDiff($d1, $d2)));
+        return [[PropelDatabaseComparator::computeDiff($d1, $d2)]];
     }
 
     public function providerForTestGetRenameTableDDL()
     {
-        return array(array('foo1', 'foo2'));
+        return [['foo1', 'foo2']];
     }
 
     public function providerForTestGetModifyTableDDL()
@@ -125,7 +125,7 @@ EOF;
         $t1 = $this->getDatabaseFromSchema($schema1)->getTable('foo');
         $t2 = $this->getDatabaseFromSchema($schema2)->getTable('foo');
 
-        return array(array(PropelTableComparator::computeDiff($t1,$t2)));
+        return [[PropelTableComparator::computeDiff($t1,$t2)]];
     }
 
     public function providerForTestGetModifyTableColumnsDDL()
@@ -156,7 +156,7 @@ EOF;
         $tc->setToTable($t2);
         $tc->compareColumns();
 
-        return array(array($tc->getTableDiff()));
+        return [[$tc->getTableDiff()]];
     }
 
     public function providerForTestGetModifyTablePrimaryKeysDDL()
@@ -186,7 +186,7 @@ EOF;
         $tc->setToTable($t2);
         $tc->comparePrimaryKeys();
 
-        return array(array($tc->getTableDiff()));
+        return [[$tc->getTableDiff()]];
     }
 
     public function providerForTestGetModifyTableIndicesDDL()
@@ -231,7 +231,7 @@ EOF;
         $tc->setToTable($t2);
         $tc->compareIndices();
 
-        return array(array($tc->getTableDiff()));
+        return [[$tc->getTableDiff()]];
     }
 
     public function providerForTestGetModifyTableForeignKeysDDL()
@@ -297,7 +297,7 @@ EOF;
         $tc->setToTable($t2);
         $tc->compareForeignKeys();
 
-        return array(array($tc->getTableDiff()));
+        return [[$tc->getTableDiff()]];
     }
 
     public function providerForTestGetModifyTableForeignKeysSkipSqlDDL()
@@ -339,7 +339,7 @@ EOF;
         $tc->setToTable($t2);
         $tc->compareForeignKeys();
 
-        return array(array($tc->getTableDiff()));
+        return [[$tc->getTableDiff()]];
     }
 
     public function providerForTestGetModifyTableForeignKeysSkipSql2DDL()
@@ -378,7 +378,7 @@ EOF;
         $tc->setToTable($t2);
         $tc->compareForeignKeys();
 
-        return array(array($tc->getTableDiff()));
+        return [[$tc->getTableDiff()]];
     }
 
     public function providerForTestGetRemoveColumnDDL()
@@ -387,7 +387,7 @@ EOF;
         $column = new Column('bar');
         $table->addColumn($column);
 
-        return array(array($column));
+        return [[$column]];
     }
 
     public function providerForTestGetRenameColumnDDL()
@@ -405,7 +405,7 @@ EOF;
         $c2->getDomain()->replaceSize(2);
         $t2->addColumn($c2);
 
-        return array(array($c1, $c2));
+        return [[$c1, $c2]];
     }
 
     public function providerForTestGetModifyColumnDDL()
@@ -421,7 +421,7 @@ EOF;
         $c2->getDomain()->replaceSize(3);
         $t2->addColumn($c2);
 
-        return array(array(PropelColumnComparator::computeDiff($c1, $c2)));
+        return [[PropelColumnComparator::computeDiff($c1, $c2)]];
     }
 
     public function providerForTestGetModifyColumnsDDL()
@@ -446,10 +446,7 @@ EOF;
         $c4->setNotNull(true);
         $t2->addColumn($c4);
 
-        return array(array(array(
-            PropelColumnComparator::computeDiff($c1, $c3),
-            PropelColumnComparator::computeDiff($c2, $c4)
-        )));
+        return [[[PropelColumnComparator::computeDiff($c1, $c3), PropelColumnComparator::computeDiff($c2, $c4)]]];
     }
 
     public function providerForTestGetAddColumnDDL()
@@ -464,7 +461,7 @@ EOF;
 EOF;
         $column = $this->getDatabaseFromSchema($schema)->getTable('foo')->getColumn('bar');
 
-        return array(array($column));
+        return [[$column]];
     }
 
     public function providerForTestGetAddColumnsDDL()
@@ -480,7 +477,7 @@ EOF;
 EOF;
         $table = $this->getDatabaseFromSchema($schema)->getTable('foo');
 
-        return array(array(array($table->getColumn('bar1'), $table->getColumn('bar2'))));
+        return [[[$table->getColumn('bar1'), $table->getColumn('bar2')]]];
     }
 
     public function providerForTestGetModifyColumnRemoveDefaultValueDDL()
@@ -497,7 +494,7 @@ EOF;
         $c2->getDomain()->setType('INTEGER');
         $t2->addColumn($c2);
 
-        return array(array(PropelColumnComparator::computeDiff($c1, $c2)));
+        return [[PropelColumnComparator::computeDiff($c1, $c2)]];
     }
 
     public function providerForTestGetModifyTableForeignKeysSkipSql3DDL()
@@ -531,7 +528,7 @@ EOF;
         $d2 = $this->getDatabaseFromSchema($schema2);
         $diff = PropelDatabaseComparator::computeDiff($d1, $d2);
 
-        return array(array($diff));
+        return [[$diff]];
     }
 
     public function providerForTestGetModifyTableForeignKeysSkipSql4DDL()
@@ -565,7 +562,7 @@ EOF;
         $d2 = $this->getDatabaseFromSchema($schema2);
         $diff = PropelDatabaseComparator::computeDiff($d2, $d1);
 
-        return array(array($diff));
+        return [[$diff]];
     }
 
 }

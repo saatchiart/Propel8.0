@@ -86,7 +86,7 @@ abstract class ScopedElement extends XMLElement
         }
         $this->namespace = $v;
         if ($v && (!$this->pkg || $this->pkgOverridden) && $this->getBuildProperty('namespaceAutoPackage')) {
-            $this->pkg = str_replace('\\', '.', $v);
+            $this->pkg = str_replace('\\', '.', (string) $v);
             $this->pkgOverridden = true;
         }
     }

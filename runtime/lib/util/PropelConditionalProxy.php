@@ -33,23 +33,18 @@
  */
 class PropelConditionalProxy
 {
-    protected $criteria;
-    protected $parent;
     protected $state;
-    protected $wasTrue;
+    protected $wasTrue = false;
     protected $parentState;
 
-    public function __construct($criteria, $cond, $proxy = null)
+    public function __construct(protected $criteria, $cond, protected $parent = null)
     {
-        $this->criteria = $criteria;
-        $this->wasTrue = false;
         $this->setConditionalState($cond);
-        $this->parent = $proxy;
 
-        if (is_null($proxy)) {
+        if (is_null($parent)) {
             $this->parentState = true;
         } else {
-            $this->parentState = $proxy->getConditionalState();
+            $this->parentState = $parent->getConditionalState();
         }
     }
 

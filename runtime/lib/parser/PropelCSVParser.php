@@ -18,10 +18,10 @@
  */
 class PropelCSVParser extends PropelParser
 {
-    const QUOTE_NONE = 0;
-    const QUOTE_ALL = 1;
-    const QUOTE_NONNUMERIC = 2;
-    const QUOTE_MINIMAL = 3;
+    final public const QUOTE_NONE = 0;
+    final public const QUOTE_ALL = 1;
+    final public const QUOTE_NONNUMERIC = 2;
+    final public const QUOTE_MINIMAL = 3;
 
     // these settings are predefined for Excel CSV format
 
@@ -42,7 +42,7 @@ class PropelCSVParser extends PropelParser
      */
     public function fromArray($array, $isList = false, $includeHeading = true)
     {
-        $rows = array();
+        $rows = [];
         if ($isList) {
             if ($includeHeading) {
                 $rows[] = implode($this->delimiter, $this->formatRow(array_keys(reset($array))));
@@ -139,11 +139,11 @@ class PropelCSVParser extends PropelParser
      */
     protected function containsSpecialChars($input)
     {
-        $special_chars = str_split($this->lineTerminator, 1);
+        $special_chars = str_split((string) $this->lineTerminator, 1);
         $special_chars[] = $this->quotechar;
         $special_chars[] = $this->delimiter;
         foreach ($special_chars as $char) {
-            if (strpos($input, $char) !== false) {
+            if (str_contains($input, (string) $char)) {
                 return true;
             }
         }
@@ -154,11 +154,10 @@ class PropelCSVParser extends PropelParser
     /**
      * Serializes a value to place it into a CSV output
      *
-     * @param mixed $input
      *
      * @return string
      */
-    protected function serialize($input)
+    protected function serialize(mixed $input)
     {
         return serialize($input);
     }
@@ -193,20 +192,20 @@ class PropelCSVParser extends PropelParser
             $heading = array_shift($rows);
             $keys = explode($this->delimiter, $heading);
         } else {
-            $keys = range(0, count($this->getColumns($rows[0])) - 1);
+            $keys = range(0, (is_countable($this->getColumns($rows[0])) ? count($this->getColumns($rows[0])) : 0) - 1);
         }
         if ($isList) {
-            $array = array();
+            $array = [];
             foreach ($rows as $row) {
                 $values = $this->cleanupRow($this->getColumns($row));
-                if ($values !== array()) {
+                if ($values !== []) {
                     $array[] = array_combine($keys, $values);
                 }
             }
         } else {
             $values = $this->cleanupRow($this->getColumns(array_shift($rows)));
-            if ($keys === array('') && $values === array()) {
-                $array = array();
+            if ($keys === [''] && $values === []) {
+                $array = [];
             } else {
                 if (count($keys) > count($values)) {
                     // empty values at the end of the row are not match bu the getColumns() regexp
@@ -226,8 +225,8 @@ class PropelCSVParser extends PropelParser
 
     protected function getColumns($row)
     {
-        $delim = preg_quote($this->delimiter, '/');
-        preg_match_all('/(".+?"|[^' . $delim . ']+)(' . $delim . '|$)/', $row, $matches);
+        $delim = preg_quote((string) $this->delimiter, '/');
+        preg_match_all('/(".+?"|[^' . $delim . ']+)(' . $delim . '|$)/', (string) $row, $matches);
 
         return $matches[1];
     }
@@ -259,9 +258,9 @@ class PropelCSVParser extends PropelParser
 
     protected function isQuoted($input)
     {
-        $quote = preg_quote($this->quotechar, '/');
+        $quote = preg_quote((string) $this->quotechar, '/');
 
-        return preg_match('/^' . $quote . '.*' . $quote . '$/', $input);
+        return preg_match('/^' . $quote . '.*' . $quote . '$/', (string) $input);
     }
 
     protected function unescape($input)
@@ -269,13 +268,13 @@ class PropelCSVParser extends PropelParser
         return str_replace(
             $this->escapechar . $this->quotechar,
             $this->quotechar,
-            $input
+            (string) $input
         );
     }
 
     protected function unquote($input)
     {
-        return trim($input, $this->quotechar);
+        return trim((string) $input, $this->quotechar);
     }
 
     /**
@@ -283,7 +282,7 @@ class PropelCSVParser extends PropelParser
      */
     protected function isSerialized($input)
     {
-        return preg_match('/^\w\:\d+\:\{/', $input);
+        return preg_match('/^\w\:\d+\:\{/', (string) $input);
     }
 
     /**

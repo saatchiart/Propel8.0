@@ -26,67 +26,46 @@ abstract class DataModelBuilder
 {
 
     /**
-     * The current table.
-     *
-     * @var        Table
-     */
-    private $table;
-
-    /**
      * The generator config object holding build properties, etc.
-     *
-     * @var        GeneratorConfigInterface
      */
-    private $generatorConfig;
+    private ?\GeneratorConfig $generatorConfig = null;
 
     /**
      * An array of warning messages that can be retrieved for display (e.g. as part of phing build process).
      *
      * @var        array string[]
      */
-    private $warnings = array();
+    private array $warnings = [];
 
     /**
      * Peer builder class for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $peerBuilder;
+    private ?\DataModelBuilder $peerBuilder = null;
 
     /**
      * Stub Peer builder class for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $stubPeerBuilder;
+    private ?\DataModelBuilder $stubPeerBuilder = null;
 
     /**
      * Object builder class for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $objectBuilder;
+    private ?\DataModelBuilder $objectBuilder = null;
 
     /**
      * Stub Object builder class for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $stubObjectBuilder;
+    private ?\DataModelBuilder $stubObjectBuilder = null;
 
     /**
      * Query builder class for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $queryBuilder;
+    private ?\DataModelBuilder $queryBuilder = null;
 
     /**
      * Stub Query builder class for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $stubQueryBuilder;
+    private ?\DataModelBuilder $stubQueryBuilder = null;
 
     /**
      * TableMap builder class for current table.
@@ -97,73 +76,53 @@ abstract class DataModelBuilder
 
     /**
      * Stub Interface builder class for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $interfaceBuilder;
+    private ?\DataModelBuilder $interfaceBuilder = null;
 
     /**
      * Stub child object for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $multiExtendObjectBuilder;
+    private ?\DataModelBuilder $multiExtendObjectBuilder = null;
 
     /**
      * Node object builder for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $nodeBuilder;
+    private ?\DataModelBuilder $nodeBuilder = null;
 
     /**
      * Node peer builder for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $nodePeerBuilder;
+    private ?\DataModelBuilder $nodePeerBuilder = null;
 
     /**
      * Stub node object builder for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $stubNodeBuilder;
+    private ?\DataModelBuilder $stubNodeBuilder = null;
 
     /**
      * Stub node peer builder for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $stubNodePeerBuilder;
+    private ?\DataModelBuilder $stubNodePeerBuilder = null;
 
     /**
      * NestedSet object builder for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $nestedSetBuilder;
+    private ?\DataModelBuilder $nestedSetBuilder = null;
 
     /**
      * NestedSet peer builder for current table.
-     *
-     * @var        DataModelBuilder
      */
-    private $nestedSetPeerBuilder;
+    private ?\DataModelBuilder $nestedSetPeerBuilder = null;
 
     /**
      * The Data-SQL builder for current table.
-     *
-     * @var        DataSQLBuilder
      */
-    private $dataSqlBuilder;
+    private ?\DataModelBuilder $dataSqlBuilder = null;
 
     /**
      * The Pluralizer class to use.
-     *
-     * @var        Pluralizer
      */
-    private $pluralizer;
+    private ?\Pluralizer $pluralizer = null;
 
     /**
      * The platform class
@@ -177,9 +136,8 @@ abstract class DataModelBuilder
      *
      * @param Table $table The Table which we are using to build [OM, DDL, etc.].
      */
-    public function __construct(Table $table)
+    public function __construct(private Table $table)
     {
-        $this->table = $table;
     }
 
     /**
@@ -423,9 +381,7 @@ abstract class DataModelBuilder
     /**
      * Gets a new data model builder class for specified table and classname.
      *
-     * @param Table  $table
      * @param string $classname The class of builder
-     *
      * @return DataModelBuilder
      */
     public function getNewBuilder(Table $table, $classname)
@@ -590,8 +546,6 @@ abstract class DataModelBuilder
 
     /**
      * Sets the table for this builder.
-     *
-     * @param Table $table
      */
     public function setTable(Table $table)
     {
@@ -627,8 +581,6 @@ abstract class DataModelBuilder
 
     /**
      * Platform setter
-     *
-     * @param PropelPlatformInterface $platform
      */
     public function setPlatform(PropelPlatformInterface $platform)
     {

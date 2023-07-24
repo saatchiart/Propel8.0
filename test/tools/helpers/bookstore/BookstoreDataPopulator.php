@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-define('_LOB_SAMPLE_FILE_PATH', dirname(__FILE__) . '/../../../etc/lob');
+define('_LOB_SAMPLE_FILE_PATH', __DIR__ . '/../../../etc/lob');
 
 /**
  * Populates data needed by the bookstore unit tests.
@@ -143,7 +143,7 @@ class BookstoreDataPopulator
         $m1->setBook($td);
         $m1->setCoverImage(file_get_contents($blob_path));
         // CLOB is broken in PDO OCI, see http://pecl.php.net/bugs/bug.php?id=7943
-        if (get_class(Propel::getDB()) != "DBOracle") {
+        if (Propel::getDB()::class != "DBOracle") {
             $m1->setExcerpt(file_get_contents($clob_path));
         }
         $m1->save($con);
@@ -196,7 +196,7 @@ class BookstoreDataPopulator
 
         $store = new Bookstore();
         $store->setStoreName("Amazon");
-        $store->setPopulationServed(5000000000); // world population
+        $store->setPopulationServed(5_000_000_000); // world population
         $store->setTotalBooks(300);
         $store->save($con);
 
@@ -270,27 +270,7 @@ class BookstoreDataPopulator
 
     public static function depopulate($con = null)
     {
-        $peerClasses = array(
-            'AuthorPeer',
-            'BookstorePeer',
-            'BookstoreContestPeer',
-            'BookstoreContestEntryPeer',
-            'BookstoreEmployeePeer',
-            'BookstoreEmployeeAccountPeer',
-            'BookstoreSalePeer',
-            'BookClubListPeer',
-            'BookOpinionPeer',
-            'BookReaderPeer',
-            'BookListRelPeer',
-            'BookPeer',
-            'ContestPeer',
-            'CustomerPeer',
-            'MediaPeer',
-            'PublisherPeer',
-            'ReaderFavoritePeer',
-            'ReviewPeer',
-            'BookSummaryPeer',
-        );
+        $peerClasses = ['AuthorPeer', 'BookstorePeer', 'BookstoreContestPeer', 'BookstoreContestEntryPeer', 'BookstoreEmployeePeer', 'BookstoreEmployeeAccountPeer', 'BookstoreSalePeer', 'BookClubListPeer', 'BookOpinionPeer', 'BookReaderPeer', 'BookListRelPeer', 'BookPeer', 'ContestPeer', 'CustomerPeer', 'MediaPeer', 'PublisherPeer', 'ReaderFavoritePeer', 'ReviewPeer', 'BookSummaryPeer'];
         // free the memory from existing objects
         foreach ($peerClasses as $peerClass) {
             // $peerClass::$instances crashes on PHP 5.2, see http://www.propelorm.org/ticket/1388
@@ -307,7 +287,7 @@ class BookstoreDataPopulator
         $con->beginTransaction();
         foreach ($peerClasses as $peerClass) {
             // $peerClass::doDeleteAll() crashes on PHP 5.2, see http://www.propelorm.org/ticket/1388
-            call_user_func(array($peerClass, 'doDeleteAll'), $con);
+            call_user_func([$peerClass, 'doDeleteAll'], $con);
         }
         $con->commit();
     }

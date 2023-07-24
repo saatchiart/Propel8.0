@@ -18,8 +18,8 @@
 class ColumnDefaultValue
 {
 
-    const TYPE_VALUE = "value";
-    const TYPE_EXPR = "expr";
+    final public const TYPE_VALUE = "value";
+    final public const TYPE_EXPR = "expr";
 
     /**
      * @var        string The default value, as specified in the schema.
@@ -29,7 +29,7 @@ class ColumnDefaultValue
     /**
      * @var        string The type of value represented by this object (DefaultValue::TYPE_VALUE or DefaultValue::TYPE_EXPR).
      */
-    private $type = ColumnDefaultValue::TYPE_VALUE;
+    private string $type = ColumnDefaultValue::TYPE_VALUE;
 
     /**
      * Creates a new DefaultValue object.
@@ -104,7 +104,7 @@ class ColumnDefaultValue
             return true;
         }
         // special case for current timestamp
-        $equivalents = array('CURRENT_TIMESTAMP', 'NOW()');
+        $equivalents = ['CURRENT_TIMESTAMP', 'NOW()'];
         if (in_array(strtoupper($this->getValue()), $equivalents) && in_array(strtoupper($other->getValue()), $equivalents)) {
             return true;
         }

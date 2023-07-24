@@ -14,7 +14,7 @@ class PropelQuickBuilder
 {
     protected $schema, $platform, $config, $database;
 
-    protected $classTargets = array('tablemap', 'peer', 'object', 'query', 'peerstub', 'objectstub', 'querystub');
+    protected $classTargets = ['tablemap', 'peer', 'object', 'query', 'peerstub', 'objectstub', 'querystub'];
 
     public function setClassTargets(array $targets)
     {
@@ -53,8 +53,6 @@ class PropelQuickBuilder
 
     /**
      * Setter for the config property
-     *
-     * @param GeneratorConfigInterface $config
      */
     public function setConfig(GeneratorConfigInterface $config)
     {
@@ -101,7 +99,7 @@ class PropelQuickBuilder
         $this->buildClasses($classTargets);
         $name = $this->getDatabase()->getName();
         if (!Propel::isInit()) {
-            Propel::setConfiguration(array('datasources' => array('default' => $name)));
+            Propel::setConfiguration(['datasources' => ['default' => $name]]);
         }
         Propel::setDB($name, $adapter);
         Propel::setConnection($name, $con, Propel::CONNECTION_READ);
@@ -126,7 +124,7 @@ class PropelQuickBuilder
     {
         $statements = PropelSQLParser::parseString($this->getSQL());
         foreach ($statements as $statement) {
-            if (strpos($statement, 'DROP') === 0) {
+            if (str_starts_with((string) $statement, 'DROP')) {
                 // drop statements cause errors since the table doesn't exist
                 continue;
             }
@@ -180,7 +178,7 @@ class PropelQuickBuilder
                         $builder->setChild($child);
                         $script .= $builder->build();
 
-                        foreach (array('objectmultiextend', 'queryinheritancestub') as $target) {
+                        foreach (['objectmultiextend', 'queryinheritancestub'] as $target) {
                             $builder = $this->getConfig()->getConfiguredBuilder($table, $target);
                             $builder->setChild($child);
                             $script .= $builder->build();
@@ -197,15 +195,15 @@ class PropelQuickBuilder
         if ($table->treeMode()) {
             switch ($table->treeMode()) {
                 case 'NestedSet':
-                    foreach (array('nestedsetpeer', 'nestedset') as $target) {
+                    foreach (['nestedsetpeer', 'nestedset'] as $target) {
                         $script .= $this->getConfig()->getConfiguredBuilder($table, $target)->build();
                     }
                     break;
                 case 'MaterializedPath':
-                    foreach (array('nodepeer', 'node') as $target) {
+                    foreach (['nodepeer', 'node'] as $target) {
                         $script .= $this->getConfig()->getConfiguredBuilder($table, $target)->build();
                     }
-                    foreach (array('nodepeerstub', 'nodestub') as $target) {
+                    foreach (['nodepeerstub', 'nodestub'] as $target) {
                         $script .= $this->getConfig()->getConfiguredBuilder($table, $target)->build();
                     }
                     break;

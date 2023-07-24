@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/Column.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/builder/util/XmlToAppData.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/platform/DefaultPlatform.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/behavior/AutoAddPkBehavior.php';
+require_once __DIR__ . '/../../../../generator/lib/model/Column.php';
+require_once __DIR__ . '/../../../../generator/lib/builder/util/XmlToAppData.php';
+require_once __DIR__ . '/../../../../generator/lib/platform/DefaultPlatform.php';
+require_once __DIR__ . '/../../../../generator/lib/behavior/AutoAddPkBehavior.php';
 
 /**
  * Tests for package handling.
@@ -30,7 +30,7 @@ class ColumnTest extends \PHPUnit\Framework\TestCase
     public function testMakeList()
     {
         $expected = '"Column0", "Column1", "Column2", "Column3", "Column4"';
-        $objArray = array();
+        $objArray = [];
         for ($i=0; $i<5; $i++) {
             $c = new Column();
             $c->setName("Column" . $i);
@@ -40,7 +40,7 @@ class ColumnTest extends \PHPUnit\Framework\TestCase
         $list = Column::makeList($objArray, new DefaultPlatform());
         $this->assertEquals($expected, $list, sprintf("Expected '%s' match, got '%s' ", var_export($expected, true), var_export($list,true)));
 
-        $strArray = array();
+        $strArray = [];
         for ($i=0; $i<5; $i++) {
             $strArray[] = "Column" . $i;
         }
@@ -220,7 +220,7 @@ EOF;
         $database->addTable($table);
         $database->setPlatform($platform);
 
-        $column->loadFromXML(array('valueSet' => 'Foo, Bar, "Foo, Bar"'));
+        $column->loadFromXML(['valueSet' => 'Foo, Bar, "Foo, Bar"']);
         $valueSet = $column->getValueSet();
 
         $this->assertCount(3, $valueSet);

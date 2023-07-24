@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/schemas/SchemasTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/schemas/SchemasTestBase.php';
 
 /**
  * Test class for RelatedMap::getSymmetricalRelation with schemas.
@@ -27,7 +27,7 @@ class RelatedMapSymmetricalWithSchemasTest extends SchemasTestBase
         $this->databaseMap = Propel::getDatabaseMap('bookstore-schemas');
     }
 
-    public function testOneToMany()
+    public function testOneToMany(): never
     {
         // passes on its own, but not with the full tests suite
         $this->markTestSkipped();

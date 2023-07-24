@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 
 /**
  * Tests the generated Peer classes for lazy load columns.
@@ -43,9 +43,9 @@ EOF;
     public function testPopulateObjectNotInPool()
     {
         LazyLoadActiveRecord2Peer::clearInstancePool();
-        $values = array(123, 'fooValue', 'bazValue');
+        $values = [123, 'fooValue', 'bazValue'];
         $col = 0;
-        list($obj, $col) = LazyLoadActiveRecord2Peer::populateObject($values, $col);
+        [$obj, $col] = LazyLoadActiveRecord2Peer::populateObject($values, $col);
         $this->assertEquals(3, $col);
         $this->assertEquals(123, $obj->getId());
         $this->assertEquals('fooValue', $obj->getFoo());
@@ -62,9 +62,9 @@ EOF;
         $ar->setBaz('bazValue');
         $ar->setNew(false);
         LazyLoadActiveRecord2Peer::addInstanceToPool($ar, 123);
-        $values = array(123, 'fooValue', 'bazValue');
+        $values = [123, 'fooValue', 'bazValue'];
         $col = 0;
-        list($obj, $col) = LazyLoadActiveRecord2Peer::populateObject($values, $col);
+        [$obj, $col] = LazyLoadActiveRecord2Peer::populateObject($values, $col);
         $this->assertEquals(3, $col);
         $this->assertEquals(123, $obj->getId());
         $this->assertEquals('fooValue', $obj->getFoo());
@@ -75,9 +75,9 @@ EOF;
     public function testPopulateObjectNotInPoolStartColGreaterThanOne()
     {
         LazyLoadActiveRecord2Peer::clearInstancePool();
-        $values = array('dummy', 'dummy', 123, 'fooValue', 'bazValue', 'dummy');
+        $values = ['dummy', 'dummy', 123, 'fooValue', 'bazValue', 'dummy'];
         $col = 2;
-        list($obj, $col) = LazyLoadActiveRecord2Peer::populateObject($values, $col);
+        [$obj, $col] = LazyLoadActiveRecord2Peer::populateObject($values, $col);
         $this->assertEquals(5, $col);
         $this->assertEquals(123, $obj->getId());
         $this->assertEquals('fooValue', $obj->getFoo());
@@ -94,9 +94,9 @@ EOF;
         $ar->setBaz('bazValue');
         $ar->setNew(false);
         LazyLoadActiveRecord2Peer::addInstanceToPool($ar, 123);
-        $values = array('dummy', 'dummy', 123, 'fooValue', 'bazValue', 'dummy');
+        $values = ['dummy', 'dummy', 123, 'fooValue', 'bazValue', 'dummy'];
         $col = 2;
-        list($obj, $col) = LazyLoadActiveRecord2Peer::populateObject($values, $col);
+        [$obj, $col] = LazyLoadActiveRecord2Peer::populateObject($values, $col);
         $this->assertEquals(5, $col);
         $this->assertEquals(123, $obj->getId());
         $this->assertEquals('fooValue', $obj->getFoo());

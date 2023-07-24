@@ -25,17 +25,13 @@ class PropelDateTime extends DateTime
 
     /**
      * A string representation of the date, for serialization.
-     *
-     * @var        string
      */
-    private $dateString;
+    private ?string $dateString = null;
 
     /**
      * A string representation of the time zone, for serialization.
-     *
-     * @var        string
      */
-    private $tzString;
+    private ?string $tzString = null;
 
     /**
      * Factory method to get a DateTime object from a temporal input
@@ -48,7 +44,7 @@ class PropelDateTime extends DateTime
      *
      * @throws PropelException
      */
-    public static function newInstance($value, DateTimeZone $timeZone = null, $dateTimeClass = 'DateTime')
+    public static function newInstance(mixed $value, DateTimeZone $timeZone = null, $dateTimeClass = 'DateTime')
     {
         if ($value instanceof DateTime) {
             return $value;
@@ -99,27 +95,29 @@ class PropelDateTime extends DateTime
     }
 
     /**
+     * @inheritDoc
+     *
      * PHP "magic" function called when object is serialized.
      * Sets an internal property with the date string and returns properties
      * of class that should be serialized.
      *
      * @return array string[]
      */
-    public function __sleep()
+    public function __sleep(): array
     {
         // We need to use a string without a time zone, due to
         // PHP bug: http://bugs.php.net/bug.php?id=40743
         $this->dateString = $this->format('Y-m-d H:i:s');
         $this->tzString = $this->getTimeZone()->getName();
 
-        return array('dateString', 'tzString');
+        return ['dateString', 'tzString'];
     }
 
     /**
      * PHP "magic" function called when object is restored from serialized state.
      * Calls DateTime constructor with previously stored string value of date.
      */
-    public function __wakeup()
+    public function __wakeup(): void
     {
         parent::__construct($this->dateString, new DateTimeZone($this->tzString));
     }

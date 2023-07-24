@@ -52,27 +52,19 @@ class PhpNameGenerator implements NameGenerator
 
         if (count($inputs) > 2) {
             $prefix = $inputs[2];
-            if ($prefix != '' && substr($schemaName, 0, strlen($prefix)) == $prefix) {
-                $schemaName = substr($schemaName, strlen($prefix));
+            if ($prefix != '' && str_starts_with((string) $schemaName, (string) $prefix)) {
+                $schemaName = substr((string) $schemaName, strlen((string) $prefix));
             }
         }
 
         $phpName = null;
 
-        switch ($method) {
-            case self::CONV_METHOD_CLEAN:
-                $phpName = $this->cleanMethod($schemaName);
-                break;
-            case self::CONV_METHOD_PHPNAME:
-                $phpName = $this->phpnameMethod($schemaName);
-                break;
-            case self::CONV_METHOD_NOCHANGE:
-                $phpName = $this->nochangeMethod($schemaName);
-                break;
-            case self::CONV_METHOD_UNDERSCORE:
-            default:
-                $phpName = $this->underscoreMethod($schemaName);
-        }
+        $phpName = match ($method) {
+            self::CONV_METHOD_CLEAN => $this->cleanMethod($schemaName),
+            self::CONV_METHOD_PHPNAME => $this->phpnameMethod($schemaName),
+            self::CONV_METHOD_NOCHANGE => $this->nochangeMethod($schemaName),
+            default => $this->underscoreMethod($schemaName),
+        };
 
         return $phpName;
     }
@@ -125,10 +117,10 @@ class PhpNameGenerator implements NameGenerator
     {
         $name = "";
         $regexp = '/([a-z0-9]+)/i';
-        $matches = array();
+        $matches = [];
         if (preg_match_all($regexp, $schemaName, $matches)) {
             foreach ($matches[1] AS $tok) {
-                $name .= ucfirst(strtolower($tok));
+                $name .= ucfirst(strtolower((string) $tok));
             }
         } else {
             return $schemaName;

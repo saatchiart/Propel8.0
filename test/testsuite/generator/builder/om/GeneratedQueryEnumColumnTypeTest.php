@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 
 /**
  * Tests the generated queries for enum column types filters
@@ -61,7 +61,7 @@ EOF;
         $this->assertEquals(1, $e->count(), 'object columns are searchable by enumerated value using where()');
         $this->assertEquals('baz', $e[0]->getBar(), 'object columns are searchable by enumerated value using where()');
         $e = ComplexColumnTypeEntity13Query::create()
-            ->where('ComplexColumnTypeEntity13.Bar IN ?', array('baz', 4))
+            ->where('ComplexColumnTypeEntity13.Bar IN ?', ['baz', 4])
             ->find();
         $this->assertEquals(2, $e->count(), 'object columns are searchable by enumerated value using where()');
     }
@@ -81,11 +81,11 @@ EOF;
             ->findOne();
         $this->assertEquals('4', $e->getBar(), 'enum columns are searchable by enumerated value');
         $nb = ComplexColumnTypeEntity13Query::create()
-            ->filterByBar(array('baz', '4'), Criteria::IN)
+            ->filterByBar(['baz', '4'], Criteria::IN)
             ->count();
         $this->assertEquals(2, $nb, 'enum columns are searchable by enumerated value');
         $nb = ComplexColumnTypeEntity13Query::create()
-            ->filterByBar(array('baz', '4'))
+            ->filterByBar(['baz', '4'])
             ->count();
         $this->assertEquals(2, $nb, 'enum columns filters default to Criteria IN when passed an array');
     }

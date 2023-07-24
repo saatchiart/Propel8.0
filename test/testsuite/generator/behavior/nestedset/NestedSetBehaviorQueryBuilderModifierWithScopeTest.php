@@ -9,7 +9,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/behavior/BookstoreNestedSetTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/behavior/BookstoreNestedSetTestBase.php';
 
 /**
  * Tests for NestedSetBehaviorQueryBuilderModifier class with scope enabled
@@ -22,7 +22,7 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
 {
     public function testTreeRoots()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -40,13 +40,13 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
         $objs = Table10Query::create()
             ->treeRoots()
             ->find();
-        $coll = $this->buildCollection(array($t1, $t8));
+        $coll = $this->buildCollection([$t1, $t8]);
         $this->assertEquals($coll, $objs, 'treeRoots() filters by roots');
     }
 
     public function testInTree()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -65,19 +65,19 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
             ->inTree(1)
             ->orderByBranch()
             ->find();
-        $coll = $this->buildCollection(array($t1, $t2, $t3, $t4, $t5, $t6, $t7));
+        $coll = $this->buildCollection([$t1, $t2, $t3, $t4, $t5, $t6, $t7]);
         $this->assertEquals($coll, $tree, 'inTree() filters by node');
         $tree = Table10Query::create()
             ->inTree(2)
             ->orderByBranch()
             ->find();
-        $coll = $this->buildCollection(array($t8, $t9, $t10));
+        $coll = $this->buildCollection([$t8, $t9, $t10]);
         $this->assertEquals($coll, $tree, 'inTree() filters by node');
     }
 
     public function testDescendantsOf()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -96,13 +96,13 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
             ->descendantsOf($t1)
             ->orderByBranch()
             ->find();
-        $coll = $this->buildCollection(array($t2, $t3, $t4, $t5, $t6, $t7));
+        $coll = $this->buildCollection([$t2, $t3, $t4, $t5, $t6, $t7]);
         $this->assertEquals($coll, $objs, 'descendantsOf() filters by descendants of the same scope');
     }
 
     public function testBranchOf()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -121,14 +121,14 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
             ->branchOf($t1)
             ->orderByBranch()
             ->find();
-        $coll = $this->buildCollection(array($t1, $t2, $t3, $t4, $t5, $t6, $t7));
+        $coll = $this->buildCollection([$t1, $t2, $t3, $t4, $t5, $t6, $t7]);
         $this->assertEquals($coll, $objs, 'branchOf() filters by branch of the same scope');
 
     }
 
     public function testChildrenOf()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -147,13 +147,13 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
             ->childrenOf($t1)
             ->orderByBranch()
             ->find();
-        $coll = $this->buildCollection(array($t2, $t3));
+        $coll = $this->buildCollection([$t2, $t3]);
         $this->assertEquals($coll, $objs, 'childrenOf() filters by children of the same scope');
     }
 
     public function testSiblingsOf()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -172,13 +172,13 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
             ->siblingsOf($t3)
             ->orderByBranch()
             ->find();
-        $coll = $this->buildCollection(array($t2));
+        $coll = $this->buildCollection([$t2]);
         $this->assertEquals($coll, $desc, 'siblingsOf() returns filters by siblings of the same scope');
     }
 
     public function testAncestorsOf()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -197,12 +197,12 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
             ->ancestorsOf($t5)
             ->orderByBranch()
             ->find();
-        $coll = $this->buildCollection(array($t1, $t3), 'ancestorsOf() filters by ancestors of the same scope');
+        $coll = $this->buildCollection([$t1, $t3]);
     }
 
     public function testRootsOf()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -221,7 +221,7 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
             ->rootsOf($t5)
             ->orderByBranch()
             ->find();
-        $coll = $this->buildCollection(array($t1, $t3, $t5), 'rootsOf() filters by ancestors of the same scope');
+        $coll = $this->buildCollection([$t1, $t3, $t5]);
     }
 
     public function testFindRoot()
@@ -229,7 +229,7 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
         $this->assertTrue(method_exists('Table10Query', 'findRoot'), 'nested_set adds a findRoot() method');
         Table10Query::create()->deleteAll();
         $this->assertNull(Table10Query::create()->findRoot(1), 'findRoot() returns null as long as no root node is defined');
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -250,7 +250,7 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
 
     public function testFindRoots()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -267,13 +267,13 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
         */
         $objs = Table10Query::create()
             ->findRoots();
-        $coll = $this->buildCollection(array($t1, $t8));
+        $coll = $this->buildCollection([$t1, $t8]);
         $this->assertEquals($coll, $objs, 'findRoots() returns all root objects');
     }
 
     public function testFindTree()
     {
-        list($t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10) = $this->initTreeWithScope();
+        [$t1, $t2, $t3, $t4, $t5, $t6, $t7, $t8, $t9, $t10] = $this->initTreeWithScope();
         /* Tree used for tests
          Scope 1
          t1
@@ -289,10 +289,10 @@ class NestedSetBehaviorQueryBuilderModifierWithScopeTest extends BookstoreNested
          t9 t10
         */
         $tree = Table10Query::create()->findTree(1);
-        $coll = $this->buildCollection(array($t1, $t2, $t3, $t4, $t5, $t6, $t7));
+        $coll = $this->buildCollection([$t1, $t2, $t3, $t4, $t5, $t6, $t7]);
         $this->assertEquals($coll, $tree, 'findTree() retrieves the tree of a scope, ordered by branch');
         $tree = Table10Query::create()->findTree(2);
-        $coll = $this->buildCollection(array($t8, $t9, $t10));
+        $coll = $this->buildCollection([$t8, $t9, $t10]);
         $this->assertEquals($coll, $tree, 'findTree() retrieves the tree of a scope, ordered by branch');
     }
 

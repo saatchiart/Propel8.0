@@ -9,9 +9,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/behavior/versionable/VersionableBehavior.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../generator/lib/behavior/versionable/VersionableBehavior.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
 
 /**
  * Tests for VersionableBehavior class
@@ -34,7 +34,7 @@ class VersionableBehaviorTest extends \PHPUnit\Framework\TestCase
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     /**
@@ -145,7 +145,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     /**
@@ -369,7 +369,7 @@ EOF;
 </database>
 EOF;
 
-        return array(array($schema));
+        return [[$schema]];
     }
 
     /**

@@ -26,12 +26,12 @@ class NameFactory
     /**
      * The class name of the PHP name generator.
      */
-    const PHP_GENERATOR = 'PhpNameGenerator';
+    final public const PHP_GENERATOR = 'PhpNameGenerator';
 
     /**
      * The fully qualified class name of the constraint name generator.
      */
-    const CONSTRAINT_GENERATOR = 'ConstraintNameGenerator';
+    final public const CONSTRAINT_GENERATOR = 'ConstraintNameGenerator';
 
     /**
      * The single instance of this class.
@@ -42,7 +42,7 @@ class NameFactory
      * The cache of <code>NameGenerator</code> algorithms in use for
      * name generation, keyed by fully qualified class name.
      */
-    private static $algorithms = array();
+    private static array $algorithms = [];
 
     /**
      * Factory method which retrieves an instance of the named generator.

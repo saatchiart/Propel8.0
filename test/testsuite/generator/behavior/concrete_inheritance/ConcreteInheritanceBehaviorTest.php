@@ -9,10 +9,10 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../../../runtime/lib/Propel.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/behavior/concrete_inheritance/ConcreteInheritanceBehavior.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../generator/lib/behavior/concrete_inheritance/ConcreteInheritanceBehavior.php';
 
 /**
  * Tests for ConcreteInheritanceBehavior class
@@ -80,13 +80,13 @@ EOF;
 
     public function testModifyTableAddsParentColumn()
     {
-        $contentColumns = array('id', 'title', 'category_id');
+        $contentColumns = ['id', 'title', 'category_id'];
         $article = ConcreteArticlePeer::getTableMap();
         foreach ($contentColumns as $column) {
             $this->assertTrue($article->containsColumn($column), 'modifyTable() adds the columns of the parent table');
         }
         $quizz = ConcreteQuizzPeer::getTableMap();
-        $this->assertEquals(3, count($quizz->getColumns()), 'modifyTable() does not add a column of the parent table if a similar column exists');
+        $this->assertEquals(3, is_countable($quizz->getColumns()) ? count($quizz->getColumns()) : 0, 'modifyTable() does not add a column of the parent table if a similar column exists');
     }
 
     public function testModifyTableCopyDataAddsOneToOneRelationships()
@@ -115,7 +115,7 @@ EOF;
         try {
             ConcreteArticlePeer::doInsert($c);
             $this->assertTrue(true, 'modifyTable() removed autoIncrement from copied Primary keys');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->fail('modifyTable() removed autoIncrement from copied Primary keys');
         }
     }
@@ -318,7 +318,7 @@ EOF;
             $article->setId(4);
             $article->save();
             $this->fail('getParentOrCreate() returns a new parent object on new child objects with pk set');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'getParentOrCreate() returns a new parent object on new child objects with pk set');
         }
     }
@@ -332,7 +332,7 @@ EOF;
             $article->setId(4);
             $article->save();
             $this->fail('SetPk fails when allowPkInsert is false');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'SetPk fails when allowPkInsert is false');
         }
     }

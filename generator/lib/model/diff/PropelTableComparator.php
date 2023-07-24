@@ -27,7 +27,7 @@ class PropelTableComparator
 
     public function __construct($tableDiff = null)
     {
-        $this->tableDiff = (null === $tableDiff) ? new PropelTableDiff() : $tableDiff;
+        $this->tableDiff = $tableDiff ?? new PropelTableDiff();
     }
 
     public function getTableDiff()
@@ -37,8 +37,6 @@ class PropelTableComparator
 
     /**
      * Set the table the comparator starts from
-     *
-     * @param Table $fromTable
      */
     public function setFromTable(Table $fromTable)
     {
@@ -57,8 +55,6 @@ class PropelTableComparator
 
     /**
      * Set the table the comparator goes to
-     *
-     * @param Table $toTable
      */
     public function setToTable(Table $toTable)
     {
@@ -78,8 +74,6 @@ class PropelTableComparator
     /**
      * Compute and return the difference between two table objects
      *
-     * @param Table   $fromTable
-     * @param Table   $toTable
      * @param boolean $caseInsensitive Whether the comparison is case insensitive.
      *                                 False by default.
      *
@@ -234,7 +228,7 @@ class PropelTableComparator
                     unset($toTableIndices[$toTableIndexPos]);
                 } else {
                     $test = $caseInsensitive ?
-                        strtolower($fromTableIndex->getName()) == strtolower($toTableIndex->getName()) :
+                        strtolower((string) $fromTableIndex->getName()) == strtolower((string) $toTableIndex->getName()) :
                         $fromTableIndex->getName() == $toTableIndex->getName();
                     if ($test) {
                         // same name, but different columns
@@ -283,7 +277,7 @@ class PropelTableComparator
                     unset($toTableFks[$toTableFkPos]);
                 } else {
                     $test = $caseInsensitive ?
-                        strtolower($fromTableFk->getName()) == strtolower($toTableFk->getName()) :
+                        strtolower((string) $fromTableFk->getName()) == strtolower((string) $toTableFk->getName()) :
                         $fromTableFk->getName() == $toTableFk->getName();
                     if ($test) {
                         // same name, but different columns

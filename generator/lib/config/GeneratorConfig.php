@@ -22,10 +22,8 @@ class GeneratorConfig implements GeneratorConfigInterface
 
     /**
      * The build properties.
-     *
-     * @var        array
      */
-    private $buildProperties = array();
+    private array $buildProperties = [];
 
     protected $buildConnections = null;
     protected $defaultBuildConnection = null;
@@ -35,7 +33,7 @@ class GeneratorConfig implements GeneratorConfigInterface
      *
      * @param mixed $props Array or Iterator
      */
-    public function __construct($props = null)
+    public function __construct(mixed $props = null)
     {
         if ($props) {
             $this->setBuildProperties($props);
@@ -60,14 +58,14 @@ class GeneratorConfig implements GeneratorConfigInterface
      *
      * @param mixed $props Array or Iterator
      */
-    public function setBuildProperties($props)
+    public function setBuildProperties(mixed $props)
     {
-        $this->buildProperties = array();
+        $this->buildProperties = [];
 
-        $renamedPropelProps = array();
+        $renamedPropelProps = [];
         foreach ($props as $key => $propValue) {
-            if (strpos($key, "propel.") === 0) {
-                $newKey = substr($key, strlen("propel."));
+            if (str_starts_with((string) $key, "propel.")) {
+                $newKey = substr((string) $key, strlen("propel."));
                 $j = strpos($newKey, '.');
                 while ($j !== false) {
                     $newKey = substr($newKey, 0, $j) . ucfirst(substr($newKey, $j + 1));
@@ -87,7 +85,7 @@ class GeneratorConfig implements GeneratorConfigInterface
      */
     public function getBuildProperty($name)
     {
-        return isset($this->buildProperties[$name]) ? $this->buildProperties[$name] : null;
+        return $this->buildProperties[$name] ?? null;
     }
 
     /**
@@ -118,15 +116,15 @@ class GeneratorConfig implements GeneratorConfigInterface
 
         // This is a slight hack to workaround camel case inconsistencies for the DataSQL classes.
         // Basically, we want to turn ?.?.?.sqliteDataSQLBuilder into ?.?.?.SqliteDataSQLBuilder
-        $lastdotpos = strrpos($classpath, '.');
+        $lastdotpos = strrpos((string) $classpath, '.');
         if ($lastdotpos !== false) {
-            $classpath[$lastdotpos + 1] = strtoupper($classpath[$lastdotpos + 1]);
+            $classpath[$lastdotpos + 1] = strtoupper((string) $classpath[$lastdotpos + 1]);
         } else {
             // Allows to configure full classname instead of a dot-path notation
             if (class_exists($classpath)) {
                 return $classpath;
             }
-            $classpath = ucfirst($classpath);
+            $classpath = ucfirst((string) $classpath);
         }
 
         if (empty($classpath)) {
@@ -168,7 +166,7 @@ class GeneratorConfig implements GeneratorConfigInterface
             // propel.platform.class = platform.${propel.database}Platform by default
             $clazz = $this->getClassname('platformClass');
         } elseif (null !== $buildConnection['adapter']) {
-            $clazz = Phing::import('platform.' . ucfirst($buildConnection['adapter']) . 'Platform');
+            $clazz = Phing::import('platform.' . ucfirst((string) $buildConnection['adapter']) . 'Platform');
         } else {
             return null;
         }
@@ -192,7 +190,6 @@ class GeneratorConfig implements GeneratorConfigInterface
     /**
      * Creates and configures a new SchemaParser class for specified platform.
      *
-     * @param PDO $con
      *
      * @return SchemaParser
      * @throws BuildException
@@ -253,7 +250,7 @@ class GeneratorConfig implements GeneratorConfigInterface
         $propname = 'behavior' . ucfirst(strtolower($name)) . 'Class';
         try {
             $ret = $this->getClassname($propname);
-        } catch (BuildException $e) {
+        } catch (BuildException) {
             // class path not configured
             $ret = false;
         }
@@ -279,7 +276,7 @@ class GeneratorConfig implements GeneratorConfigInterface
                 // configuration stored in a buildtime-conf.xml file
                 $this->parseBuildConnections(file_get_contents($buildTimeConfigPath));
             } else {
-                $this->buildConnections = array();
+                $this->buildConnections = [];
             }
         }
 
@@ -288,16 +285,11 @@ class GeneratorConfig implements GeneratorConfigInterface
 
     protected function parseBuildConnections($xmlString)
     {
-        $conf = simplexml_load_string($xmlString);
+        $conf = simplexml_load_string((string) $xmlString);
         $this->defaultBuildConnection = (string) $conf->propel->datasources['default'];
-        $buildConnections = array();
+        $buildConnections = [];
         foreach ($conf->propel->datasources->datasource as $datasource) {
-            $buildConnections[(string) $datasource['id']] = array(
-                'adapter'  => (string) $datasource->adapter,
-                'dsn'      => (string) $datasource->connection->dsn,
-                'user'     => (string) $datasource->connection->user,
-                'password' => (string) $datasource->connection->password,
-            );
+            $buildConnections[(string) $datasource['id']] = ['adapter'  => (string) $datasource->adapter, 'dsn'      => (string) $datasource->connection->dsn, 'user'     => (string) $datasource->connection->user, 'password' => (string) $datasource->connection->password];
         }
         $this->buildConnections = $buildConnections;
     }
@@ -312,19 +304,14 @@ class GeneratorConfig implements GeneratorConfigInterface
             return $connections[$databaseName];
         } else {
             // fallback to the single connection from build.properties
-            return array(
-                'adapter'  => $this->getBuildProperty('databaseAdapter'),
-                'dsn'      => $this->getBuildProperty('databaseUrl'),
-                'user'     => $this->getBuildProperty('databaseUser'),
-                'password' => $this->getBuildProperty('databasePassword'),
-            );
+            return ['adapter'  => $this->getBuildProperty('databaseAdapter'), 'dsn'      => $this->getBuildProperty('databaseUrl'), 'user'     => $this->getBuildProperty('databaseUser'), 'password' => $this->getBuildProperty('databasePassword')];
         }
     }
 
     public function getBuildPDO($database)
     {
         $buildConnection = $this->getBuildConnection($database);
-        $dsn = str_replace("@DB@", $database, $buildConnection['dsn']);
+        $dsn = str_replace("@DB@", $database, (string) $buildConnection['dsn']);
 
         // Set user + password to null if they are empty strings or missing
         $username = isset($buildConnection['user']) && $buildConnection['user'] ? $buildConnection['user'] : null;

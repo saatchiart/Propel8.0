@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../runtime/lib/om/BaseObject.php';
+require_once __DIR__ . '/../../../../runtime/lib/om/BaseObject.php';
 
 /**
  * Test class for BaseObject.
@@ -22,16 +22,16 @@ class BaseObjectTest extends \PHPUnit\Framework\TestCase
     public function testGetVirtualColumns()
     {
         $b = new TestableBaseObject();
-        $this->assertEquals(array(), $b->getVirtualColumns(), 'getVirtualColumns() returns an empty array for new objects');
-        $b->virtualColumns = array('foo' => 'bar');
-        $this->assertEquals(array('foo' => 'bar'), $b->getVirtualColumns(), 'getVirtualColumns() returns an associative array of virtual columns');
+        $this->assertEquals([], $b->getVirtualColumns(), 'getVirtualColumns() returns an empty array for new objects');
+        $b->virtualColumns = ['foo' => 'bar'];
+        $this->assertEquals(['foo' => 'bar'], $b->getVirtualColumns(), 'getVirtualColumns() returns an associative array of virtual columns');
     }
 
     public function testHasVirtualColumn()
     {
         $b = new TestableBaseObject();
         $this->assertFalse($b->hasVirtualColumn('foo'), 'hasVirtualColumn() returns false if the virtual column is not set');
-        $b->virtualColumns = array('foo' => 'bar');
+        $b->virtualColumns = ['foo' => 'bar'];
         $this->assertTrue($b->hasVirtualColumn('foo'), 'hasVirtualColumn() returns true if the virtual column is set');
     }
 
@@ -48,7 +48,7 @@ class BaseObjectTest extends \PHPUnit\Framework\TestCase
     public function testGetVirtualColumn()
     {
         $b = new TestableBaseObject();
-        $b->virtualColumns = array('foo' => 'bar');
+        $b->virtualColumns = ['foo' => 'bar'];
         $this->assertEquals('bar', $b->getVirtualColumn('foo'), 'getVirtualColumn() returns a virtual column value based on its key');
     }
 
@@ -85,5 +85,5 @@ class BaseObjectTest extends \PHPUnit\Framework\TestCase
 
 class TestableBaseObject extends BaseObject
 {
-    public $virtualColumns = array();
+    public $virtualColumns = [];
 }

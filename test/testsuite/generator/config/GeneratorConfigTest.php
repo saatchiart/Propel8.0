@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/config/GeneratorConfig.php';
+require_once __DIR__ . '/../../../../generator/lib/config/GeneratorConfig.php';
 
 /**
  * @author	William Durand <william.durand1@gmail.com>
@@ -20,7 +20,7 @@ class GeneratorConfigTest extends \PHPUnit\Framework\TestCase
 
     public function setUp(): void
     {
-        $this->pathToFixtureFiles = dirname(__FILE__) . '/../../../fixtures/generator/config';
+        $this->pathToFixtureFiles = __DIR__ . '/../../../fixtures/generator/config';
     }
 
     public function testGetClassnameWithClass()
@@ -52,9 +52,9 @@ class GeneratorConfigTest extends \PHPUnit\Framework\TestCase
         require $file;
 
         $generator = new GeneratorConfig();
-        $generator->setBuildProperty('propel.foo.bar', '\Foo\Test\FoobarWithNS');
+        $generator->setBuildProperty('propel.foo.bar', '\\' . \Foo\Test\FoobarWithNS::class);
 
-        $this->assertSame('\Foo\Test\FoobarWithNS', $generator->getClassname('propel.foo.bar'));
+        $this->assertSame('\\' . \Foo\Test\FoobarWithNS::class, $generator->getClassname('propel.foo.bar'));
     }
 
     /**

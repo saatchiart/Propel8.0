@@ -43,7 +43,7 @@ class PropelArrayCollection extends PropelCollection
                 $obj->save($con);
             }
             $con->commit();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $con->rollback();
         }
     }
@@ -87,8 +87,8 @@ class PropelArrayCollection extends PropelCollection
      */
     public function getPrimaryKeys($usePrefix = true)
     {
-        $callable = array($this->getPeerClass(), 'getPrimaryKeyFromRow');
-        $ret = array();
+        $callable = [$this->getPeerClass(), 'getPrimaryKeyFromRow'];
+        $ret = [];
         foreach ($this as $key => $element) {
             $key = $usePrefix ? ($this->getModel() . '_' . $key) : $key;
             $ret[$key] = call_user_func($callable, array_values($element));
@@ -143,9 +143,9 @@ class PropelArrayCollection extends PropelCollection
      *
      * @return array
      */
-    public function toArray($keyColumn = null, $usePrefix = false, $keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array())
+    public function toArray($keyColumn = null, $usePrefix = false, $keyType = BasePeer::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = [])
     {
-        $ret = array();
+        $ret = [];
         foreach ($this as $key => $element) {
             $key = null === $keyColumn ? $key : $element[$keyColumn];
             $key = $usePrefix ? ($this->getModel() . '_' . $key) : $key;
@@ -187,7 +187,7 @@ class PropelArrayCollection extends PropelCollection
      */
     public function toKeyValue($keyColumn, $valueColumn)
     {
-        $ret = array();
+        $ret = [];
         foreach ($this as $obj) {
             $ret[$obj[$keyColumn]] = $obj[$valueColumn];
         }

@@ -8,8 +8,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreDataPopulator.php';
 
 /**
  * Test class for PropelQuery
@@ -38,7 +38,7 @@ class PropelQueryTest extends BookstoreTestBase
         try {
             $q = PropelQuery::from('Foo');
             $this->fail('PropelQuery::from() throws an exception when called on a non-existing query class');
-        } catch (PropelException $e) {
+        } catch (PropelException) {
             $this->assertTrue(true, 'PropelQuery::from() throws an exception when called on a non-existing query class');
         }
     }
@@ -85,7 +85,7 @@ class PropelQueryTest extends BookstoreTestBase
             ->find();
 
         $booksIn = BookQuery::create()
-            ->filterById(array($booksAll[1]->getId(), $booksAll[2]->getId()))
+            ->filterById([$booksAll[1]->getId(), $booksAll[2]->getId()])
             ->find();
 
         $this->assertTrue($booksIn[0] == $booksAll[1]);
@@ -96,7 +96,7 @@ class PropelQueryTest extends BookstoreTestBase
 
         $booksIn = BookQuery::create()
                 ->filterById(
-                     array('min' => $booksAll[2]->getId()))
+                     ['min' => $booksAll[2]->getId()])
                 ->find();
 
         $this->assertTrue($booksIn[1] == $booksAll[3]);
@@ -106,7 +106,7 @@ class PropelQueryTest extends BookstoreTestBase
 
         $booksIn = BookQuery::create()
             ->filterById(
-                array('max' => $booksAll[1]->getId()) )
+                ['max' => $booksAll[1]->getId()] )
             ->find();
 
         $this->assertTrue($booksIn[1] == $booksAll[1]);
@@ -118,20 +118,18 @@ class PropelQueryTest extends BookstoreTestBase
 
         $minMax = BookQuery::create()
             ->filterById(
-                array('min' => $booksAll[1]->getId(),
-                      'max' => $booksAll[2]->getId())
+                ['min' => $booksAll[1]->getId(), 'max' => $booksAll[2]->getId()]
                 )
             ->find();
 
         $In = BookQuery::create()
             ->filterById(
-                array($booksAll[1]->getId(),
-                      $booksAll[2]->getId())
+                [$booksAll[1]->getId(), $booksAll[2]->getId()]
                 )
             ->find();
 
         $this->assertTrue($minMax[0] === $In[0]);
-        $this->assertTrue(count($minMax->getData()) === count($In->getData()));
+        $this->assertTrue((is_countable($minMax->getData()) ? count($minMax->getData()) : 0) === (is_countable($In->getData()) ? count($In->getData()) : 0));
     }
 
     public function testInstancePool()

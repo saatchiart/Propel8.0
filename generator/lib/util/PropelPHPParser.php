@@ -65,7 +65,7 @@ class PropelPHPParser
 
     protected function removePhp($code)
     {
-        return substr($code, 6);
+        return substr((string) $code, 6);
     }
 
     /**
@@ -109,7 +109,7 @@ class PropelPHPParser
                     // Decrease the bracket-counter (not the class-brackets: `$isInFunction` must be true!)
                     $functionBracketBalance--;
                     if ($functionBracketBalance == 0) {
-                        if (strpos($methodCode, 'function ' . $methodName . '(') !== false) {
+                        if (str_contains($methodCode, 'function ' . $methodName . '(')) {
                             return $methodCode;
                         } else {
                             // If it's the closing bracket of the function, reset `$isInFunction`
@@ -121,7 +121,7 @@ class PropelPHPParser
                 }
             } else {
                 // Tokens consisting of (possibly) more than one character.
-                list($id, $text) = $token;
+                [$id, $text] = $token;
                 switch ($id) {
                     case T_FUNCTION:
                         // If we encounter the keyword 'function', flip the `isInFunction` flag to
@@ -155,7 +155,7 @@ class PropelPHPParser
     public function removeMethod($methodName)
     {
         if ($methodCode = $this->findMethod($methodName)) {
-            $this->code = str_replace($methodCode, '', $this->code);
+            $this->code = str_replace($methodCode, '', (string) $this->code);
 
             return $methodCode;
         }
@@ -174,7 +174,7 @@ class PropelPHPParser
     public function replaceMethod($methodName, $newCode)
     {
         if ($methodCode = $this->findMethod($methodName)) {
-            $this->code = str_replace($methodCode, $newCode, $this->code);
+            $this->code = str_replace($methodCode, $newCode, (string) $this->code);
 
             return $methodCode;
         }
@@ -193,7 +193,7 @@ class PropelPHPParser
     public function addMethodAfter($methodName, $newCode)
     {
         if ($methodCode = $this->findMethod($methodName)) {
-            $this->code = str_replace($methodCode, $methodCode . $newCode, $this->code);
+            $this->code = str_replace($methodCode, $methodCode . $newCode, (string) $this->code);
 
             return $methodCode;
         }
@@ -212,7 +212,7 @@ class PropelPHPParser
     public function addMethodBefore($methodName, $newCode)
     {
         if ($methodCode = $this->findMethod($methodName)) {
-            $this->code = str_replace($methodCode, $newCode . $methodCode, $this->code);
+            $this->code = str_replace($methodCode, $newCode . $methodCode, (string) $this->code);
 
             return $methodCode;
         }

@@ -16,9 +16,9 @@
  *
  * @package    propel.generator.model.diff
  */
-class PropelColumnDiff
+class PropelColumnDiff implements \Stringable
 {
-    protected $changedProperties = array();
+    protected $changedProperties = [];
     protected $fromColumn;
     protected $toColumn;
 
@@ -44,8 +44,6 @@ class PropelColumnDiff
 
     /**
      * Setter for the fromColumn property
-     *
-     * @param Column $fromColumn
      */
     public function setFromColumn(Column $fromColumn)
     {
@@ -64,8 +62,6 @@ class PropelColumnDiff
 
     /**
      * Setter for the toColumn property
-     *
-     * @param Column $toColumn
      */
     public function setToColumn(Column $toColumn)
     {
@@ -96,7 +92,7 @@ class PropelColumnDiff
         $diff->setToColumn($this->getFromColumn());
 
         // properties
-        $changedProperties = array();
+        $changedProperties = [];
         foreach ($this->getChangedProperties() as $name => $propertyChange) {
             $changedProperties[$name] = array_reverse($propertyChange);
         }
@@ -105,13 +101,13 @@ class PropelColumnDiff
         return $diff;
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         $ret = '';
         $ret .= sprintf("      %s:\n", $this->getFromColumn()->getFullyQualifiedName());
         $ret .= "        modifiedProperties:\n";
         foreach ($this->getChangedProperties() as $key => $value) {
-            $ret .= sprintf("          %s: %s\n", $key, json_encode($value));
+            $ret .= sprintf("          %s: %s\n", $key, json_encode($value, JSON_THROW_ON_ERROR));
         }
 
         return $ret;

@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Tests relationships between generated Object classes.
@@ -48,23 +48,23 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $book->setIsbn('TEST');
         // No save ...
 
-        $this->assertEquals(0, count($list->getBookListRels()) );
-        $this->assertEquals(0, count($book->getBookListRels()) );
-        $this->assertEquals(0, count(BookListRelPeer::doSelect(new Criteria())) );
+        $this->assertEquals(0, is_countable($list->getBookListRels()) ? is_countable($list->getBookListRels()) ? count($list->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(0, is_countable($book->getBookListRels()) ? is_countable($book->getBookListRels()) ? count($book->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(0, is_countable(BookListRelPeer::doSelect(new Criteria())) ? is_countable(BookListRelPeer::doSelect(new Criteria())) ? count(BookListRelPeer::doSelect(new Criteria())) : 0 : 0 );
 
         $xref = new BookListRel();
         $xref->setBook($book);
         $list->addBookListRel($xref);
 
-        $this->assertEquals(1, count($list->getBookListRels()));
-        $this->assertEquals(1, count($book->getBookListRels()) );
-        $this->assertEquals(0, count(BookListRelPeer::doSelect(new Criteria())) );
+        $this->assertEquals(1, is_countable($list->getBookListRels()) ? is_countable($list->getBookListRels()) ? count($list->getBookListRels()) : 0 : 0);
+        $this->assertEquals(1, is_countable($book->getBookListRels()) ? is_countable($book->getBookListRels()) ? count($book->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(0, is_countable(BookListRelPeer::doSelect(new Criteria())) ? is_countable(BookListRelPeer::doSelect(new Criteria())) ? count(BookListRelPeer::doSelect(new Criteria())) : 0 : 0 );
 
         $list->save();
 
-        $this->assertEquals(1, count($list->getBookListRels()) );
-        $this->assertEquals(1, count($book->getBookListRels()) );
-        $this->assertEquals(1, count(BookListRelPeer::doSelect(new Criteria())) );
+        $this->assertEquals(1, is_countable($list->getBookListRels()) ? is_countable($list->getBookListRels()) ? count($list->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(1, is_countable($book->getBookListRels()) ? is_countable($book->getBookListRels()) ? count($book->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(1, is_countable(BookListRelPeer::doSelect(new Criteria())) ? is_countable(BookListRelPeer::doSelect(new Criteria())) ? count(BookListRelPeer::doSelect(new Criteria())) : 0 : 0 );
 
     }
 
@@ -82,22 +82,22 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $book->setIsbn('TEST');
         // No save (yet) ...
 
-        $this->assertEquals(0, count($list->getBookListRels()) );
-        $this->assertEquals(0, count($book->getBookListRels()) );
-        $this->assertEquals(0, count(BookListRelPeer::doSelect(new Criteria())) );
+        $this->assertEquals(0, is_countable($list->getBookListRels()) ? is_countable($list->getBookListRels()) ? count($list->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(0, is_countable($book->getBookListRels()) ? is_countable($book->getBookListRels()) ? count($book->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(0, is_countable(BookListRelPeer::doSelect(new Criteria())) ? is_countable(BookListRelPeer::doSelect(new Criteria())) ? count(BookListRelPeer::doSelect(new Criteria())) : 0 : 0 );
 
         $xref = new BookListRel();
         $xref->setBookClubList($list);
         $book->addBookListRel($xref);
 
-        $this->assertEquals(1, count($list->getBookListRels()) );
-        $this->assertEquals(1, count($book->getBookListRels()) );
-        $this->assertEquals(0, count(BookListRelPeer::doSelect(new Criteria())) );
+        $this->assertEquals(1, is_countable($list->getBookListRels()) ? is_countable($list->getBookListRels()) ? count($list->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(1, is_countable($book->getBookListRels()) ? is_countable($book->getBookListRels()) ? count($book->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(0, is_countable(BookListRelPeer::doSelect(new Criteria())) ? is_countable(BookListRelPeer::doSelect(new Criteria())) ? count(BookListRelPeer::doSelect(new Criteria())) : 0 : 0 );
         $book->save();
 
-        $this->assertEquals(1, count($list->getBookListRels()) );
-        $this->assertEquals(1, count($book->getBookListRels()) );
-        $this->assertEquals(1, count(BookListRelPeer::doSelect(new Criteria())) );
+        $this->assertEquals(1, is_countable($list->getBookListRels()) ? is_countable($list->getBookListRels()) ? count($list->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(1, is_countable($book->getBookListRels()) ? is_countable($book->getBookListRels()) ? count($book->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(1, is_countable(BookListRelPeer::doSelect(new Criteria())) ? is_countable(BookListRelPeer::doSelect(new Criteria())) ? count(BookListRelPeer::doSelect(new Criteria())) : 0 : 0 );
 
     }
 
@@ -116,9 +116,9 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $book->setIsbn('TEST');
         // No save (yet) ...
 
-        $this->assertEquals(0, count($list->getBookListRels()) );
-        $this->assertEquals(0, count($book->getBookListRels()) );
-        $this->assertEquals(0, count(BookListRelPeer::doSelect(new Criteria())) );
+        $this->assertEquals(0, is_countable($list->getBookListRels()) ? is_countable($list->getBookListRels()) ? count($list->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(0, is_countable($book->getBookListRels()) ? is_countable($book->getBookListRels()) ? count($book->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(0, is_countable(BookListRelPeer::doSelect(new Criteria())) ? is_countable(BookListRelPeer::doSelect(new Criteria())) ? count(BookListRelPeer::doSelect(new Criteria())) : 0 : 0 );
 
         // Now set the relationship from the opposite direction.
 
@@ -126,14 +126,14 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $xref->setBookClubList($list);
         $book->addBookListRel($xref);
 
-        $this->assertEquals(1, count($list->getBookListRels()) );
-        $this->assertEquals(1, count($book->getBookListRels()) );
-        $this->assertEquals(0, count(BookListRelPeer::doSelect(new Criteria())) );
+        $this->assertEquals(1, is_countable($list->getBookListRels()) ? is_countable($list->getBookListRels()) ? count($list->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(1, is_countable($book->getBookListRels()) ? is_countable($book->getBookListRels()) ? count($book->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(0, is_countable(BookListRelPeer::doSelect(new Criteria())) ? is_countable(BookListRelPeer::doSelect(new Criteria())) ? count(BookListRelPeer::doSelect(new Criteria())) : 0 : 0 );
         $book->save();
 
-        $this->assertEquals(1, count($list->getBookListRels()) );
-        $this->assertEquals(1, count($book->getBookListRels()) );
-        $this->assertEquals(1, count(BookListRelPeer::doSelect(new Criteria())) );
+        $this->assertEquals(1, is_countable($list->getBookListRels()) ? is_countable($list->getBookListRels()) ? count($list->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(1, is_countable($book->getBookListRels()) ? is_countable($book->getBookListRels()) ? count($book->getBookListRels()) : 0 : 0 );
+        $this->assertEquals(1, is_countable(BookListRelPeer::doSelect(new Criteria())) ? is_countable(BookListRelPeer::doSelect(new Criteria())) ? count(BookListRelPeer::doSelect(new Criteria())) : 0 : 0 );
     }
 
     public function testManyToManyGetterExists()
@@ -148,11 +148,11 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $books = $blc1->getBooks();
         $this->assertTrue($books instanceof PropelObjectCollection, 'getCrossRefFK() returns a Propel collection');
         $this->assertEquals('Book', $books->getModel(), 'getCrossRefFK() returns a collection of the correct model');
-        $this->assertEquals(0, count($books), 'getCrossRefFK() returns an empty list for new objects');
+        $this->assertEquals(0, is_countable($books) ? count($books) : 0, 'getCrossRefFK() returns an empty list for new objects');
         $query = BookQuery::create()
             ->filterByTitle('Harry Potter and the Order of the Phoenix');
         $books = $blc1->getBooks($query);
-        $this->assertEquals(0, count($books), 'getCrossRefFK() accepts a query as first parameter');
+        $this->assertEquals(0, is_countable($books) ? count($books) : 0, 'getCrossRefFK() accepts a query as first parameter');
     }
 
     public function testManyToManyGetter()
@@ -162,11 +162,11 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $books = $blc1->getBooks();
         $this->assertTrue($books instanceof PropelObjectCollection, 'getCrossRefFK() returns a Propel collection');
         $this->assertEquals('Book', $books->getModel(), 'getCrossRefFK() returns a collection of the correct model');
-        $this->assertEquals(2, count($books), 'getCrossRefFK() returns the correct list of objects');
+        $this->assertEquals(2, is_countable($books) ? count($books) : 0, 'getCrossRefFK() returns the correct list of objects');
         $query = BookQuery::create()
             ->filterByTitle('Harry Potter and the Order of the Phoenix');
         $books = $blc1->getBooks($query);
-        $this->assertEquals(1, count($books), 'getCrossRefFK() accepts a query as first parameter');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'getCrossRefFK() accepts a query as first parameter');
     }
 
     public function testOneToManyGetter()
@@ -255,7 +255,7 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $list->clearBookListRels();
         $list->clearBooks();
         $books = $list->getBooks();
-        $expected = new PropelObjectCollection(array($book));
+        $expected = new PropelObjectCollection([$book]);
         $expected->setModel('Book');
         $this->assertEquals($expected, $books, 'addCrossFk() adds the object properly');
         $this->assertEquals(1, $list->countBookListRels());
@@ -319,9 +319,9 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
 
         // No save (yet) ...
 
-        $this->assertEquals(1, count($book->getReviews()) );
+        $this->assertEquals(1, is_countable($book->getReviews()) ? is_countable($book->getReviews()) ? count($book->getReviews()) : 0 : 0 );
         $book->clearReviews();
-        $this->assertEquals(0, count($book->getReviews()));
+        $this->assertEquals(0, is_countable($book->getReviews()) ? is_countable($book->getReviews()) ? count($book->getReviews()) : 0 : 0);
     }
 
     /**
@@ -333,9 +333,9 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $book = new Book();
         $bookClub = new BookClubList();
         $book->addBookClubList($bookClub);
-        $this->assertEquals(1, count($book->getBookClubLists()));
+        $this->assertEquals(1, is_countable($book->getBookClubLists()) ? is_countable($book->getBookClubLists()) ? count($book->getBookClubLists()) : 0 : 0);
         $book->clear();
-        $this->assertEquals(0, count($book->getBookClubLists()));
+        $this->assertEquals(0, is_countable($book->getBookClubLists()) ? is_countable($book->getBookClubLists()) ? count($book->getBookClubLists()) : 0 : 0);
     }
 
     /**
@@ -350,7 +350,7 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $author->setLastName("Public");
 
         $books = $author->getBooks(); // empty, of course
-        $this->assertEquals(0, count($books), "Expected empty collection.");
+        $this->assertEquals(0, is_countable($books) ? count($books) : 0, "Expected empty collection.");
 
         $book = new Book();
         $book->setTitle("A sample book");
@@ -363,7 +363,7 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $book->setIsbn("MODIFIED ISBN");
 
         $books = $author->getBooks();
-        $this->assertEquals(1, count($books), "Expected 1 book.");
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, "Expected 1 book.");
         $this->assertSame($book, $books[0], "Expected the same object to be returned by fk accessor.");
         $this->assertEquals("MODIFIED ISBN", $books[0]->getISBN(), "Expected the modified value NOT to have been overwritten.");
     }
@@ -592,7 +592,7 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $bookClubList->save();
 
         $this->assertEquals(3, $coll->count());
-        $this->assertEquals(3, count($bookClubList->getBooks()));
+        $this->assertEquals(3, is_countable($bookClubList->getBooks()) ? is_countable($bookClubList->getBooks()) ? count($bookClubList->getBooks()) : 0 : 0);
         $this->assertSame($coll, $bookClubList->getBooks());
         $this->assertEquals(3, BookQuery::create()->count());
         $this->assertEquals(1, BookClubListQuery::create()->count());
@@ -621,7 +621,7 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $bookClubList->setBooks($books);
         $bookClubList->save();
 
-        $this->assertEquals(3, count($bookClubList->getBooks()));
+        $this->assertEquals(3, is_countable($bookClubList->getBooks()) ? is_countable($bookClubList->getBooks()) ? count($bookClubList->getBooks()) : 0 : 0);
         $this->assertEquals(3, BookQuery::create()->count());
         $this->assertEquals(1, BookClubListQuery::create()->count());
         $this->assertEquals(3, BookListRelQuery::create()->count());
@@ -644,7 +644,7 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $bookClubList->setBooks(new PropelObjectCollection());
         $bookClubList->save();
 
-        $this->assertEquals(0, count($bookClubList->getBooks()));
+        $this->assertEquals(0, is_countable($bookClubList->getBooks()) ? is_countable($bookClubList->getBooks()) ? count($bookClubList->getBooks()) : 0 : 0);
 
         $this->assertEquals(0, BookQuery::create()->count());
         $this->assertEquals(1, BookClubListQuery::create()->count());
@@ -659,7 +659,7 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         BookListRelQuery::create()->deleteAll();
 
         $books = new PropelObjectCollection();
-        foreach (array('foo', 'bar') as $title) {
+        foreach (['foo', 'bar'] as $title) {
             $b = new Book();
             $b->setTitle($title);
             $b->setIsbn('12553');
@@ -677,7 +677,7 @@ class GeneratedObjectRelTest extends BookstoreEmptyTestBase
         $this->assertEquals('bar', $books[1]->getTitle());
 
         $books = new PropelObjectCollection();
-        foreach (array('bam', 'bom') as $title) {
+        foreach (['bam', 'bom'] as $title) {
             $b = new Book();
             $b->setTitle($title);
             $b->setIsbn('1345');

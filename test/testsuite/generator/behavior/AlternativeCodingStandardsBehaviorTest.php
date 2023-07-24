@@ -9,8 +9,8 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/Behavior.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/behavior/AlternativeCodingStandardsBehavior.php';
+require_once __DIR__ . '/../../../../generator/lib/model/Behavior.php';
+require_once __DIR__ . '/../../../../generator/lib/behavior/AlternativeCodingStandardsBehavior.php';
 
 /**
  * Tests for TimestampableBehavior class
@@ -23,25 +23,20 @@ class AlternativeCodingStandardsBehaviorTest extends \PHPUnit\Framework\TestCase
 {
     public function convertBracketsNewlineDataProvider()
     {
-        return array(
-            array("class Foo {
+        return [["class Foo {
 }", "class Foo
 {
-}"),
-            array("if (true) {
+}"], ["if (true) {
 }", "if (true)
 {
-}"),
-            array("} else {
+}"], ["} else {
 }", "}
 else
 {
-}"),
-            array("foreach (\$i as \$j) {
+}"], ["foreach (\$i as \$j) {
 }", "foreach (\$i as \$j)
 {
-}"),
-        );
+}"]];
     }
 
     /**

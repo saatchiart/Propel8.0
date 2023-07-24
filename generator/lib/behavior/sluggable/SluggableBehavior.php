@@ -19,16 +19,17 @@
 class SluggableBehavior extends Behavior
 {
     // default parameters value
-    protected $parameters = array(
+    protected $parameters = [
         'add_cleanup'     => 'true',
         'slug_column'     => 'slug',
         'slug_pattern'    => '',
-        'replace_pattern' => '/\W+/', // Tip: use '/[^\\pL\\d]+/u' instead if you're in PHP5.3
+        'replace_pattern' => '/\W+/',
+        // Tip: use '/[^\\pL\\d]+/u' instead if you're in PHP5.3
         'replacement'     => '-',
         'separator'       => '-',
         'permanent'       => 'false',
-        'scope_column'    => ''
-    );
+        'scope_column'    => '',
+    ];
 
     /**
      * Add the slug_column to the current table
@@ -36,11 +37,7 @@ class SluggableBehavior extends Behavior
     public function modifyTable()
     {
         if (!$this->getTable()->containsColumn($this->getParameter('slug_column'))) {
-            $this->getTable()->addColumn(array(
-                'name' => $this->getParameter('slug_column'),
-                'type' => 'VARCHAR',
-                'size' => 255
-            ));
+            $this->getTable()->addColumn(['name' => $this->getParameter('slug_column'), 'type' => 'VARCHAR', 'size' => 255]);
             // add a unique to column
             $unique = new Unique($this->getColumnForParameter('slug_column'));
             $unique->setName($this->getTable()->getCommonName() . '_slug');
@@ -88,7 +85,7 @@ if (\$this->isColumnModified($const) && \$this->{$this->getColumnGetter()}()) {
         if ($pattern && false === $this->booleanValue($this->getParameter('permanent'))) {
             $script .= "
 } elseif (";
-            $count = preg_match_all('/{([a-zA-Z]+)}/', $pattern, $matches, PREG_PATTERN_ORDER);
+            $count = preg_match_all('/{([a-zA-Z]+)}/', (string) $pattern, $matches, PREG_PATTERN_ORDER);
 
             foreach ($matches[1] as $key => $match) {
                 $columnName = $this->underscore(ucfirst($match));
@@ -205,7 +202,7 @@ protected function createRawSlug()
 {
     ";
         if ($pattern) {
-            $script .= "return '" . str_replace(array('{', '}'), array('\' . $this->cleanupSlugPart($this->get', '()) . \''), $pattern) . "';";
+            $script .= "return '" . str_replace(['{', '}'], ['\' . $this->cleanupSlugPart($this->get', '()) . \''], (string) $pattern) . "';";
         } else {
             $script .= "return \$this->cleanupSlugPart(\$this->__toString());";
         }
@@ -434,6 +431,6 @@ public function findOneBySlug(\$slug, \$con = null)
      */
     protected function underscore($string)
     {
-        return strtolower(preg_replace(array('/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'), array('\\1_\\2', '\\1_\\2'), strtr($string, '_', '.')));
+        return strtolower(preg_replace(['/([A-Z]+)([A-Z][a-z])/', '/([a-z\d])([A-Z])/'], ['\\1_\\2', '\\1_\\2'], strtr($string, '_', '.')));
     }
 }

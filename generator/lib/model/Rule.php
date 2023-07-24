@@ -23,7 +23,7 @@ class Rule extends XMLElement
     private $name;
     private $value;
     private $message;
-    private $validator;
+    private ?\Validator $validator = null;
     private $classname;
 
     /**
@@ -62,7 +62,6 @@ class Rule extends XMLElement
     /**
      * Sets the owning validator for this rule.
      *
-     * @param Validator $validator
      *
      * @see        Validator::addRule()
      */
@@ -103,7 +102,7 @@ class Rule extends XMLElement
     public function getClass()
     {
         if ($this->classname === null && $this->name !== null) {
-            return "propel.validator." . ucfirst($this->name) . "Validator";
+            return "propel.validator." . ucfirst((string) $this->name) . "Validator";
         }
 
         return $this->classname;
@@ -180,7 +179,7 @@ class Rule extends XMLElement
      */
     public function getMessage()
     {
-        $message = str_replace('${value}', $this->getValue(), $this->message);
+        $message = str_replace('${value}', $this->getValue(), (string) $this->message);
 
         return $message;
     }

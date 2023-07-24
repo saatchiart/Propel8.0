@@ -18,11 +18,8 @@
  */
 class I18nBehaviorPeerBuilderModifier
 {
-    protected $behavior;
-
-    public function __construct($behavior)
+    public function __construct(protected $behavior)
     {
-        $this->behavior = $behavior;
     }
 
     public function staticConstants()

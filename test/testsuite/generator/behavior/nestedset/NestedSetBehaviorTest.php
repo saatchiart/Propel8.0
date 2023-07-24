@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/behavior/nestedset/NestedSetBehavior.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/platform/MysqlPlatform.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../../generator/lib/behavior/nestedset/NestedSetBehavior.php';
+require_once __DIR__ . '/../../../../../generator/lib/platform/MysqlPlatform.php';
 
 /**
  * Tests for NestedSetBehavior class
@@ -24,7 +24,7 @@ class NestedSetBehaviorTest extends BookstoreTestBase
     public function testDefault()
     {
         $table9 = Table9Peer::getTableMap();
-        $this->assertEquals(count($table9->getColumns()), 5, 'nested_set adds three column by default');
+        $this->assertEquals(is_countable($table9->getColumns()) ? count($table9->getColumns()) : 0, 5, 'nested_set adds three column by default');
         $this->assertTrue(method_exists('Table9', 'getTreeLeft'), 'nested_set adds a tree_left column by default');
         $this->assertTrue(method_exists('Table9', 'getLeftValue'), 'nested_set maps the left_value getter with the tree_left column');
         $this->assertTrue(method_exists('Table9', 'getTreeRight'), 'nested_set adds a tree_right column by default');
@@ -39,7 +39,7 @@ class NestedSetBehaviorTest extends BookstoreTestBase
     public function testParameters()
     {
         $table10 = Table10Peer::getTableMap();
-        $this->assertEquals(count($table10->getColumns()), 6, 'nested_set does not add columns when they already exist');
+        $this->assertEquals(is_countable($table10->getColumns()) ? count($table10->getColumns()) : 0, 6, 'nested_set does not add columns when they already exist');
         $this->assertTrue(method_exists('Table10', 'getLeftValue'), 'nested_set maps the left_value getter with the tree_left column');
         $this->assertTrue(method_exists('Table10', 'getRightValue'), 'nested_set maps the right_value getter with the tree_right column');
         $this->assertTrue(method_exists('Table10', 'getLevel'), 'nested_set maps the level getter with the tree_level column');
@@ -72,7 +72,7 @@ class NestedSetBehaviorTest extends BookstoreTestBase
     </table>
 </database>
 XML;
-        $expectedSql = <<<SQL
+        $expectedSql = <<<SQL_WRAP
 
 # This is a fix for InnoDB in MySQL >= 4.1.x
 # It "suspends judgement" for fkey relationships until are tables are set.
@@ -115,7 +115,7 @@ CREATE TABLE `post`
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;
 
-SQL;
+SQL_WRAP;
         $builder = new PropelQuickBuilder();
         $builder->setPlatform(new MysqlPlatform());
         $builder->setSchema($schema);

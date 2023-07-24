@@ -37,7 +37,7 @@ class NestedSetBehaviorPeerBuilderModifier
 
     protected function getColumnAttribute($name)
     {
-        return strtolower($this->getColumn($name)->getName());
+        return strtolower((string) $this->getColumn($name)->getName());
     }
 
     protected function getColumnConstant($name)
@@ -411,13 +411,13 @@ public static function updateLoadedNodes(\$prune = null, PropelPDO \$con = null)
             // We don't need to alter the object instance pool; we're just modifying these ones
             // already in the pool.
             \$criteria = new Criteria($peerClassname::DATABASE_NAME);";
-        if (count($this->table->getPrimaryKey()) === 1) {
+        if ((is_countable($this->table->getPrimaryKey()) ? count($this->table->getPrimaryKey()) : 0) === 1) {
             $pkey = $this->table->getPrimaryKey();
             $col = array_shift($pkey);
             $script .= "
             \$criteria->add(" . $this->builder->getColumnConstant($col) . ", \$keys, Criteria::IN);";
         } else {
-            $fields = array();
+            $fields = [];
             foreach ($this->table->getPrimaryKey() as $k => $col) {
                 $fields[] = $this->builder->getColumnConstant($col);
             };

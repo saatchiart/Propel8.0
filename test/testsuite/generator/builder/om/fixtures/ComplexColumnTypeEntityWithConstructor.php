@@ -7,7 +7,7 @@ class ComplexColumnTypeEntityWithConstructor extends BaseComplexColumnTypeEntity
         parent::__construct();
 
         $this->setTags(
-            array('foo', 'bar')
+            ['foo', 'bar']
         );
     }
 }

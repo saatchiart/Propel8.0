@@ -8,9 +8,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../../runtime/lib/query/Criteria.php';
-require_once dirname(__FILE__) . '/../../../../runtime/lib/util/BasePeer.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../../runtime/lib/query/Criteria.php';
+require_once __DIR__ . '/../../../../runtime/lib/util/BasePeer.php';
 
 /**
  * Test class for Criteria.
@@ -25,7 +25,7 @@ class CriteriaMergeTest extends BookstoreTestBase
 
     protected function assertCriteriaTranslation($criteria, $expectedSql, $message = '')
     {
-        $params = array();
+        $params = [];
         $result = BasePeer::createSelectSql($criteria, $params);
         $this->assertEquals($expectedSql, $result, $message);
     }
@@ -76,24 +76,24 @@ class CriteriaMergeTest extends BookstoreTestBase
         $c1->setDistinct();
         $c2 = new Criteria();
         $c1->mergeWith($c2);
-        $this->assertEquals(array(Criteria::DISTINCT), $c1->getSelectModifiers(), 'mergeWith() does not remove an existing select modifier');
+        $this->assertEquals([Criteria::DISTINCT], $c1->getSelectModifiers(), 'mergeWith() does not remove an existing select modifier');
         $c1 = new Criteria();
         $c2 = new Criteria();
         $c2->setDistinct();
         $c1->mergeWith($c2);
-        $this->assertEquals(array(Criteria::DISTINCT), $c1->getSelectModifiers(), 'mergeWith() merges the select modifiers');
+        $this->assertEquals([Criteria::DISTINCT], $c1->getSelectModifiers(), 'mergeWith() merges the select modifiers');
         $c1 = new Criteria();
         $c1->setDistinct();
         $c2 = new Criteria();
         $c2->setDistinct();
         $c1->mergeWith($c2);
-        $this->assertEquals(array(Criteria::DISTINCT), $c1->getSelectModifiers(), 'mergeWith() does not duplicate select modifiers');
+        $this->assertEquals([Criteria::DISTINCT], $c1->getSelectModifiers(), 'mergeWith() does not duplicate select modifiers');
         $c1 = new Criteria();
         $c1->setAll();
         $c2 = new Criteria();
         $c2->setDistinct();
         $c1->mergeWith($c2);
-        $this->assertEquals(array(Criteria::ALL), $c1->getSelectModifiers(), 'mergeWith() does not merge the select modifiers in case of conflict');
+        $this->assertEquals([Criteria::ALL], $c1->getSelectModifiers(), 'mergeWith() does not merge the select modifiers in case of conflict');
     }
 
     public function testMergeWithSelectColumns()
@@ -103,25 +103,25 @@ class CriteriaMergeTest extends BookstoreTestBase
         $c1->addSelectColumn(BookPeer::ID);
         $c2 = new Criteria();
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE, BookPeer::ID), $c1->getSelectColumns(), 'mergeWith() does not remove an existing select columns');
+        $this->assertEquals([BookPeer::TITLE, BookPeer::ID], $c1->getSelectColumns(), 'mergeWith() does not remove an existing select columns');
         $c1 = new Criteria();
         $c2 = new Criteria();
         $c2->addSelectColumn(BookPeer::TITLE);
         $c2->addSelectColumn(BookPeer::ID);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE, BookPeer::ID), $c1->getSelectColumns(), 'mergeWith() merges the select columns to an empty select');
+        $this->assertEquals([BookPeer::TITLE, BookPeer::ID], $c1->getSelectColumns(), 'mergeWith() merges the select columns to an empty select');
         $c1 = new Criteria();
         $c1->addSelectColumn(BookPeer::TITLE);
         $c2 = new Criteria();
         $c2->addSelectColumn(BookPeer::ID);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE, BookPeer::ID), $c1->getSelectColumns(), 'mergeWith() merges the select columns after the existing select columns');
+        $this->assertEquals([BookPeer::TITLE, BookPeer::ID], $c1->getSelectColumns(), 'mergeWith() merges the select columns after the existing select columns');
         $c1 = new Criteria();
         $c1->addSelectColumn(BookPeer::TITLE);
         $c2 = new Criteria();
         $c2->addSelectColumn(BookPeer::TITLE);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE, BookPeer::TITLE), $c1->getSelectColumns(), 'mergeWith() merges the select columns to an existing select, even if duplicated');
+        $this->assertEquals([BookPeer::TITLE, BookPeer::TITLE], $c1->getSelectColumns(), 'mergeWith() merges the select columns to an existing select, even if duplicated');
     }
 
     public function testMergeWithAsColumns()
@@ -131,19 +131,19 @@ class CriteriaMergeTest extends BookstoreTestBase
         $c1->addAsColumn('bar', BookPeer::ID);
         $c2 = new Criteria();
         $c1->mergeWith($c2);
-        $this->assertEquals(array('foo' => BookPeer::TITLE, 'bar' => BookPeer::ID), $c1->getAsColumns(), 'mergeWith() does not remove an existing as columns');
+        $this->assertEquals(['foo' => BookPeer::TITLE, 'bar' => BookPeer::ID], $c1->getAsColumns(), 'mergeWith() does not remove an existing as columns');
         $c1 = new Criteria();
         $c2 = new Criteria();
         $c2->addAsColumn('foo', BookPeer::TITLE);
         $c2->addAsColumn('bar', BookPeer::ID);
         $c1->mergeWith($c2);
-        $this->assertEquals(array('foo' => BookPeer::TITLE, 'bar' => BookPeer::ID), $c1->getAsColumns(), 'mergeWith() merges the select columns to an empty as');
+        $this->assertEquals(['foo' => BookPeer::TITLE, 'bar' => BookPeer::ID], $c1->getAsColumns(), 'mergeWith() merges the select columns to an empty as');
         $c1 = new Criteria();
         $c1->addAsColumn('foo', BookPeer::TITLE);
         $c2 = new Criteria();
         $c2->addAsColumn('bar', BookPeer::ID);
         $c1->mergeWith($c2);
-        $this->assertEquals(array('foo' => BookPeer::TITLE, 'bar' => BookPeer::ID), $c1->getAsColumns(), 'mergeWith() merges the select columns after the existing as columns');
+        $this->assertEquals(['foo' => BookPeer::TITLE, 'bar' => BookPeer::ID], $c1->getAsColumns(), 'mergeWith() merges the select columns after the existing as columns');
     }
 
     /**
@@ -166,31 +166,31 @@ class CriteriaMergeTest extends BookstoreTestBase
         $c1->addAscendingOrderByColumn(BookPeer::ID);
         $c2 = new Criteria();
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE . ' ASC', BookPeer::ID . ' ASC'), $c1->getOrderByColumns(), 'mergeWith() does not remove an existing orderby columns');
+        $this->assertEquals([BookPeer::TITLE . ' ASC', BookPeer::ID . ' ASC'], $c1->getOrderByColumns(), 'mergeWith() does not remove an existing orderby columns');
         $c1 = new Criteria();
         $c2 = new Criteria();
         $c2->addAscendingOrderByColumn(BookPeer::TITLE);
         $c2->addAscendingOrderByColumn(BookPeer::ID);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE . ' ASC', BookPeer::ID . ' ASC'), $c1->getOrderByColumns(), 'mergeWith() merges the select columns to an empty order by');
+        $this->assertEquals([BookPeer::TITLE . ' ASC', BookPeer::ID . ' ASC'], $c1->getOrderByColumns(), 'mergeWith() merges the select columns to an empty order by');
         $c1 = new Criteria();
         $c1->addAscendingOrderByColumn(BookPeer::TITLE);
         $c2 = new Criteria();
         $c2->addAscendingOrderByColumn(BookPeer::ID);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE . ' ASC', BookPeer::ID . ' ASC'), $c1->getOrderByColumns(), 'mergeWith() merges the select columns after the existing orderby columns');
+        $this->assertEquals([BookPeer::TITLE . ' ASC', BookPeer::ID . ' ASC'], $c1->getOrderByColumns(), 'mergeWith() merges the select columns after the existing orderby columns');
         $c1 = new Criteria();
         $c1->addAscendingOrderByColumn(BookPeer::TITLE);
         $c2 = new Criteria();
         $c2->addAscendingOrderByColumn(BookPeer::TITLE);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE . ' ASC'), $c1->getOrderByColumns(), 'mergeWith() does not merge duplicated orderby columns');
+        $this->assertEquals([BookPeer::TITLE . ' ASC'], $c1->getOrderByColumns(), 'mergeWith() does not merge duplicated orderby columns');
         $c1 = new Criteria();
         $c1->addAscendingOrderByColumn(BookPeer::TITLE);
         $c2 = new Criteria();
         $c2->addDescendingOrderByColumn(BookPeer::TITLE);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE . ' ASC', BookPeer::TITLE . ' DESC'), $c1->getOrderByColumns(), 'mergeWith() merges duplicated orderby columns with inverse direction');
+        $this->assertEquals([BookPeer::TITLE . ' ASC', BookPeer::TITLE . ' DESC'], $c1->getOrderByColumns(), 'mergeWith() merges duplicated orderby columns with inverse direction');
     }
 
     public function testMergeWithGroupByColumns()
@@ -200,25 +200,25 @@ class CriteriaMergeTest extends BookstoreTestBase
         $c1->addGroupByColumn(BookPeer::ID);
         $c2 = new Criteria();
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE, BookPeer::ID), $c1->getGroupByColumns(), 'mergeWith() does not remove an existing groupby columns');
+        $this->assertEquals([BookPeer::TITLE, BookPeer::ID], $c1->getGroupByColumns(), 'mergeWith() does not remove an existing groupby columns');
         $c1 = new Criteria();
         $c2 = new Criteria();
         $c2->addGroupByColumn(BookPeer::TITLE);
         $c2->addGroupByColumn(BookPeer::ID);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE, BookPeer::ID), $c1->getGroupByColumns(), 'mergeWith() merges the select columns to an empty groupby');
+        $this->assertEquals([BookPeer::TITLE, BookPeer::ID], $c1->getGroupByColumns(), 'mergeWith() merges the select columns to an empty groupby');
         $c1 = new Criteria();
         $c1->addGroupByColumn(BookPeer::TITLE);
         $c2 = new Criteria();
         $c2->addGroupByColumn(BookPeer::ID);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE, BookPeer::ID), $c1->getGroupByColumns(), 'mergeWith() merges the select columns after the existing groupby columns');
+        $this->assertEquals([BookPeer::TITLE, BookPeer::ID], $c1->getGroupByColumns(), 'mergeWith() merges the select columns after the existing groupby columns');
         $c1 = new Criteria();
         $c1->addGroupByColumn(BookPeer::TITLE);
         $c2 = new Criteria();
         $c2->addGroupByColumn(BookPeer::TITLE);
         $c1->mergeWith($c2);
-        $this->assertEquals(array(BookPeer::TITLE), $c1->getGroupByColumns(), 'mergeWith() does not merge duplicated groupby columns');
+        $this->assertEquals([BookPeer::TITLE], $c1->getGroupByColumns(), 'mergeWith() does not merge duplicated groupby columns');
     }
 
     public function testMergeWithWhereConditions()
@@ -372,18 +372,18 @@ class CriteriaMergeTest extends BookstoreTestBase
         $c1->addAlias('b', BookPeer::TABLE_NAME);
         $c2 = new Criteria();
         $c1->mergeWith($c2);
-        $this->assertEquals(array('b' => BookPeer::TABLE_NAME), $c1->getAliases(), 'mergeWith() does not remove an existing alias');
+        $this->assertEquals(['b' => BookPeer::TABLE_NAME], $c1->getAliases(), 'mergeWith() does not remove an existing alias');
         $c1 = new Criteria();
         $c2 = new Criteria();
         $c2->addAlias('a', AuthorPeer::TABLE_NAME);
         $c1->mergeWith($c2);
-        $this->assertEquals(array('a' => AuthorPeer::TABLE_NAME), $c1->getAliases(), 'mergeWith() merge aliases to an empty alias');
+        $this->assertEquals(['a' => AuthorPeer::TABLE_NAME], $c1->getAliases(), 'mergeWith() merge aliases to an empty alias');
         $c1 = new Criteria();
         $c1->addAlias('b', BookPeer::TABLE_NAME);
         $c2 = new Criteria();
         $c2->addAlias('a', AuthorPeer::TABLE_NAME);
         $c1->mergeWith($c2);
-        $this->assertEquals(array('b' => BookPeer::TABLE_NAME, 'a' => AuthorPeer::TABLE_NAME), $c1->getAliases(), 'mergeWith() merge aliases to an existing alias');
+        $this->assertEquals(['b' => BookPeer::TABLE_NAME, 'a' => AuthorPeer::TABLE_NAME], $c1->getAliases(), 'mergeWith() merge aliases to an existing alias');
     }
 
     /**

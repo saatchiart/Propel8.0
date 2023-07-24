@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test class for PropelObjectFormatter when Criteria uses with().
@@ -307,16 +307,16 @@ class PropelObjectFormatterWithTest extends BookstoreEmptyTestBase
         $c->with('Review');
         $con = Propel::getConnection(BookPeer::DATABASE_NAME);
         $books = $c->find($con);
-        $this->assertEquals(1, count($books), 'with() does not duplicate the main object');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'with() does not duplicate the main object');
         $book = $books[0];
         $count = $con->getQueryCount();
         $this->assertEquals($book->getTitle(), 'Harry Potter and the Order of the Phoenix', 'Main object is correctly hydrated');
         $reviews = $book->getReviews();
         $this->assertEquals($count, $con->getQueryCount(), 'with() hydrates the related objects to save a query ');
-        $this->assertEquals(2, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(2, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
         try {
             $book->save();
-        } catch (Exception $e) {
+        } catch (Exception) {
             $this->fail('with() does not force objects to be new');
         }
     }
@@ -349,7 +349,7 @@ class PropelObjectFormatterWithTest extends BookstoreEmptyTestBase
             ->orderBy('Book.Title')
             ->with('Book')
             ->find();
-        $this->assertEquals(2, count($authors), 'with() used on a many-to-many doesn\'t change the main object count');
+        $this->assertEquals(2, is_countable($authors) ? count($authors) : 0, 'with() used on a many-to-many doesn\'t change the main object count');
     }
 
     public function testFindOneWithOneToManyThenManyToOne()
@@ -364,18 +364,18 @@ class PropelObjectFormatterWithTest extends BookstoreEmptyTestBase
         $c->leftJoinWith('Book.Review');
         $con = Propel::getConnection(BookPeer::DATABASE_NAME);
         $authors = $c->find($con);
-        $this->assertEquals(1, count($authors), 'with() does not duplicate the main object');
+        $this->assertEquals(1, is_countable($authors) ? count($authors) : 0, 'with() does not duplicate the main object');
         $rowling = $authors[0];
         $count = $con->getQueryCount();
         $this->assertEquals($rowling->getFirstName(), 'J.K.', 'Main object is correctly hydrated');
         $books = $rowling->getBooks();
         $this->assertEquals($count, $con->getQueryCount(), 'with() hydrates the related objects to save a query ');
-        $this->assertEquals(1, count($books), 'Related objects are correctly hydrated');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'Related objects are correctly hydrated');
         $book = $books[0];
         $this->assertEquals($book->getTitle(), 'Harry Potter and the Order of the Phoenix', 'Related object is correctly hydrated');
         $reviews = $book->getReviews();
         $this->assertEquals($count, $con->getQueryCount(), 'with() hydrates the related objects to save a query ');
-        $this->assertEquals(2, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(2, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
     }
 
     public function testFindWithLeftJoinWithOneToManyAndNullObject()
@@ -430,18 +430,18 @@ class PropelObjectFormatterWithTest extends BookstoreEmptyTestBase
             ->with('review')
             ->endUse()
             ->find($con);
-        $this->assertEquals(1, count($authors), 'with() does not duplicate the main object');
+        $this->assertEquals(1, is_countable($authors) ? count($authors) : 0, 'with() does not duplicate the main object');
         $rowling = $authors[0];
         $count = $con->getQueryCount();
         $this->assertEquals($rowling->getFirstName(), 'J.K.', 'Main object is correctly hydrated');
         $books = $rowling->getBooks();
         $this->assertEquals($count, $con->getQueryCount(), 'with() hydrates the related objects to save a query ');
-        $this->assertEquals(1, count($books), 'Related objects are correctly hydrated');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'Related objects are correctly hydrated');
         $book = $books[0];
         $this->assertEquals($book->getTitle(), 'Harry Potter and the Order of the Phoenix', 'Related object is correctly hydrated');
         $reviews = $book->getReviews();
         $this->assertEquals($count, $con->getQueryCount(), 'with() hydrates the related objects to save a query ');
-        $this->assertEquals(2, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(2, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
     }
 
     public function testFindOneWithOneToManyThenManyToOneUsingAlias()
@@ -456,18 +456,18 @@ class PropelObjectFormatterWithTest extends BookstoreEmptyTestBase
         $c->leftJoinWith('b.Review r');
         $con = Propel::getConnection(BookPeer::DATABASE_NAME);
         $authors = $c->find($con);
-        $this->assertEquals(1, count($authors), 'with() does not duplicate the main object');
+        $this->assertEquals(1, is_countable($authors) ? count($authors) : 0, 'with() does not duplicate the main object');
         $rowling = $authors[0];
         $count = $con->getQueryCount();
         $this->assertEquals($rowling->getFirstName(), 'J.K.', 'Main object is correctly hydrated');
         $books = $rowling->getBooks();
         $this->assertEquals($count, $con->getQueryCount(), 'with() hydrates the related objects to save a query ');
-        $this->assertEquals(1, count($books), 'Related objects are correctly hydrated');
+        $this->assertEquals(1, is_countable($books) ? count($books) : 0, 'Related objects are correctly hydrated');
         $book = $books[0];
         $this->assertEquals($book->getTitle(), 'Harry Potter and the Order of the Phoenix', 'Related object is correctly hydrated');
         $reviews = $book->getReviews();
         $this->assertEquals($count, $con->getQueryCount(), 'with() hydrates the related objects to save a query ');
-        $this->assertEquals(2, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(2, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
     }
 
     public function testFindOneWithColumn()
@@ -509,7 +509,7 @@ class PropelObjectFormatterWithTest extends BookstoreEmptyTestBase
 
         //Washington Post
         $this->assertTrue($book instanceof Book, 'withColumn() do not change the resulting model class');
-        $this->assertEquals(1, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(1, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
         $this->assertEquals($count, $con->getQueryCount(), 'with() hydrates the related objects to save a query ');
         $this->assertEquals('J.K.', $book->getVirtualColumn('AuthorName'), 'PropelObjectFormatter adds withColumns as virtual columns');
     }
@@ -553,7 +553,7 @@ class PropelObjectFormatterWithTest extends BookstoreEmptyTestBase
         $count = $con->getQueryCount();
         $reviews = $book->getReviews();
         $this->assertEquals($count, $con->getQueryCount(), 'with() hydrates the related objects to save a query ');
-        $this->assertEquals(2, count($reviews), 'Related objects are correctly hydrated');
+        $this->assertEquals(2, is_countable($reviews) ? count($reviews) : 0, 'Related objects are correctly hydrated');
     }
 
     public function testFindOneWithLeftJoinWithOneToManyAndNullObjectsAndWithAdditionalJoins()
@@ -591,6 +591,6 @@ class PropelObjectFormatterWithTest extends BookstoreEmptyTestBase
             ->with('BookReader');
 
         $books = $query->findOne($this->con);
-        $this->assertEquals(0, count($books->getBookOpinions()));
+        $this->assertEquals(0, is_countable($books->getBookOpinions()) ? count($books->getBookOpinions()) : 0);
     }
 }

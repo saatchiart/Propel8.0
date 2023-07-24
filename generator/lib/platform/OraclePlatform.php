@@ -104,7 +104,7 @@ ALTER SESSION SET NLS_TIMESTAMP_FORMAT='YYYY-MM-DD HH24:MI:SS';
     {
         $tableDescription = $table->hasDescription() ? $this->getCommentLineDDL($table->getDescription()) : '';
 
-        $lines = array();
+        $lines = [];
 
         foreach ($table->getColumns() as $column) {
             $lines[] = $this->getColumnDDL($column);
@@ -175,7 +175,7 @@ DROP SEQUENCE " . $this->quoteIdentifier($this->getSequenceName($table)) . ";
     {
         $tableName = $table->getName();
         // pk constraint name must be 30 chars at most
-        $tableName = substr($tableName, 0, min(27, strlen($tableName)));
+        $tableName = substr((string) $tableName, 0, min(27, strlen((string) $tableName)));
 
         return $tableName . '_PK';
     }
@@ -381,7 +381,7 @@ CREATE %sINDEX %s ON %s (%s)%s;
             $columnValueMutator
         );
 
-        return preg_replace('/^/m', $tab, $script);
+        return preg_replace('/^/m', (string) $tab, $script);
     }
 
     public function getDefaultFKOnDeleteBehavior()

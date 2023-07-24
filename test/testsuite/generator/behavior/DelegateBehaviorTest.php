@@ -9,9 +9,9 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/util/PropelQuickBuilder.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/behavior/DelegateBehavior.php';
-require_once dirname(__FILE__) . '/../../../../runtime/lib/Propel.php';
+require_once __DIR__ . '/../../../../generator/lib/util/PropelQuickBuilder.php';
+require_once __DIR__ . '/../../../../generator/lib/behavior/DelegateBehavior.php';
+require_once __DIR__ . '/../../../../runtime/lib/Propel.php';
 
 /**
  * Tests for DelegateBehavior class
@@ -107,8 +107,8 @@ EOF;
     public function testModifyTableRelatesOneToOneDelegate()
     {
         $delegateTable = DelegateDelegatePeer::getTableMap();
-        $this->assertEquals(2, count($delegateTable->getColumns()));
-        $this->assertEquals(1, count($delegateTable->getRelations()));
+        $this->assertEquals(2, is_countable($delegateTable->getColumns()) ? count($delegateTable->getColumns()) : 0);
+        $this->assertEquals(1, is_countable($delegateTable->getRelations()) ? count($delegateTable->getRelations()) : 0);
         $this->assertTrue(method_exists('DelegateMain', 'getDelegateDelegate'));
         $this->assertTrue(method_exists('DelegateDelegate', 'getDelegateMain'));
     }

@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/XMLElement.php';
+require_once __DIR__ . '/../../../../generator/lib/model/XMLElement.php';
 
 /**
  * @author William Durand <william.durand1@gmail.com>
@@ -26,16 +26,7 @@ class XMLElementTest extends \PHPUnit\Framework\TestCase
 
     public static function providerForGetDefaultValueForArray()
     {
-        return array(
-            array('', null),
-            array(null, null),
-            array('FOO', '||FOO||'),
-            array('FOO, BAR', '||FOO | BAR||'),
-            array('FOO , BAR', '||FOO | BAR||'),
-            array('FOO,BAR', '||FOO | BAR||'),
-            array(' ', null),
-            array(', ', null),
-        );
+        return [['', null], [null, null], ['FOO', '||FOO||'], ['FOO, BAR', '||FOO | BAR||'], ['FOO , BAR', '||FOO | BAR||'], ['FOO,BAR', '||FOO | BAR||'], [' ', null], [', ', null]];
     }
 }
 

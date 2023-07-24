@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/model/ColumnDefaultValue.php';
+require_once __DIR__ . '/../../../../generator/lib/model/ColumnDefaultValue.php';
 
 /**
  * Tests for ColumnDefaultValue class.
@@ -20,13 +20,7 @@ class ColumnDefaultValueTest extends \PHPUnit\Framework\TestCase
 {
     public function equalsProvider()
     {
-        return array(
-            array(new ColumnDefaultValue('foo', 'bar'), new ColumnDefaultValue('foo', 'bar'), true),
-            array(new ColumnDefaultValue('foo', 'bar'), new ColumnDefaultValue('foo1', 'bar'), false),
-            array(new ColumnDefaultValue('foo', 'bar'), new ColumnDefaultValue('foo', 'bar1'), false),
-            array(new ColumnDefaultValue('current_timestamp', 'bar'), new ColumnDefaultValue('now()', 'bar'), true),
-            array(new ColumnDefaultValue('current_timestamp', 'bar'), new ColumnDefaultValue('now()', 'bar1'), false),
-        );
+        return [[new ColumnDefaultValue('foo', 'bar'), new ColumnDefaultValue('foo', 'bar'), true], [new ColumnDefaultValue('foo', 'bar'), new ColumnDefaultValue('foo1', 'bar'), false], [new ColumnDefaultValue('foo', 'bar'), new ColumnDefaultValue('foo', 'bar1'), false], [new ColumnDefaultValue('current_timestamp', 'bar'), new ColumnDefaultValue('now()', 'bar'), true], [new ColumnDefaultValue('current_timestamp', 'bar'), new ColumnDefaultValue('now()', 'bar1'), false]];
     }
 
     /**

@@ -49,7 +49,7 @@ class PHP5ObjectBuilder extends ObjectBuilder
      */
     public function getDefaultKeyType()
     {
-        $defaultKeyType = $this->getBuildProperty('defaultKeyType') ? $this->getBuildProperty('defaultKeyType') : 'phpName';
+        $defaultKeyType = $this->getBuildProperty('defaultKeyType') ?: 'phpName';
 
         return "TYPE_" . strtoupper($defaultKeyType);
     }
@@ -81,8 +81,8 @@ class PHP5ObjectBuilder extends ObjectBuilder
         // Check to see whether any generated foreign key names
         // will conflict with column names.
 
-        $colPhpNames = array();
-        $fkPhpNames = array();
+        $colPhpNames = [];
+        $fkPhpNames = [];
 
         foreach ($table->getColumns() as $col) {
             $colPhpNames[] = $col->getPhpName();
@@ -112,7 +112,6 @@ class PHP5ObjectBuilder extends ObjectBuilder
     /**
      * Returns the appropriate formatter (from platform) for a date/time column.
      *
-     * @param Column $col
      *
      * @return string
      */
@@ -202,7 +201,7 @@ class PHP5ObjectBuilder extends ObjectBuilder
         if (null === $parentClass) {
             $parentClass = ClassTools::classname($this->getBaseClass());
 
-            if (false === strpos($this->getBaseClass(), '.')) {
+            if (!str_contains($this->getBaseClass(), '.')) {
                 $this->declareClass($this->getBaseClass());
             } else {
                 $this->declareClass($parentClass);
@@ -270,7 +269,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
         if ($table->hasCrossForeignKeys()) {
             foreach ($table->getCrossFks() as $fkList) {
                 /* @var $refFK ForeignKey */
-                list($refFK, $crossFK) = $fkList;
+                [$refFK, $crossFK] = $fkList;
                 $fkName = $this->getFKPhpNameAffix($crossFK, $plural = true);
 
                 if (!$refFK->isLocalPrimaryKey()) {
@@ -456,12 +455,11 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      * Add comment about the attribute (variable) that stores column values
      *
      * @param string &$script The script will be modified in this method.
-     * @param Column $col
      **/
     protected function addColumnAttributeComment(&$script, Column $col)
     {
         $cptype = $col->getPhpType();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         $script .= "
     /**
@@ -484,11 +482,10 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      * Adds the declaration of a column value storage attribute
      *
      * @param string &$script The script will be modified in this method.
-     * @param Column $col
      **/
     protected function addColumnAttributeDeclaration(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $script .= "
     protected \$" . $clo . ";
 ";
@@ -498,11 +495,10 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      * Adds the comment about the attribute keeping track if an attribute value has been loaded
      *
      * @param string &$script The script will be modified in this method.
-     * @param Column $col
      **/
     protected function addColumnAttributeLoaderComment(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $script .= "
     /**
      * Whether the lazy-loaded \$$clo value has been loaded from database.
@@ -515,11 +511,10 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      * Adds the declaration of the attribute keeping track of an attribute's loaded state
      *
      * @param string &$script The script will be modified in this method.
-     * @param Column $col
      **/
     protected function addColumnAttributeLoaderDeclaration(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $script .= "
     protected \$" . $clo . "_isLoaded = false;
 ";
@@ -529,11 +524,10 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      * Adds the comment about the serialized attribute
      *
      * @param string &$script The script will be modified in this method.
-     * @param Column $col
      **/
     protected function addColumnAttributeUnserializedComment(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $script .= "
     /**
      * The unserialized \$$clo value - i.e. the persisted object.
@@ -546,11 +540,10 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      * Adds the declaration of the serialized attribute
      *
      * @param string &$script The script will be modified in this method.
-     * @param Column $col
      **/
     protected function addColumnAttributeUnserializedDeclaration(&$script, Column $col)
     {
-        $clo = strtolower($col->getName()) . "_unserialized";
+        $clo = strtolower((string) $col->getName()) . "_unserialized";
         $script .= "
     protected \$" . $clo . ";
 ";
@@ -754,7 +747,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
         // FIXME - Apply support for PHP default expressions here
         // see: http://trac.propelorm.org/ticket/378
 
-        $colsWithDefaults = array();
+        $colsWithDefaults = [];
         foreach ($table->getColumns() as $col) {
             $def = $col->getDefaultValue();
             if ($def !== null && !$def->isExpression()) {
@@ -762,9 +755,9 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
             }
         }
 
-        $colconsts = array();
+        $colconsts = [];
         foreach ($colsWithDefaults as $col) {
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             $defaultValue = $this->getDefaultValueString($col);
             $script .= "
         \$this->" . $clo . " = $defaultValue;";
@@ -819,7 +812,8 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      **/
     public function addTemporalAccessorComment(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $mysqlInvalidDateString = null;
+        $clo = strtolower((string) $col->getName());
         $useDateTime = $this->getBuildProperty('useDateTimeClass');
 
         $dateTimeClass = $this->getBuildProperty('dateTimeClass');
@@ -907,7 +901,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function getAccessorLazyLoadSnippet(Column $col)
     {
         if ($col->isLazyLoad()) {
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             $defaultValueString = 'null';
             $def = $col->getDefaultValue();
             if ($def !== null && !$def->isExpression()) {
@@ -932,8 +926,9 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      **/
     protected function addTemporalAccessorBody(&$script, Column $col)
     {
+        $mysqlInvalidDateString = null;
         $cfc = $col->getPhpName();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         $useDateTime = $this->getBuildProperty('useDateTimeClass');
 
@@ -1067,7 +1062,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function addObjectAccessorBody(&$script, Column $col)
     {
         $cfc = $col->getPhpName();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $cloUnserialized = $clo . '_unserialized';
         if ($col->isLazyLoad()) {
             $script .= $this->getAccessorLazyLoadSnippet($col);
@@ -1108,7 +1103,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function addArrayAccessorBody(&$script, Column $col)
     {
         $cfc = $col->getPhpName();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $cloUnserialized = $clo . '_unserialized';
         if ($col->isLazyLoad()) {
             $script .= $this->getAccessorLazyLoadSnippet($col);
@@ -1136,7 +1131,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addEnumAccessor(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $script .= "
     /**
      * Get the [$clo] column value.
@@ -1166,7 +1161,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function addEnumAccessorBody(&$script, Column $col)
     {
         $cfc = $col->getPhpName();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         if ($col->isLazyLoad()) {
             $script .= $this->getAccessorLazyLoadSnippet($col);
         }
@@ -1191,7 +1186,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addHasArrayElement(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $cfc = $col->getPhpName();
         $visibility = $col->getAccessorVisibility();
         $singularPhpName = rtrim($cfc, 's');
@@ -1248,7 +1243,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      **/
     public function addDefaultAccessorComment(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         $script .= "
     /**
@@ -1296,7 +1291,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function addDefaultAccessorBody(&$script, Column $col)
     {
         $cfc = $col->getPhpName();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         if ($col->isLazyLoad()) {
             $script .= $this->getAccessorLazyLoadSnippet($col);
         }
@@ -1347,7 +1342,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      **/
     protected function addLazyLoaderComment(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         $script .= "
     /**
@@ -1390,7 +1385,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function addLazyLoaderBody(&$script, Column $col)
     {
         $platform = $this->getPlatform();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         // pdo_sqlsrv driver requires the use of PDOStatement::bindColumn() or a hex string will be returned
         if ($col->getType() === PropelTypes::BLOB && $platform instanceof SqlsrvPlatform) {
@@ -1490,7 +1485,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      **/
     public function addMutatorComment(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $script .= "
     /**
      * Set the value of [$clo] column.
@@ -1528,7 +1523,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      **/
     protected function addMutatorOpenBody(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $cfc = $col->getPhpName();
         if ($col->isLazyLoad()) {
             $script .= "
@@ -1570,7 +1565,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     {
         $table = $this->getTable();
         $cfc = $col->getPhpName();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         if ($col->isForeignKey()) {
 
@@ -1655,7 +1650,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function addLobMutator(&$script, Column $col)
     {
         $this->addMutatorOpen($script, $col);
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $script .= "
         // Because BLOB columns are streams in PDO we have to assume that they are
         // always modified when a new value is passed in.  For example, the contents
@@ -1683,7 +1678,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function addTemporalMutator(&$script, Column $col)
     {
         $cfc = $col->getPhpName();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $visibility = $col->getMutatorVisibility();
 
         $dateTimeClass = $this->getBuildProperty('dateTimeClass');
@@ -1727,7 +1722,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     public function addTemporalMutatorComment(&$script, Column $col)
     {
         $cfc = $col->getPhpName();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         $script .= "
     /**
@@ -1749,7 +1744,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addObjectMutator(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $cloUnserialized = $clo . '_unserialized';
         $this->addMutatorOpen($script, $col);
 
@@ -1773,7 +1768,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addArrayMutator(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $cloUnserialized = $clo . '_unserialized';
         $this->addMutatorOpen($script, $col);
 
@@ -1795,7 +1790,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addAddArrayElement(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $cfc = $col->getPhpName();
         $visibility = $col->getAccessorVisibility();
         $singularPhpName = rtrim($cfc, 's');
@@ -1838,7 +1833,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addRemoveArrayElement(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $cfc = $col->getPhpName();
         $visibility = $col->getAccessorVisibility();
         $singularPhpName = rtrim($cfc, 's');
@@ -1888,7 +1883,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addEnumMutator(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         $script .= "
     /**
@@ -1928,7 +1923,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addBooleanMutator(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         $this->addBooleanMutatorComment($script, $col);
         $this->addMutatorOpenOpen($script, $col);
@@ -1956,7 +1951,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     public function addBooleanMutatorComment(&$script, Column $col)
     {
         $cfc = $col->getPhpName();
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         $script .= "
     /**
@@ -1981,7 +1976,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addDefaultMutator(&$script, Column $col)
     {
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
 
         $this->addMutatorOpen($script, $col);
 
@@ -2068,7 +2063,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function addHasOnlyDefaultValuesBody(&$script)
     {
         $table = $this->getTable();
-        $colsWithDefaults = array();
+        $colsWithDefaults = [];
         foreach ($table->getColumns() as $col) {
             $def = $col->getDefaultValue();
             if ($def !== null && !$def->isExpression()) {
@@ -2078,7 +2073,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
         foreach ($colsWithDefaults as $col) {
 
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             $def = $col->getDefaultValue();
 
             $script .= "
@@ -2176,7 +2171,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
         $n = 0;
         foreach ($table->getColumns() as $col) {
             if (!$col->isLazyLoad()) {
-                $clo = strtolower($col->getName());
+                $clo = strtolower((string) $col->getName());
                 if ($col->getType() === PropelTypes::CLOB_EMU && $this->getPlatform() instanceof OraclePlatform) {
                     // PDO_OCI returns a stream for CLOB objects, while other PDO adapters return a string...
                     $script .= "
@@ -2310,7 +2305,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
         $script .= "
         \$criteria = new Criteria(" . $this->getPeerClassname() . "::DATABASE_NAME);";
         foreach ($this->getTable()->getPrimaryKey() as $col) {
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             $script .= "
         \$criteria->add(" . $this->getColumnConstant($col) . ", \$this->$clo);";
         }
@@ -2389,7 +2384,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
         \$criteria = new Criteria(" . $this->getPeerClassname() . "::DATABASE_NAME);
 ";
         foreach ($this->getTable()->getColumns() as $col) {
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             $script .= "
         if (\$this->isColumnModified(" . $this->getColumnConstant($col) . ")) \$criteria->add(" . $this->getColumnConstant($col) . ", \$this->$clo);";
         }
@@ -2420,7 +2415,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     {
         $fks = $this->getTable()->getForeignKeys();
         $referrers = $this->getTable()->getReferrers();
-        $hasFks = count($fks) > 0 || count($referrers) > 0;
+        $hasFks = count($fks) > 0 || (is_countable($referrers) ? count($referrers) : 0) > 0;
         $objectClassName = $this->getObjectClassname();
         $pkGetter = $this->getTable()->hasCompositePrimaryKey() ? 'serialize($this->getPrimaryKey())' : '$this->getPrimaryKey()';
         $defaultKeyType = $this->getDefaultKeyType();
@@ -2950,7 +2945,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
         // support for lazy load columns
         foreach ($table->getColumns() as $col) {
             if ($col->isLazyLoad()) {
-                $clo = strtolower($col->getName());
+                $clo = strtolower((string) $col->getName());
                 $script .= "
         // Reset the $clo lazy-load column
         \$this->" . $clo . " = null;
@@ -2982,7 +2977,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
         }
 
         foreach ($table->getCrossFks() as $fkList) {
-            list($refFK, $crossFK) = $fkList;
+            [$refFK, $crossFK] = $fkList;
             $script .= "
             \$this->" . $this->getCrossFKVarName($crossFK) . " = null;";
         }
@@ -3183,7 +3178,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
         $pkeys = $this->getTable()->getPrimaryKey();
         $col = $pkeys[0];
-        $clo = strtolower($col->getName());
+        $clo = strtolower((string) $col->getName());
         $ctype = $col->getPhpType();
 
         $script .= "
@@ -3280,7 +3275,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
         return null === \$this->get" . $pkeys[0]->getPhpName() . "();";
         } else {
-            $tests = array();
+            $tests = [];
             foreach ($pkeys as $pkey) {
                 $tests[] = "(null === \$this->get" . $pkey->getPhpName() . "())";
             }
@@ -3292,15 +3287,12 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     }
 ";
     } // addIsPrimaryKeyKeyNull
-
     // --------------------------------------------------------------------
     // Complex OM Methods
     // --------------------------------------------------------------------
-
     /**
      * Constructs variable name for fkey-related objects.
      *
-     * @param ForeignKey $fk
      *
      * @return string
      */
@@ -3312,7 +3304,6 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     /**
      * Constructs variable name for objects which referencing current table by specified foreign key.
      *
-     * @param ForeignKey $fk
      *
      * @return string
      */
@@ -3325,7 +3316,6 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      * Constructs variable name for single object which references current table by specified foreign key
      * which is ALSO a primary key (hence one-to-one relationship).
      *
-     * @param ForeignKey $fk
      *
      * @return string
      */
@@ -3460,7 +3450,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
         $and = "";
         $conditional = "";
-        $localColumns = array(); // foreign key local attributes names
+        $localColumns = []; // foreign key local attributes names
 
         // If the related columns are a primary key on the foreign table
         // then use retrieveByPk() instead of doSelect() to take advantage
@@ -3476,7 +3466,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
             $column = $table->getColumn($columnName);
             $cptype = $column->getPhpType();
-            $clo = strtolower($column->getName());
+            $clo = strtolower((string) $column->getName());
             $localColumns[$foreignColumn->getPosition()] = '$this->' . $clo;
 
             if ($cptype == "integer" || $cptype == "float" || $cptype == "double") {
@@ -3548,6 +3538,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      */
     protected function addFKByKeyMutator(&$script, ForeignKey $fk)
     {
+        $tblFK = null;
         $table = $this->getTable();
 
         #$className = $this->getForeignTable($fk)->getPhpName();
@@ -3634,7 +3625,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
             $relCol2 = $this->getFKPhpNameAffix($fk2, $plural = false);
 
-            if ($this->getRelatedBySuffix($refFK) != "" && ($this->getRelatedBySuffix($refFK) == $this->getRelatedBySuffix($fk2))) {
+            if (static::getRelatedBySuffix($refFK) != "" && (static::getRelatedBySuffix($refFK) == static::getRelatedBySuffix($fk2))) {
                 $doJoinGet = false;
             }
 
@@ -4265,7 +4256,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
     protected function addScheduledForDeletionAttribute(&$script, $fkName)
     {
-        $fkName = lcfirst($fkName);
+        $fkName = lcfirst((string) $fkName);
 
         $script .= "
     /**
@@ -4363,7 +4354,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     protected function addCrossFKMethods(&$script)
     {
         foreach ($this->getTable()->getCrossFks() as $fkList) {
-            list($refFK, $crossFK) = $fkList;
+            [$refFK, $crossFK] = $fkList;
             $this->declareClassFromBuilder($this->getNewStubObjectBuilder($crossFK->getForeignTable()));
             $this->declareClassFromBuilder($this->getNewStubQueryBuilder($crossFK->getForeignTable()));
 
@@ -4618,8 +4609,6 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
     /**
      * @param string     &$script The script will be modified in this method.
-     * @param ForeignKey $refFK
-     * @param ForeignKey $crossFK
      */
     protected function addCrossFKDoAdd(&$script, ForeignKey $refFK, ForeignKey $crossFK)
     {
@@ -4800,7 +4789,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
         // We need to rewind any LOB columns
         foreach ($table->getColumns() as $col) {
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             if ($col->isLobType()) {
                 $script .= "
                 // Rewind the $clo LOB column, since PDO does not rewind after inserting value.
@@ -4818,7 +4807,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
         if ($table->hasCrossForeignKeys()) {
             foreach ($table->getCrossFks() as $fkList) {
-                list($refFK, $crossFK) = $fkList;
+                [$refFK, $crossFK] = $fkList;
                 $this->addCrossFkScheduledForDeletion($script, $refFK, $crossFK);
             }
         }
@@ -4998,7 +4987,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
                 $script .= "
         \$this->modifiedColumns[] = $constantName;";
             }
-            $columnProperty = strtolower($column->getName());
+            $columnProperty = strtolower((string) $column->getName());
             if (!$table->isAllowPkInsert()) {
                 $script .= "
         if (null !== \$this->{$columnProperty}) {
@@ -5016,7 +5005,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
         // if non auto-increment but using sequence, get the id first
         if (!$platform->isNativeIdMethodAutoIncrement() && $table->getIdMethod() == "native") {
             $column = $table->getFirstPrimaryKeyColumn();
-            $columnProperty = strtolower($column->getName());
+            $columnProperty = strtolower((string) $column->getName());
             $script .= "
         if (null === \$this->{$columnProperty}) {
             try {";
@@ -5057,7 +5046,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
             $columnNameCase = var_export($platform->quoteIdentifier($column->getName()), true);
             $script .= "
                     case $columnNameCase:";
-            $script .= $platform->getColumnBindingPHP($column, "\$identifier", '$this->' . strtolower($column->getName()), '						');
+            $script .= $platform->getColumnBindingPHP($column, "\$identifier", '$this->' . strtolower((string) $column->getName()), '						');
             $script .= "
                         break;";
         }
@@ -5074,7 +5063,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
         // if auto-increment, get the id after
         if ($platform->isNativeIdMethodAutoIncrement() && $table->getIdMethod() == "native") {
             $column = $table->getFirstPrimaryKeyColumn();
-            $columnProperty = strtolower($column->getName());
+            $columnProperty = strtolower((string) $column->getName());
             $script .= "
         try {";
             $script .= $platform->getIdentifierPhp('$pk', '$con', $primaryKeyMethodInfo);
@@ -5531,7 +5520,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 ";
         foreach ($table->getColumns() as $col) {
 
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
 
             if ($col->isForeignKey()) {
                 foreach ($col->getForeignKeys() as $fk) {
@@ -5614,7 +5603,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     public function copyInto(\$copyObj, \$deepCopy = false, \$makeNew = true)
     {";
 
-        $autoIncCols = array();
+        $autoIncCols = [];
         if ($table->hasCompositePrimaryKey()) {
             foreach ($table->getColumns() as $col) {
                 /* @var        $col Column */
@@ -5635,7 +5624,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
 
         // Avoid useless code by checking to see if there are any referrers
         // to this table:
-        if (count($table->getReferrers()) > 0 || count($table->getForeignKeys()) > 0) {
+        if ((is_countable($table->getReferrers()) ? count($table->getReferrers()) : 0) > 0 || count($table->getForeignKeys()) > 0) {
             $script .= "
 
         if (\$deepCopy && !\$this->startCopy) {
@@ -5725,7 +5714,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     public function clear()
     {";
         foreach ($table->getColumns() as $col) {
-            $clo = strtolower($col->getName());
+            $clo = strtolower((string) $col->getName());
             $script .= "
         \$this->" . $clo . " = null;";
             if ($col->isLazyLoad()) {
@@ -5782,7 +5771,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
     {
         if (\$deep && !\$this->alreadyInClearAllReferencesDeep) {
             \$this->alreadyInClearAllReferencesDeep = true;";
-        $vars = array();
+        $vars = [];
         foreach ($this->getTable()->getReferrers() as $refFK) {
             if ($refFK->isLocalPrimaryKey()) {
                 $varName = $this->getPKRefFKVarName($refFK);
@@ -5802,7 +5791,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
             $vars[] = $varName;
         }
         foreach ($this->getTable()->getCrossFks() as $fkList) {
-            list($refFK, $crossFK) = $fkList;
+            [$refFK, $crossFK] = $fkList;
             $varName = $this->getCrossFKVarName($crossFK);
             $script .= "
             if (\$this->$varName) {

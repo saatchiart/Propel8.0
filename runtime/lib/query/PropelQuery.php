@@ -25,7 +25,7 @@ class PropelQuery
      */
     public static function from($queryClassAndAlias)
     {
-        list($class, $alias) = ModelCriteria::getClassAndAlias($queryClassAndAlias);
+        [$class, $alias] = ModelCriteria::getClassAndAlias($queryClassAndAlias);
         $queryClass = $class . 'Query';
         if (!class_exists($queryClass)) {
             throw new PropelException('Cannot find a query class for ' . $class);

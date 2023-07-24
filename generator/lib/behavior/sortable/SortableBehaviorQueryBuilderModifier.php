@@ -17,11 +17,6 @@
 class SortableBehaviorQueryBuilderModifier
 {
     /**
-     * @var SortableBehavior
-     */
-    protected $behavior;
-
-    /**
      * @var Table
      */
     protected $table;
@@ -41,9 +36,11 @@ class SortableBehaviorQueryBuilderModifier
      */
     protected $peerClassname;
 
-    public function __construct($behavior)
+    /**
+     * @param \SortableBehavior $behavior
+     */
+    public function __construct(protected $behavior)
     {
-        $this->behavior = $behavior;
         $this->table = $behavior->getTable();
     }
 
@@ -95,7 +92,7 @@ class SortableBehaviorQueryBuilderModifier
 
     protected function addInList(&$script)
     {
-        list($methodSignature, $paramsDoc, $buildScope) = $this->behavior->generateScopePhp();
+        [$methodSignature, $paramsDoc, $buildScope] = $this->behavior->generateScopePhp();
 
         $script .= "
 /**
@@ -121,7 +118,7 @@ public function inList($methodSignature)
         $peerClassname = $this->peerClassname;
 
         if ($useScope) {
-            list($methodSignature, $paramsDoc, $buildScope) = $this->behavior->generateScopePhp();
+            [$methodSignature, $paramsDoc, $buildScope] = $this->behavior->generateScopePhp();
         }
 
         $script .= "
@@ -142,7 +139,7 @@ public function filterByRank(\$rank" . ($useScope ? ", $methodSignature" : "") .
 {
 ";
         if ($useScope) {
-            $methodSignature = str_replace(' = null', '', $methodSignature);
+            $methodSignature = str_replace(' = null', '', (string) $methodSignature);
         }
 
         $script .= "
@@ -191,7 +188,7 @@ public function orderByRank(\$order = Criteria::ASC)
         $useScope = $this->behavior->useScope();
 
         if ($useScope) {
-            list($methodSignature, $paramsDoc, $buildScope) = $this->behavior->generateScopePhp();
+            [$methodSignature, $paramsDoc, $buildScope] = $this->behavior->generateScopePhp();
         }
 
         $script .= "
@@ -212,7 +209,7 @@ public function findOneByRank(\$rank, " . ($useScope ? "$methodSignature, " : ""
 {";
 
         if ($useScope) {
-            $methodSignature = str_replace(' = null', '', $methodSignature);
+            $methodSignature = str_replace(' = null', '', (string) $methodSignature);
         }
 
         $script .= "
@@ -229,7 +226,7 @@ public function findOneByRank(\$rank, " . ($useScope ? "$methodSignature, " : ""
         $useScope = $this->behavior->useScope();
 
         if ($useScope) {
-            list($methodSignature, $paramsDoc, $buildScope) = $this->behavior->generateScopePhp();
+            [$methodSignature, $paramsDoc, $buildScope] = $this->behavior->generateScopePhp();
         }
 
         $script .= "
@@ -251,7 +248,7 @@ public function findList(" . ($useScope ? "$methodSignature, " : "") . "\$con = 
 ";
 
         if ($useScope) {
-            $methodSignature = str_replace(' = null', '', $methodSignature);
+            $methodSignature = str_replace(' = null', '', (string) $methodSignature);
         }
 
         $script .= "
@@ -274,7 +271,7 @@ public function findList(" . ($useScope ? "$methodSignature, " : "") . "\$con = 
         $useScope = $this->behavior->useScope();
 
         if ($useScope) {
-            list($methodSignature, $paramsDoc, $buildScope) = $this->behavior->generateScopePhp();
+            [$methodSignature, $paramsDoc, $buildScope] = $this->behavior->generateScopePhp();
         }
 
         $script .= "

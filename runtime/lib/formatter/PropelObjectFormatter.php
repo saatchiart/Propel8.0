@@ -20,7 +20,7 @@ class PropelObjectFormatter extends PropelFormatter
 {
     protected $collectionName = 'PropelObjectCollection';
 
-    private $mainObject;
+    private ?\BaseObject $mainObject = null;
 
     public function format(PDOStatement $stmt)
     {
@@ -30,14 +30,14 @@ class PropelObjectFormatter extends PropelFormatter
             $collection->setModel($this->class);
             $collection->setFormatter($this);
         } else {
-            $collection = array();
+            $collection = [];
         }
         if ($this->isWithOneToMany()) {
             if ($this->hasLimit) {
                 throw new PropelException('Cannot use limit() in conjunction with with() on a one-to-many relationship. Please remove the with() call, or the limit() call.');
             }
-            $pks = array();
-            $objectsByPks = array();
+            $pks = [];
+            $objectsByPks = [];
             while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
                 $object = $this->getAllObjectsFromRow($row);
                 $pk = $object->getPrimaryKey();
@@ -100,7 +100,7 @@ class PropelObjectFormatter extends PropelFormatter
     public function getAllObjectsFromRow($row)
     {
         // get the main object
-        list($obj, $col) = call_user_func(array($this->peer, 'populateObject'), $row);
+        [$obj, $col] = call_user_func([$this->peer, 'populateObject'], $row);
 
         if (null !== $this->mainObject) {
             $obj = $this->mainObject;
@@ -108,7 +108,7 @@ class PropelObjectFormatter extends PropelFormatter
 
         // related objects added using with()
         foreach ($this->getWith() as $modelWith) {
-            list($endObject, $col) = call_user_func(array($modelWith->getModelPeerName(), 'populateObject'), $row, $col);
+            [$endObject, $col] = call_user_func([$modelWith->getModelPeerName(), 'populateObject'], $row, $col);
 
             if (null !== $modelWith->getLeftPhpName() && !isset($hydrationChain[$modelWith->getLeftPhpName()])) {
                 continue;
@@ -125,20 +125,20 @@ class PropelObjectFormatter extends PropelFormatter
             // in which case it should not be related to the previous object
             if (null === $endObject || $endObject->isPrimaryKeyNull()) {
                 if ($modelWith->isAdd()) {
-                    call_user_func(array($startObject, $modelWith->getInitMethod()), false);
+                    call_user_func([$startObject, $modelWith->getInitMethod()], false);
                 }
                 continue;
             }
             if (isset($hydrationChain)) {
                 $hydrationChain[$modelWith->getRightPhpName()] = $endObject;
             } else {
-                $hydrationChain = array($modelWith->getRightPhpName() => $endObject);
+                $hydrationChain = [$modelWith->getRightPhpName() => $endObject];
             }
 
-            call_user_func(array($startObject, $modelWith->getRelationMethod()), $endObject);
+            call_user_func([$startObject, $modelWith->getRelationMethod()], $endObject);
 
             if ($modelWith->isAdd()) {
-                call_user_func(array($startObject, $modelWith->getResetPartialMethod()), false);
+                call_user_func([$startObject, $modelWith->getResetPartialMethod()], false);
             }
         }
 

@@ -185,7 +185,7 @@ abstract class " . $this->getClassname() . " extends " . $this->getPeerBuilder()
         $table = $this->getTable();
         $tableName = $table->getName();
 
-        $colname = array();
+        $colname = [];
 
         foreach ($table->getColumns() as $col) {
             if ($col->isNestedSetLeftKey()) {
@@ -213,7 +213,7 @@ abstract class " . $this->getClassname() . " extends " . $this->getPeerBuilder()
             throw new EngineException("One column must have nestedSetRightKey attribute set to true for [" . $table->getName() . "] table");
         }
 
-        $colname['scope'] = isset($colname['scope']) ? $colname['scope'] : null;
+        $colname['scope'] ??= null;
 
         $script .= "
     /**
@@ -1519,7 +1519,7 @@ abstract class " . $this->getClassname() . " extends " . $this->getPeerBuilder()
                 \$criteria->add(" . $this->getColumnConstant($col) . ", \$keys, Criteria::IN);
 ";
         } else {
-            $fields = array();
+            $fields = [];
             foreach ($table->getPrimaryKey() as $k => $col) {
                 $fields[] = $this->getColumnConstant($col);
             };

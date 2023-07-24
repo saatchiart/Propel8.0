@@ -21,10 +21,8 @@ class MssqlSchemaParser extends BaseSchemaParser
 
     /**
      * Map MSSQL native types to Propel types.
-     *
-     * @var        array
      */
-    private static $mssqlTypeMap = array(
+    private static array $mssqlTypeMap = [
         "binary" => PropelTypes::BINARY,
         "bit" => PropelTypes::BOOLEAN,
         "char" => PropelTypes::CHAR,
@@ -57,11 +55,11 @@ class MssqlSchemaParser extends BaseSchemaParser
         "varbinary(max)" => PropelTypes::CLOB,
         "varchar" => PropelTypes::VARCHAR,
         "varchar(max)" => PropelTypes::CLOB,
-    // SQL Server 2000 only
+        // SQL Server 2000 only
         "bigint identity" => PropelTypes::BIGINT,
         "bigint" => PropelTypes::BIGINT,
         "sql_variant" => PropelTypes::VARCHAR,
-    );
+    ];
 
     /**
      * @see        BaseSchemaParser::getTypeMapping()
@@ -79,7 +77,7 @@ class MssqlSchemaParser extends BaseSchemaParser
         $stmt = $this->dbh->query("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME <> 'dtproperties'");
 
         // First load the tables (important that this happen before filling out details of tables)
-        $tables = array();
+        $tables = [];
         while ($row = $stmt->fetch(PDO::FETCH_NUM)) {
             $name = $this->cleanDelimitedIdentifiers($row[0]);
             if ($name == $this->getMigrationTable()) {
@@ -125,7 +123,7 @@ class MssqlSchemaParser extends BaseSchemaParser
             $precision = $row['PRECISION'];
             $scale = $row['SCALE'];
             $autoincrement = false;
-            if (strtolower($type) == "int identity") {
+            if (strtolower((string) $type) == "int identity") {
                 $autoincrement = true;
             }
 
@@ -157,6 +155,7 @@ class MssqlSchemaParser extends BaseSchemaParser
      */
     protected function addForeignKeys(Table $table)
     {
+        $name = null;
         $database = $table->getDatabase();
 
         $stmt = $this->dbh->query("SELECT ccu1.TABLE_NAME, ccu1.COLUMN_NAME, ccu2.TABLE_NAME AS FK_TABLE_NAME, ccu2.COLUMN_NAME AS FK_COLUMN_NAME
@@ -167,7 +166,7 @@ class MssqlSchemaParser extends BaseSchemaParser
                                             INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE ccu2 ON ccu2.CONSTRAINT_NAME = rc1.UNIQUE_CONSTRAINT_NAME
                                     WHERE (ccu1.table_name = '" . $table->getName() . "')");
 
-        $foreignKeys = array(); // local store to avoid duplicates
+        $foreignKeys = []; // local store to avoid duplicates
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 
             $lcol = $this->cleanDelimitedIdentifiers($row['COLUMN_NAME']);
@@ -198,7 +197,7 @@ class MssqlSchemaParser extends BaseSchemaParser
     {
         $stmt = $this->dbh->query("sp_indexes_rowset '" . $table->getName() . "'");
 
-        $indexes = array();
+        $indexes = [];
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $colName = $this->cleanDelimitedIdentifiers($row["COLUMN_NAME"]);
             $name = $this->cleanDelimitedIdentifiers($row['INDEX_NAME']);

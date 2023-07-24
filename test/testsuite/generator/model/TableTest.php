@@ -9,11 +9,11 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../generator/lib/builder/util/XmlToAppData.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/config/GeneratorConfig.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/platform/DefaultPlatform.php';
-require_once dirname(__FILE__) . '/../../../../generator/lib/platform/MysqlPlatform.php';
-require_once dirname(__FILE__) . '/../../../tools/helpers/DummyPlatforms.php';
+require_once __DIR__ . '/../../../../generator/lib/builder/util/XmlToAppData.php';
+require_once __DIR__ . '/../../../../generator/lib/config/GeneratorConfig.php';
+require_once __DIR__ . '/../../../../generator/lib/platform/DefaultPlatform.php';
+require_once __DIR__ . '/../../../../generator/lib/platform/MysqlPlatform.php';
+require_once __DIR__ . '/../../../tools/helpers/DummyPlatforms.php';
 
 /**
  * Tests for Table model class
@@ -68,7 +68,7 @@ EOF;
         $appData = $xmlToAppData->parseString($schema);
         $table = $appData->getDatabase('test1')->getTable('table1');
         $config = new GeneratorConfig();
-        $config->setBuildProperties(array('propel.foo.bar.class' => 'bazz'));
+        $config->setBuildProperties(['propel.foo.bar.class' => 'bazz']);
         $table->getDatabase()->getAppData()->setGeneratorConfig($config);
         $this->assertThat($table->getGeneratorConfig(), $this->isInstanceOf('GeneratorConfig'), 'getGeneratorConfig() returns an instance of the generator configuration');
         $this->assertEquals($table->getGeneratorConfig()->getBuildProperty('fooBarClass'), 'bazz', 'getGeneratorConfig() returns the instance of the generator configuration used in the platform');
@@ -77,13 +77,10 @@ EOF;
     public function testAddBehavior()
     {
         $include_path = get_include_path();
-        set_include_path($include_path . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/../../../../generator/lib'));
+        set_include_path($include_path . PATH_SEPARATOR . realpath(__DIR__ . '/../../../../generator/lib'));
         $xmlToAppData = new XmlToAppData(new DefaultPlatform());
         $config = new GeneratorConfig();
-        $config->setBuildProperties(array(
-            'propel.platform.class' => 'propel.engine.platform.DefaultPlatform',
-            'propel.behavior.timestampable.class' => 'behavior.TimestampableBehavior'
-        ));
+        $config->setBuildProperties(['propel.platform.class' => 'propel.engine.platform.DefaultPlatform', 'propel.behavior.timestampable.class' => 'behavior.TimestampableBehavior']);
         $xmlToAppData->setGeneratorConfig($config);
         $schema = <<<EOF
 <database name="test1">
@@ -103,15 +100,13 @@ EOF;
     public function testAddExtraIndicesForeignKeys()
     {
         $include_path = get_include_path();
-        set_include_path($include_path . PATH_SEPARATOR . realpath(dirname(__FILE__) . '/../../../../generator/lib'));
+        set_include_path($include_path . PATH_SEPARATOR . realpath(__DIR__ . '/../../../../generator/lib'));
 
         $platform = new MysqlPlatform();
         $xmlToAppData = new XmlToAppData($platform);
         $config = new GeneratorConfig();
 
-        $config->setBuildProperties(array(
-            'propel.behavior.autoaddpkbehavior.class' => 'behavior.AutoAddPkBehavior'
-        ));
+        $config->setBuildProperties(['propel.behavior.autoaddpkbehavior.class' => 'behavior.AutoAddPkBehavior']);
 
         $xmlToAppData->setGeneratorConfig($config);
 
@@ -211,9 +206,7 @@ EOF;
         $column = new Column('Foo');
         $table->addColumn($column);
 
-        return array(
-            array($table, $column)
-        );
+        return [[$table, $column]];
     }
 
     /**
@@ -286,11 +279,11 @@ EOF;
         $this->assertEquals(1, $col1->getPosition());
         $this->assertEquals(2, $col2->getPosition());
         $this->assertEquals(3, $col3->getPosition());
-        $this->assertEquals(array(0, 1, 2), array_keys($table->getColumns()));
+        $this->assertEquals([0, 1, 2], array_keys($table->getColumns()));
         $table->removeColumn($col2);
         $this->assertEquals(1, $col1->getPosition());
         $this->assertEquals(2, $col3->getPosition());
-        $this->assertEquals(array(0, 1), array_keys($table->getColumns()));
+        $this->assertEquals([0, 1], array_keys($table->getColumns()));
     }
 
     public function testQualifiedName()
@@ -352,7 +345,7 @@ EOF;
 EOF;
         $xmlToAppData = new XmlToAppData(new DefaultPlatform());
         $appData2 = $xmlToAppData->parseString($schema2);
-        $appData1->joinAppDatas(array($appData2));
+        $appData1->joinAppDatas([$appData2]);
         $this->assertEquals('NS1', $appData1->getDatabase('DB1')->getTable('table1')->getNamespace());
         $this->assertEquals('NS2', $appData1->getDatabase('DB1')->getTable('table2')->getNamespace());
     }
@@ -368,7 +361,7 @@ EOF;
 </database>
 EOF;
         $config = new GeneratorConfig();
-        $config->setBuildProperties(array('propel.namespace.autoPackage' => 'true'));
+        $config->setBuildProperties(['propel.namespace.autoPackage' => 'true']);
         $xmlToAppData = new XmlToAppData(new DefaultPlatform());
         $xmlToAppData->setGeneratorConfig($config);
         $table = $xmlToAppData->parseString($schema)->getDatabase('DB')->getTable('table');
@@ -386,7 +379,7 @@ EOF;
 </database>
 EOF;
         $config = new GeneratorConfig();
-        $config->setBuildProperties(array('propel.namespace.autoPackage' => 'true'));
+        $config->setBuildProperties(['propel.namespace.autoPackage' => 'true']);
         $xmlToAppData = new XmlToAppData(new DefaultPlatform());
         $xmlToAppData->setGeneratorConfig($config);
         $table = $xmlToAppData->parseString($schema)->getDatabase('DB')->getTable('table');
@@ -404,7 +397,7 @@ EOF;
 </database>
 EOF;
         $config = new GeneratorConfig();
-        $config->setBuildProperties(array('propel.namespace.autoPackage' => 'true'));
+        $config->setBuildProperties(['propel.namespace.autoPackage' => 'true']);
         $xmlToAppData = new XmlToAppData(new DefaultPlatform());
         $xmlToAppData->setGeneratorConfig($config);
         $table = $xmlToAppData->parseString($schema)->getDatabase('DB')->getTable('table');
@@ -471,7 +464,7 @@ EOF;
         $doc->formatOutput = true;
 
         $config = new GeneratorConfig();
-        $config->setBuildProperties(array('propel.namespace.autoPackage' => 'true'));
+        $config->setBuildProperties(['propel.namespace.autoPackage' => 'true']);
 
         $appData = new AppData();
         $appData->setGeneratorConfig($config);

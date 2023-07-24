@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-require_once(dirname(__FILE__).'/sfYamlInline.php');
+require_once(__DIR__.'/sfYamlInline.php');
 
 /**
  * sfYamlDumper dumps PHP variables to YAML strings.
@@ -29,7 +29,7 @@ class sfYamlDumper
    *
    * @return string  The YAML representation of the PHP value
    */
-  public function dump($input, $inline = 0, $indent = 0)
+  public function dump(mixed $input, $inline = 0, $indent = 0)
   {
     $output = '';
     $prefix = $indent ? str_repeat(' ', $indent) : '';

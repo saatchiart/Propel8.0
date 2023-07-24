@@ -8,10 +8,10 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/builder/om/OMBuilder.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/builder/util/XmlToAppData.php';
-require_once dirname(__FILE__) . '/../../../../../generator/lib/platform/DefaultPlatform.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreTestBase.php';
+require_once __DIR__ . '/../../../../../generator/lib/builder/om/OMBuilder.php';
+require_once __DIR__ . '/../../../../../generator/lib/builder/util/XmlToAppData.php';
+require_once __DIR__ . '/../../../../../generator/lib/platform/DefaultPlatform.php';
 
 /**
  * Test class for OMBuilder.
@@ -29,7 +29,7 @@ class OMBuilderRelatedByTest extends \PHPUnit\Framework\TestCase
         // run only once to save execution time
         if (null == self::$database) {
             $xmlToAppData = new XmlToAppData(new DefaultPlatform());
-            $appData = $xmlToAppData->parseFile(realpath(dirname(__FILE__) . '/../../../../fixtures/bookstore/schema.xml'));
+            $appData = $xmlToAppData->parseFile(realpath(__DIR__ . '/../../../../fixtures/bookstore/schema.xml'));
             self::$database = $appData->getDatabase("bookstore");
         }
     }
@@ -43,17 +43,7 @@ class OMBuilderRelatedByTest extends \PHPUnit\Framework\TestCase
 
     public static function getRelatedBySuffixDataProvider()
     {
-        return array(
-            array('book', 0, '', ''),
-            array('essay', 0, 'RelatedByFirstAuthor', 'RelatedByFirstAuthor'),
-            array('essay', 1, 'RelatedBySecondAuthor', 'RelatedBySecondAuthor'),
-            array('essay', 2, 'RelatedById', 'RelatedByNextEssayId'),
-            array('bookstore_employee', 0, 'RelatedById', 'RelatedBySupervisorId'),
-            array('composite_essay', 0, 'RelatedById0', 'RelatedByFirstEssayId'),
-            array('composite_essay', 1, 'RelatedById1', 'RelatedBySecondEssayId'),
-            array('man', 0, 'RelatedByWifeId', 'RelatedByWifeId'),
-            array('woman', 0, 'RelatedByHusbandId', 'RelatedByHusbandId'),
-        );
+        return [['book', 0, '', ''], ['essay', 0, 'RelatedByFirstAuthor', 'RelatedByFirstAuthor'], ['essay', 1, 'RelatedBySecondAuthor', 'RelatedBySecondAuthor'], ['essay', 2, 'RelatedById', 'RelatedByNextEssayId'], ['bookstore_employee', 0, 'RelatedById', 'RelatedBySupervisorId'], ['composite_essay', 0, 'RelatedById0', 'RelatedByFirstEssayId'], ['composite_essay', 1, 'RelatedById1', 'RelatedBySecondEssayId'], ['man', 0, 'RelatedByWifeId', 'RelatedByWifeId'], ['woman', 0, 'RelatedByHusbandId', 'RelatedByHusbandId']];
     }
 
     /**

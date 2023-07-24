@@ -22,7 +22,7 @@ class PropelAutoloader
 
     protected static $instance = null;
 
-    protected $classes = array();
+    protected $classes = [];
 
     /**
      * Retrieves the singleton instance of this class.
@@ -49,8 +49,8 @@ class PropelAutoloader
     {
         ini_set('unserialize_callback_func', 'spl_autoload_call');
 
-        if (false === spl_autoload_register(array(self::getInstance(), 'autoload'))) {
-            throw new Exception(sprintf('Unable to register %s::autoload as an autoloading method.', get_class(self::getInstance())));
+        if (false === spl_autoload_register([self::getInstance(), 'autoload'])) {
+            throw new Exception(sprintf('Unable to register %s::autoload as an autoloading method.', self::getInstance()::class));
         }
     }
 
@@ -61,7 +61,7 @@ class PropelAutoloader
      */
     public static function unregister()
     {
-        spl_autoload_unregister(array(self::getInstance(), 'autoload'));
+        spl_autoload_unregister([self::getInstance(), 'autoload']);
     }
 
     /**
@@ -94,7 +94,7 @@ class PropelAutoloader
      */
     public function getClassPath($class)
     {
-        return isset($this->classes[$class]) ? $this->classes[$class] : null;
+        return $this->classes[$class] ?? null;
     }
 
     /**
@@ -112,7 +112,7 @@ class PropelAutoloader
             return true;
         }
         // fallback for classes defined with leading backslash
-        if (strpos($class, '\\') === 0) {
+        if (str_starts_with($class, '\\')) {
             $class = substr($class, 1);
 
             return $this->autoload($class);

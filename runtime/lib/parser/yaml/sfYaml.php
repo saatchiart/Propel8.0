@@ -28,7 +28,7 @@ class sfYaml
    */
   public static function setSpecVersion($version)
   {
-    if (!in_array($version, array('1.1', '1.2'))) {
+    if (!in_array($version, ['1.1', '1.2'])) {
       throw new InvalidArgumentException(sprintf('Version %s of the YAML specifications is not supported', $version));
     }
 
@@ -68,7 +68,7 @@ class sfYaml
     $file = '';
 
     // if input is a file, process it
-    if (strpos($input, "\n") === false && is_file($input)) {
+    if (!str_contains($input, "\n") && is_file($input)) {
       $file = $input;
 
       ob_start();
@@ -84,7 +84,7 @@ class sfYaml
       return $input;
     }
 
-    require_once dirname(__FILE__).'/sfYamlParser.php';
+    require_once __DIR__.'/sfYamlParser.php';
 
     $yaml = new sfYamlParser();
 
@@ -110,7 +110,7 @@ class sfYaml
    */
   public static function dump($array, $inline = 2)
   {
-    require_once dirname(__FILE__).'/sfYamlDumper.php';
+    require_once __DIR__.'/sfYamlDumper.php';
 
     $yaml = new sfYamlDumper();
 

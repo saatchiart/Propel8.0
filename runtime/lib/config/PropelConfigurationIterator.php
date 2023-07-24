@@ -21,19 +21,19 @@ class PropelConfigurationIterator extends RecursiveIteratorIterator
     /**
      * Node is a parent node
      */
-    const NODE_PARENT = 0;
+    final public const NODE_PARENT = 0;
 
     /**
      * Node is an actual configuration item
      */
-    const NODE_ITEM = 1;
+    final public const NODE_ITEM = 1;
 
     /**
      * Namespace stack when recursively iterating the configuration tree
      *
      * @var       array
      */
-    protected $namespaceStack = array();
+    protected $namespaceStack = [];
 
     /**
      * Current node type. Possible values: null (undefined), self::NODE_PARENT or self::NODE_ITEM

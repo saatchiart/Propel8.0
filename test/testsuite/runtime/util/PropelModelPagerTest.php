@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Test the utility class PropelPager
@@ -80,11 +80,11 @@ class PropelModelPagerTest extends BookstoreEmptyTestBase
         $this->createBooks(5);
         $pager = $this->getPager(4, 1);
         $this->assertTrue($pager->getResults() instanceof PropelObjectCollection, 'getResults() returns a PropelObjectCollection');
-        $this->assertEquals(4, count($pager->getResults()), 'getResults() returns at most $maxPerPage results');
+        $this->assertEquals(4, is_countable($pager->getResults()) ? count($pager->getResults()) : 0, 'getResults() returns at most $maxPerPage results');
         $pager = $this->getPager(4, 2);
-        $this->assertEquals(1, count($pager->getResults()), 'getResults() returns the remaining results when in the last page');
+        $this->assertEquals(1, is_countable($pager->getResults()) ? count($pager->getResults()) : 0, 'getResults() returns the remaining results when in the last page');
         $pager = $this->getPager(4, 3);
-        $this->assertEquals(1, count($pager->getResults()), 'getResults() returns the results of the last page when called on nonexistent pages');
+        $this->assertEquals(1, is_countable($pager->getResults()) ? count($pager->getResults()) : 0, 'getResults() returns the results of the last page when called on nonexistent pages');
     }
 
     public function testGetResultsRespectsFormatter()

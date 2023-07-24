@@ -8,7 +8,7 @@
  * @license    MIT License
  */
 
-require_once dirname(__FILE__) . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
+require_once __DIR__ . '/../../../../tools/helpers/bookstore/BookstoreEmptyTestBase.php';
 
 /**
  * Tests the generated Peer classes.
@@ -36,24 +36,24 @@ class GeneratedPeerDoSelectTest extends BookstoreEmptyTestBase
     public function testDoSelect()
     {
         $books = BookPeer::doSelect(new Criteria());
-        $this->assertEquals(4, count($books), 'doSelect() with an empty Criteria returns all results');
+        $this->assertEquals(4, is_countable($books) ? count($books) : 0, 'doSelect() with an empty Criteria returns all results');
         $book1 = $books[0];
 
         $c = new Criteria();
         $c->add(BookPeer::ID, $book1->getId());
         $res = BookPeer::doSelect($c);
-        $this->assertEquals(array($book1), $res, 'doSelect() accepts a Criteria object with a condition');
+        $this->assertEquals([$book1], $res, 'doSelect() accepts a Criteria object with a condition');
 
         $c = new Criteria();
         $c->add(BookPeer::ID, $book1->getId());
         $c->add(BookPeer::TITLE, $book1->getTitle());
         $res = BookPeer::doSelect($c);
-        $this->assertEquals(array($book1), $res, 'doSelect() accepts a Criteria object with several condition');
+        $this->assertEquals([$book1], $res, 'doSelect() accepts a Criteria object with several condition');
 
         $c = new Criteria();
         $c->add(BookPeer::ID, 'foo');
         $res = BookPeer::doSelect($c);
-        $this->assertEquals(array(), $res, 'doSelect() accepts an incorrect Criteria');
+        $this->assertEquals([], $res, 'doSelect() accepts an incorrect Criteria');
     }
 
     /**
@@ -73,14 +73,14 @@ class GeneratedPeerDoSelectTest extends BookstoreEmptyTestBase
 
         $results = BookPeer::doSelect($lc);
 
-        $this->assertEquals($limitcount, count($results), "Expected $limitcount results from BookPeer::doSelect()");
+        $this->assertEquals($limitcount, is_countable($results) ? count($results) : 0, "Expected $limitcount results from BookPeer::doSelect()");
 
         // re-create it just to avoid side-effects
         $lc2 = new Criteria();
         $lc2->setLimit($limitcount);
         $results2 = BookPeer::doSelectJoinAuthor($lc2);
 
-        $this->assertEquals($limitcount, count($results2), "Expected $limitcount results from BookPeer::doSelectJoinAuthor()");
+        $this->assertEquals($limitcount, is_countable($results2) ? count($results2) : 0, "Expected $limitcount results from BookPeer::doSelectJoinAuthor()");
 
     }
 
@@ -102,10 +102,10 @@ class GeneratedPeerDoSelectTest extends BookstoreEmptyTestBase
 
         $joinBooks = BookPeer::doSelectJoinAuthor($c);
         $obj2 = $joinBooks[0];
-        $obj2Array = $obj2->toArray(BasePeer::TYPE_PHPNAME, true, array(), true);
+        $obj2Array = $obj2->toArray(BasePeer::TYPE_PHPNAME, true, [], true);
         // $joinSize = strlen(serialize($obj2));
 
-        $this->assertEquals(count($books), count($joinBooks), "Expected to find same number of rows in doSelectJoin*() call as doSelect() call.");
+        $this->assertEquals(is_countable($books) ? count($books) : 0, is_countable($joinBooks) ? count($joinBooks) : 0, "Expected to find same number of rows in doSelectJoin*() call as doSelect() call.");
 
         // $this->assertTrue($joinSize > $size, "Expected a serialized join object to be larger than a non-join object.");
 
@@ -137,7 +137,7 @@ class GeneratedPeerDoSelectTest extends BookstoreEmptyTestBase
         $c->addAscendingOrderByColumn(BookPeer::ISBN);
 
         $matches = BookPeer::doSelectJoinAuthor($c);
-        $this->assertEquals(2, count($matches), "Expected 2 matches back from new books; got back " . count($matches));
+        $this->assertEquals(2, is_countable($matches) ? count($matches) : 0, "Expected 2 matches back from new books; got back " . (is_countable($matches) ? count($matches) : 0));
 
         $this->assertNull($matches[0]->getAuthor(), "Expected first book author to be null");
         $this->assertInstanceOf('Author', $matches[1]->getAuthor(), "Expected valid Author object for second book.");
@@ -204,7 +204,7 @@ class GeneratedPeerDoSelectTest extends BookstoreEmptyTestBase
 
         // 4) test a doSelectJoin()
         $morebooks = BookPeer::doSelectJoinAuthor(new Criteria());
-        for ($i=0,$j=0; $j < count($morebooks); $i++, $j++) {
+        for ($i=0,$j=0; $j < (is_countable($morebooks) ? count($morebooks) : 0); $i++, $j++) {
             $testb1 = $allbooks[$i];
             $testb2 = $allbooks[$j];
             $this->assertTrue($testb1 === $testb2, "Expected the same objects from consecutive doSelect() calls.");
@@ -252,14 +252,14 @@ class GeneratedPeerDoSelectTest extends BookstoreEmptyTestBase
 
         // 1) test the pooled instances'
         $c = new Criteria();
-        $c->add(BookstoreEmployeePeer::ID, array($managerId, $empId, $cashierId), Criteria::IN);
+        $c->add(BookstoreEmployeePeer::ID, [$managerId, $empId, $cashierId], Criteria::IN);
         $c->addAscendingOrderByColumn(BookstoreEmployeePeer::ID);
 
         $objects = BookstoreEmployeePeer::doSelect($c);
 
-        $this->assertEquals(3, count($objects), "Expected 3 objects to be returned.");
+        $this->assertEquals(3, is_countable($objects) ? count($objects) : 0, "Expected 3 objects to be returned.");
 
-        list($o1, $o2, $o3) = $objects;
+        [$o1, $o2, $o3] = $objects;
 
         $this->assertSame($o1, $manager);
         $this->assertSame($o2, $employee);
@@ -268,11 +268,11 @@ class GeneratedPeerDoSelectTest extends BookstoreEmptyTestBase
         // 2) test a forced reload from database
         BookstoreEmployeePeer::clearInstancePool();
 
-        list($o1,$o2,$o3) = BookstoreEmployeePeer::doSelect($c);
+        [$o1, $o2, $o3] = BookstoreEmployeePeer::doSelect($c);
 
-        $this->assertTrue($o1 instanceof BookstoreManager, "Expected BookstoreManager object, got " . get_class($o1));
-        $this->assertTrue($o2 instanceof BookstoreEmployee, "Expected BookstoreEmployee object, got " . get_class($o2));
-        $this->assertTrue($o3 instanceof BookstoreCashier, "Expected BookstoreCashier object, got " . get_class($o3));
+        $this->assertTrue($o1 instanceof BookstoreManager, "Expected BookstoreManager object, got " . $o1::class);
+        $this->assertTrue($o2 instanceof BookstoreEmployee, "Expected BookstoreEmployee object, got " . $o2::class);
+        $this->assertTrue($o3 instanceof BookstoreCashier, "Expected BookstoreCashier object, got " . $o3::class);
 
     }
 
@@ -344,7 +344,7 @@ class GeneratedPeerDoSelectTest extends BookstoreEmptyTestBase
         $c->add(ReaderFavoritePeer::READER_ID, $r1->getId());
 
         $results = ReaderFavoritePeer::doSelectJoinBookOpinion($c);
-        $this->assertEquals(1, count($results), "Expected 1 result");
+        $this->assertEquals(1, is_countable($results) ? count($results) : 0, "Expected 1 result");
     }
 
     /**
@@ -425,10 +425,10 @@ class GeneratedPeerDoSelectTest extends BookstoreEmptyTestBase
         */
 
         $c = new Criteria();
-        $c->addJoin(array(BookstoreContestEntryPeer::BOOKSTORE_ID, BookstoreContestEntryPeer::CONTEST_ID), array(BookstoreContestPeer::BOOKSTORE_ID, BookstoreContestPeer::CONTEST_ID) );
+        $c->addJoin([BookstoreContestEntryPeer::BOOKSTORE_ID, BookstoreContestEntryPeer::CONTEST_ID], [BookstoreContestPeer::BOOKSTORE_ID, BookstoreContestPeer::CONTEST_ID] );
 
         $results = BookstoreContestEntryPeer::doSelect($c);
-        $this->assertEquals(2, count($results) );
+        $this->assertEquals(2, is_countable($results) ? count($results) : 0 );
         foreach ($results as $result) {
             $this->assertEquals($bs1Id, $result->getBookstoreId() );
             $this->assertEquals($ct1Id, $result->getContestId() );

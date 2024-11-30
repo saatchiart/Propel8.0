@@ -132,6 +132,7 @@ class MssqlPropelPDO extends PropelPDO
      *
      * @return integer
      */
+    #[ReturnTypeWillChange]
     public function lastInsertId($seqname = null)
     {
         $result = self::query('SELECT SCOPE_IDENTITY()');

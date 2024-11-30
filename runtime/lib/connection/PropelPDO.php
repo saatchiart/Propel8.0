@@ -229,6 +229,7 @@ class PropelPDO extends PDO
      *
      * @return boolean
      */
+    #[ReturnTypeWillChange]
     public function beginTransaction()
     {
         $return = true;
@@ -252,6 +253,7 @@ class PropelPDO extends PDO
      *
      * @throws PropelException
      */
+    #[ReturnTypeWillChange]
     public function commit()
     {
         $return = true;
@@ -281,6 +283,7 @@ class PropelPDO extends PDO
      *
      * @return boolean Whether operation was successful.
      */
+    #[ReturnTypeWillChange]
     public function rollBack()
     {
         $return = true;
@@ -339,6 +342,7 @@ class PropelPDO extends PDO
      *
      * @return void
      */
+    #[ReturnTypeWillChange]
     public function setAttribute($attribute, $value)
     {
         switch ($attribute) {
@@ -362,6 +366,7 @@ class PropelPDO extends PDO
      *
      * @return mixed
      */
+    #[ReturnTypeWillChange]
     public function getAttribute($attribute)
     {
         switch ($attribute) {
@@ -389,6 +394,7 @@ class PropelPDO extends PDO
      *
      * @return PDOStatement
      */
+    #[ReturnTypeWillChange]
     public function prepare($sql, $driver_options = array())
     {
         if ($this->useDebug) {
@@ -421,6 +427,7 @@ class PropelPDO extends PDO
      *
      * @return integer
      */
+    #[ReturnTypeWillChange]
     public function exec($sql)
     {
         if ($this->useDebug) {
@@ -448,6 +455,7 @@ class PropelPDO extends PDO
      *
      * @return PDOStatement
      */
+    #[ReturnTypeWillChange]
     public function query(string $statement, ?int $fetchMode = null, ...$fetchModeArgs)
     {
         $debug = null;

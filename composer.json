@@ -10,7 +10,8 @@
     "homepage": "http://www.willdurand.fr"
   }],
   "autoload": {
-      "classmap": ["runtime/lib", "generator/lib"]
+      "classmap": ["runtime/lib", "generator/lib"],
+      "files": ["generator/lib/helpers/Strftime.php"]
   },
   "include-path": ["runtime/lib", "generator/lib"],
   "require": {

@@ -247,12 +247,12 @@ class PropelTableComparator
             }
         }
 
-        foreach ($fromTableIndices as $fromTableIndexPos => $fromTableIndex) {
+        foreach ($fromTableIndices as $fromTableIndex) {
             $this->tableDiff->addRemovedIndex($fromTableIndex->getName(), $fromTableIndex);
             $indexDifferences++;
         }
 
-        foreach ($toTableIndices as $toTableIndexPos => $toTableIndex) {
+        foreach ($toTableIndices as $toTableIndex) {
             $this->tableDiff->addAddedIndex($toTableIndex->getName(), $toTableIndex);
             $indexDifferences++;
         }
@@ -296,14 +296,14 @@ class PropelTableComparator
             }
         }
 
-        foreach ($fromTableFks as $fromTableFkPos => $fromTableFk) {
+        foreach ($fromTableFks as $fromTableFk) {
             if (!$fromTableFk->isSkipSql() && !in_array($fromTableFk, $toTableFks)) {
                 $this->tableDiff->addRemovedFk($fromTableFk->getName(), $fromTableFk);
                 $fkDifferences++;
             }
         }
 
-        foreach ($toTableFks as $toTableFkPos => $toTableFk) {
+        foreach ($toTableFks as $toTableFk) {
             if (!$toTableFk->isSkipSql() && !in_array($toTableFk, $fromTableFks)) {
                 $this->tableDiff->addAddedFk($toTableFk->getName(), $toTableFk);
                 $fkDifferences++;

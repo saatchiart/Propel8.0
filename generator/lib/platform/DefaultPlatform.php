@@ -768,14 +768,14 @@ ALTER TABLE %s RENAME TO %s;
         if ($tableDiff->hasModifiedPk()) {
             $ret .= $this->getAddPrimaryKeyDDL($tableDiff->getToTable());
         }
-        foreach ($tableDiff->getModifiedIndices() as $indexName => $indexModification) {
+        foreach ($tableDiff->getModifiedIndices() as $indexModification) {
             list($fromIndex, $toIndex) = $indexModification;
             $ret .= $this->getAddIndexDDL($toIndex);
         }
         foreach ($tableDiff->getAddedIndices() as $index) {
             $ret .= $this->getAddIndexDDL($index);
         }
-        foreach ($tableDiff->getModifiedFks() as $fkName => $fkModification) {
+        foreach ($tableDiff->getModifiedFks() as $fkModification) {
             list($fromFk, $toFk) = $fkModification;
             $ret .= $this->getAddForeignKeyDDL($toFk);
         }
@@ -851,7 +851,7 @@ ALTER TABLE %s RENAME TO %s;
             $ret .= $this->getAddIndexDDL($index);
         }
 
-        foreach ($tableDiff->getModifiedIndices() as $indexName => $indexModification) {
+        foreach ($tableDiff->getModifiedIndices() as $indexModification) {
             list($fromIndex, $toIndex) = $indexModification;
             $ret .= $this->getDropIndexDDL($fromIndex);
             $ret .= $this->getAddIndexDDL($toIndex);
@@ -878,7 +878,7 @@ ALTER TABLE %s RENAME TO %s;
             $ret .= $this->getAddForeignKeyDDL($fk);
         }
 
-        foreach ($tableDiff->getModifiedFks() as $fkName => $fkModification) {
+        foreach ($tableDiff->getModifiedFks() as $fkModification) {
             list($fromFk, $toFk) = $fkModification;
             $ret .= $this->getDropForeignKeyDDL($fromFk);
             $ret .= $this->getAddForeignKeyDDL($toFk);

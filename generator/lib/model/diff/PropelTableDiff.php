@@ -653,7 +653,7 @@ class PropelTableDiff
         }
         if ($modifiedColumns = $this->getModifiedColumns()) {
             $ret .= "    modifiedColumns:\n";
-            foreach ($modifiedColumns as $colname => $colDiff) {
+            foreach ($modifiedColumns as $colDiff) {
                 $ret .= $colDiff->__toString();
             }
         }

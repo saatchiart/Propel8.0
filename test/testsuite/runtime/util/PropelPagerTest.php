@@ -114,7 +114,7 @@ class PropelPagerTest extends BookstoreEmptyTestBase
     $cr->add(BookPeer::AUTHOR_ID, $this->authorId);
     $pager = new PropelPager($cr, "BookPeer", "doSelect");
     $i = 0;
-    foreach ($pager as $key => $book) {
+    foreach ($pager as $book) {
       $i++;
     }
     $this->assertEquals(7, $i);
@@ -126,7 +126,7 @@ class PropelPagerTest extends BookstoreEmptyTestBase
     $cr->add(BookPeer::AUTHOR_ID, $this->authorId);
     $pager = new PropelPager($cr, "BookPeer", "doSelect", 2, 5);
     $i = 0;
-    foreach ($pager as $key => $book) {
+    foreach ($pager as $book) {
       $i++;
     }
     $this->assertEquals(2, $i);

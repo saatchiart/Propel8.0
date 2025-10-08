@@ -300,7 +300,7 @@ class PropelDatabaseDiff
         }
         if ($modifiedTables = $this->getModifiedTables()) {
             $ret .= "modifiedTables:\n";
-            foreach ($modifiedTables as $tableName => $tableDiff) {
+            foreach ($modifiedTables as $tableDiff) {
                 $ret .= $tableDiff->__toString();
             }
         }

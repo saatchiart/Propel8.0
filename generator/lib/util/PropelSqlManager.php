@@ -129,7 +129,7 @@ class PropelSqlManager
     {
         if (null === $this->databases) {
             $databases = array();
-            foreach ($this->getDataModels() as $package => $dataModel) {
+            foreach ($this->getDataModels() as $dataModel) {
                 foreach ($dataModel->getDatabases() as $database) {
                     if (!isset($databases[$database->getName()])) {
                         $databases[$database->getName()] = $database;

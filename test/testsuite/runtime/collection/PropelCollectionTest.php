@@ -142,7 +142,7 @@ class PropelCollectionTest extends BookstoreTestBase
         $data = array('bar1', 'bar2', 'bar3');
         $col = new PropelCollection($data);
         $this->assertEquals('bar1', $col->getCurrent(), 'getCurrent() returns the value of the first element when the internal pointer is at the beginning of the list');
-        foreach ($col as $key => $value) {
+        foreach ($col as $value) {
             $this->assertEquals($value, $col->getCurrent(), 'getCurrent() returns the value of the current element in the collection');
         }
     }

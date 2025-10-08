@@ -9,3 +9,7 @@ composer.lock
 composer.phar
 generator/pear/build/
 runtime/pear/build/
+
+.phpunit.result.cache
+
+docker/mysql/data/

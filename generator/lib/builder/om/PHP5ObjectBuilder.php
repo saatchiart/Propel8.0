@@ -4261,6 +4261,7 @@ abstract class " . $this->getClassname() . " extends " . $parentClass . " ";
      * @var        PropelObjectCollection|{$className}[] Collection to store aggregation of $className objects.
      */
     protected $" . $this->getCrossFKVarName($crossFK) . ";
+    protected $" . $this->getCrossFKVarName($crossFK) . "Partial;
 ";
     }
 
